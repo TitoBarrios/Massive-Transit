@@ -3,16 +3,18 @@ package model;
 public class Bus {
 	private String plate;
 	private Route[] routes;
-	private Ticket[] capacity;
+	private Ticket[] tickets;
+	private int price;
 	private boolean disponibility;
 	
-	private final static int MAX_CAPACITY = 120;
+	private final static int MAX_TICKETS = 80;
 	private final static int MAX_ROUTES = 30;
 	
-	public Bus(String plate) {
+	public Bus(String plate, int price) {
 		this.plate = plate;
+		this.price = price;
 		routes = new Route[MAX_ROUTES];
-		capacity = new Ticket[MAX_CAPACITY];
+		tickets = new Ticket[MAX_TICKETS];
 	}
 	
 	public void setRoutes(Route[] routes) {
@@ -31,8 +33,12 @@ public class Bus {
 		return routes;
 	}
 	
-	public Ticket[] getCapacity() {
-		return capacity;
+	public Ticket[] getTickets() {
+		return tickets;
+	}
+	
+	public int getPrice() {
+		return price;
 	}
 	
 	public boolean getDisponiblility() {

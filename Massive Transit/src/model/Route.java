@@ -2,20 +2,29 @@ package model;
 
 public class Route {
 	String name;
-	Ticket[] capacity;
+	Ticket[] tickets;
 	Stop[] stops;
+	boolean disponibility;
 	
-	public static final int MAX_CAPACITY = 80;
+	public static final int MAX_TICKETS = 80;
 	public static final int MAX_STOPS = 1;
 	
 	public Route(String name, Stop[] stops) {
 		this.name = name;
 		this.stops = stops;
-		capacity = new Ticket[MAX_CAPACITY];
+		tickets = new Ticket[MAX_TICKETS];
 	}
 	
-	public void setCapacity(Ticket[] capacity) {
-		this.capacity = capacity;
+	public void setTickets(Ticket[] tickets) {
+		this.tickets = tickets;
+	}
+	
+	public void setTicket(Ticket ticket, int position) {
+		this.tickets[position] = ticket;
+	}
+	
+	public void setDisponibility(boolean disponibility) {
+		this.disponibility = disponibility;
 	}
 	
 	public String getName() {
@@ -26,7 +35,11 @@ public class Route {
 		return stops;
 	}
 	
-	public Ticket[] getCapacity() {
-		return capacity;
+	public Ticket[] getTickets() {
+		return tickets;
+	}
+	
+	public boolean getDisponibility() {
+		return disponibility;
 	}
 }

@@ -8,13 +8,13 @@ public class Ticket {
 	private LocalDateTime expirationDate;
 	private int price;
 	
-	public Ticket(User owner, int chairNumber, LocalDateTime expirationDate, int price) {
+	public Ticket(User owner, int chairNumber, LocalDateTime expirationDate) {
 		this.expirationDate = expirationDate;
 		this.chairNumber = chairNumber;
 		this.owner = owner;
 		this.price = price;
 	}
-	
+
 	public User getOwner() {
 		return owner;
 	}
