@@ -10,10 +10,11 @@ public class Bus {
 	private final static int MAX_TICKETS = 80;
 	private final static int MAX_ROUTES = 30;
 	
-	public Bus(String plate, int price) {
+	public Bus(String plate, int price, Route[] routes) {
 		this.plate = plate;
 		this.price = price;
 		routes = new Route[MAX_ROUTES];
+		this.routes = routes;
 		tickets = new Ticket[MAX_TICKETS];
 	}
 	
@@ -46,5 +47,3 @@ public class Bus {
 	}
 
 }
-	
-	
