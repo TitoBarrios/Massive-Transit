@@ -1,16 +1,19 @@
 package model;
 
+import java.time.LocalDateTime;
+
 public class Route {
 	String name;
 	Ticket[] tickets;
-	Stop[] stops;
+	LocalDateTime[] stops;
 	boolean disponibility;
 	
 	public static final int MAX_TICKETS = 80;
-	public static final int MAX_STOPS = 1;
+	public static final int MAX_STOPS = 2;
 	
-	public Route(String name, Stop[] stops) {
+	public Route(String name, LocalDateTime[] stops) {
 		this.name = name;
+		this.stops = new LocalDateTime[MAX_STOPS];
 		this.stops = stops;
 		tickets = new Ticket[MAX_TICKETS];
 	}
@@ -31,8 +34,12 @@ public class Route {
 		return name;
 	}
 	
-	public Stop[] getStops() {
+	public LocalDateTime[] getStops() {
 		return stops;
+	}
+	
+	public LocalDateTime getStop(int number) {
+		return stops[number];
 	}
 	
 	public Ticket[] getTickets() {
