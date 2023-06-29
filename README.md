@@ -1,18 +1,12 @@
 # Basic-Bus-Transportation-Program
 I am creating this program to improve my knowledge in java.
 
-Expected Features:
-- Automatic ticket expiration.
-- Buses and bus availability based on date, including hours, minutes and seconds.
-- The user can "register" to the program.
-- User's ticket history.
+Features:
+- User registration and log-in.
+- User's wallet.
+- The user can create a ticket, based on route's entry and exit dates.
+- The admin can create routes, selecting the amount of stops, first stop time and the time between each stop.
+- The admin is able to create a bus and select any route for it.
 
-Development Advancement:  
-- Objects created.
-- Console menu in development.
-- Creating the functions.
-
-Functions Created:
-- Buses and routes availability checker.
-- Ticket's expiration date checker.
-- Tickets creation.
+Future Features:
+- User's tickets history.
