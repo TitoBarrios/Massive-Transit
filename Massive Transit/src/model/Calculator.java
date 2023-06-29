@@ -63,10 +63,10 @@ public class Calculator {
 		return daysOfWeek;
 	}
 
-	public boolean isDayForWork(DayOfWeek[] laboralDays) {
+	public boolean isDayForWork(DayOfWeek[] laboralDays, LocalDateTime timeToCheck) {
 		boolean dayForWork = false;
 		for (int i = 0; i < laboralDays.length; i++) {
-			if (currentDate.getDayOfWeek() == laboralDays[i]) {
+			if (timeToCheck.getDayOfWeek().equals(laboralDays[i])) {
 				dayForWork = true;
 				break;
 			}
@@ -76,35 +76,42 @@ public class Calculator {
 
 	public LocalDateTime LaboralDaySetter(DayOfWeek[] laboralDays, LocalTime time) {
 		LocalDate dateForWork = currentDate.toLocalDate();
-		while (!isDayForWork(laboralDays)) {
-			dateForWork.plusDays(1);
+		LocalDateTime dateForWorkTime;
+		boolean isDayForWork = isDayForWork(laboralDays, currentDate);
+		while (!isDayForWork) {
+			dateForWork = dateForWork.plusDays(1);
+			dateForWorkTime = LocalDateTime.of(dateForWork, currentDate.toLocalTime());
+			isDayForWork = isDayForWork(laboralDays, dateForWorkTime);
 		}
 		LocalDateTime timeForWork = LocalDateTime.of(dateForWork, time);
 		return timeForWork;
 	}
 
 	public void RoutesCreator(int stopsNumber, String initialTime, int[] timeLapse, int[] daysActive) {
-		Route[] routes = new Route[stopsNumber];
+		Route[] routes = new Route[stopsNumber - 1];
 		LocalTime[] stopTime = new LocalTime[stopsNumber];
 		LocalDateTime[][] stops = new LocalDateTime[stopsNumber][2];
 		DayOfWeek[] laboralDays = LaboralDaysCreator(daysActive);
-
 		stopTime[0] = LocalTime.parse(initialTime);
 		stops[0][0] = LaboralDaySetter(laboralDays, stopTime[0]);
 		stopTime[1] = stopTime[0].plusMinutes(timeLapse[0]);
 		stops[0][1] = LaboralDaySetter(laboralDays, stopTime[1]);
 		routes[0] = new Route("0 a 1", new LocalDateTime[] { stops[0][0], stops[0][1] });
-
-		for (int i = 1; i < stops.length; i++) {
+		for (int i = 1; i < routes.length; i++) {
 			stopTime[i + 1] = stopTime[i].plusMinutes(timeLapse[i]);
 			stops[i][0] = stops[i - 1][1];
 			stops[i][1] = LaboralDaySetter(laboralDays, stopTime[i + 1]);
-			routes[i] = new Route(i + "a" + i + 1, new LocalDateTime[] { stops[i][0], stops[i][1] });
+			routes[i] = new Route(i + " a " + (i + 1), new LocalDateTime[] { stops[i][0], stops[i][1] });
 		}
 
 		for (int i = 0; i < this.routes.length; i++) {
 			if (this.routes[i] == null) {
-				this.routes[i] = routes;
+				this.routes[i] = new Route[routes.length];
+				for (int j = 0; j < this.routes[i].length; j++) {
+					if (this.routes[i][j] == null) {
+						this.routes[i][j] = routes[j];
+					}
+				}
 				break;
 			}
 		}
@@ -114,78 +121,95 @@ public class Calculator {
 		for (int i = 0; i < buses.length; i++) {
 			if (buses[i] == null) {
 				buses[i] = new Bus(plate, price, routes[routeNumber]);
+				break;
 			}
 		}
 	}
 
-	public Bus[] busesCreator(Route[][] routesArray, int[] price, int[] routeNumber, int busQuantity) {
-		Bus[] buses = new Bus[busQuantity];
+//Crear una clase heredada, para que funcione con aviones, con ello se pregunta el número de asiento
+	public void ticketCreator(int userNumber, int busPosition, int routePositionEntry, int routePositionExit) {
+		if (enoughMoney(userNumber, busPosition)) {
+			users[userNumber].setWallet(users[userNumber].getWallet() - buses[busPosition].getPrice());
+			Ticket ticket = new Ticket(users[userNumber], buses[busPosition].getRoutes()[routePositionExit].getStop(1));
+			for (int i = 0; i < buses[busPosition].getTickets().length; i++) {
+				if (buses[busPosition].getTickets()[i] == null) {
+					buses[busPosition].setTicket(ticket);
+				}
+			}
+		}
+	}
+
+	public boolean enoughMoney(int userNumber, int busNumber) {
+		boolean enoughMoney = false;
+		if (users[userNumber].getWallet() >= buses[busNumber].getPrice()) {
+			enoughMoney = true;
+		}
+		return enoughMoney;
+	}
+
+	public void busDisponibilityChecker() {
+		boolean isTicketAvailable = false;
+		boolean isRouteAvailable = false;
 		for (int i = 0; i < buses.length; i++) {
-			if (routesArray[routeNumber[i]] != null) {
-				buses[i] = new Bus("Bus " + i, price[i], routesArray[routeNumber[i]]);
-			}
-		}
-		return buses;
-	}
+			if (buses[i] != null) {
 
-	public void ticketCreator(User owner, int chairNumber, int busPosition, int routePosition) {
-		Ticket ticket = new Ticket(owner, chairNumber, buses[busPosition].getRoutes()[routePosition].getStop(1));
-		for (int i = 0; i < buses[busPosition].getRoutes()[routePosition].getTickets().length; i++) {
-			if (buses[busPosition].getRoutes()[routePosition].getTickets()[i] == null) {
-				buses[busPosition].getRoutes()[routePosition].setTicket(ticket, i);
-			}
-		}
-	}
-
-	public void ticketDisponibilityChecker(Bus bus) {
-		for (int i = 0; i < bus.getRoutes().length; i++) {
-			if (bus.getRoutes()[i] != null) {
-				for (int a = 0; a < bus.getRoutes()[i].getTickets().length; a++) {
-					if (bus.getRoutes()[i].getTickets()[a] != null) {
-						if (currentDate.isAfter(bus.getRoutes()[i].getTickets()[a].getExpirationDate())
-								|| currentDate.isEqual(bus.getRoutes()[i].getTickets()[0].getExpirationDate())) {
-							bus.getRoutes()[i].setTicket(null, a);
+				for (int j = 0; j < buses[i].getRoutes().length; j++) {
+					if (buses[i].getRoutes()[j] != null) {
+						if (currentDate.isAfter(buses[i].getRoutes()[j].getStops()[1])
+								|| currentDate.isEqual(buses[i].getRoutes()[j].getStops()[1])) {
+							buses[i].getRoutes()[j].setDisponibility(false);
+						} else {
+							buses[i].getRoutes()[j].setDisponibility(true);
+							isRouteAvailable = true;
 						}
 					}
 				}
-			}
-		}
-	}
 
-	public void routeAndBusDisponibilityChecker(int busNumber) {
-		buses[busNumber].setDisponibility(false);
-		for (int o = 0; o < buses[busNumber].getTickets().length; o++) {
-			if (buses[busNumber].getTickets()[o] == null) {
-				buses[busNumber].setDisponibility(true);
-				for (int i = 0; i < buses[busNumber].getRoutes().length; i++) {
-					if (buses[busNumber].getRoutes()[i] != null) {
-						buses[busNumber].getRoutes()[i].setDisponibility(false);
-						for (int a = 0; i < buses[busNumber].getRoutes()[i].getTickets().length; a++) {
-							if (buses[busNumber].getRoutes()[i].getTickets()[a] == null) {
-								if ((currentDate.isBefore(buses[busNumber].getRoutes()[i].getStop(0))
-										|| currentDate.isEqual(buses[busNumber].getRoutes()[i].getStop(0)))) {
-									buses[busNumber].getRoutes()[i].setDisponibility(true);
-									a = buses[busNumber].getRoutes()[i].getTickets().length;
-								}
-							}
+				for (int j = 0; j < buses[i].getRoutes().length; j++) {
+					if (buses[i].getRoutes()[j] != null) {
+						if (buses[i].getRoutes()[j].getDisponibility() == true) {
+							isRouteAvailable = true;
 						}
 					}
 				}
+
+				for (int j = 0; j < buses[i].getTickets().length; j++) {
+					if (buses[i].getTickets()[j] != null) {
+						if (currentDate.isAfter(buses[i].getTickets()[j].getExpirationDate())
+								|| currentDate.isEqual(buses[i].getTickets()[j].getExpirationDate())) {
+							buses[i].eliminateTicket(j);
+							isTicketAvailable = true;
+						}
+					} else {
+						isTicketAvailable = true;
+					}
+				}
+
+				if (isTicketAvailable && isRouteAvailable) {
+					buses[i].setDisponibility(true);
+				} else {
+					buses[i].setDisponibility(false);
+				}
 			}
 		}
+
 	}
 
-	public void UserCreator(String name, String password) {
-		boolean canRegister = true;
+	public boolean UserAvailability(String name) {
+		boolean availability = true;
 		for (int i = 0; i < users.length; i++) {
 			if (users[i] != null) {
-				if (users[i].getName() == name) {
-					canRegister = false;
+				if (users[i].getName().equals(name)) {
+					availability = false;
 					break;
 				}
 			}
 		}
-		if (canRegister) {
+		return availability;
+	}
+
+	public void UserCreator(String name, String password) {
+		if (UserAvailability(name)) {
 			for (int i = 0; i < users.length; i++) {
 				if (users[i] == null) {
 					users[i] = new User(name, password);
@@ -199,7 +223,7 @@ public class Calculator {
 		boolean logIn = false;
 		for (int i = 0; i < users.length; i++) {
 			if (users[i] != null) {
-				if (users[i].getName() == name && users[i].getPassword() == password) {
+				if (users[i].getName().equals(name) && users[i].getPassword().equals(password)) {
 					logIn = true;
 					break;
 				}
@@ -207,12 +231,12 @@ public class Calculator {
 		}
 		return logIn;
 	}
-	
+
 	public int searchUserArrayNumber(String name, String password) {
 		int arrayNumber = 0;
 		for (int i = 0; i < users.length; i++) {
 			if (users[i] != null) {
-				if (users[i].getName() == name && users[i].getPassword() == password) {
+				if (users[i].getName().equals(name) && users[i].getPassword().equals(password)) {
 					arrayNumber = i;
 					break;
 				}
@@ -223,14 +247,22 @@ public class Calculator {
 
 	public boolean AdminLogIn(String name, String password) {
 		boolean adminLogIn = false;
-		if (users[0].getName() == name && users[0].getPassword() == password) {
+		if (users[0].getName().equals(name) && users[0].getPassword().equals(password)) {
 			adminLogIn = true;
 		}
 		return adminLogIn;
 	}
 
+	public void addWallet(int userNumber, int money) {
+		users[userNumber].setWallet(money + users[userNumber].getWallet());
+	}
+
 	public Bus[] getBuses() {
 		return buses;
+	}
+
+	public User[] getUsers() {
+		return users;
 	}
 
 	public void setBuses(Bus[] buses) {

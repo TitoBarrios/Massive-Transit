@@ -4,13 +4,11 @@ import java.time.LocalDateTime;
 
 public class Ticket {
 	private User owner;
-	private int chairNumber;
 	private LocalDateTime expirationDate;
 	private int price;
 	
-	public Ticket(User owner, int chairNumber, LocalDateTime expirationDate) {
+	public Ticket(User owner, LocalDateTime expirationDate) {
 		this.expirationDate = expirationDate;
-		this.chairNumber = chairNumber;
 		this.owner = owner;
 		this.price = price;
 	}
@@ -21,10 +19,6 @@ public class Ticket {
 	
 	public LocalDateTime getExpirationDate() {
 		return expirationDate;
-	}
-	
-	public int getChairNumber() {
-		return chairNumber;
 	}
 	
 	public int getPrice() {

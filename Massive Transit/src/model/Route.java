@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 
 public class Route {
 	String name;
-	Ticket[] tickets;
 	LocalDateTime[] stops;
 	boolean disponibility;
 	
@@ -15,15 +14,6 @@ public class Route {
 		this.name = name;
 		this.stops = new LocalDateTime[MAX_STOPS];
 		this.stops = stops;
-		tickets = new Ticket[MAX_TICKETS];
-	}
-	
-	public void setTickets(Ticket[] tickets) {
-		this.tickets = tickets;
-	}
-	
-	public void setTicket(Ticket ticket, int position) {
-		this.tickets[position] = ticket;
 	}
 	
 	public void setDisponibility(boolean disponibility) {
@@ -40,10 +30,6 @@ public class Route {
 	
 	public LocalDateTime getStop(int number) {
 		return stops[number];
-	}
-	
-	public Ticket[] getTickets() {
-		return tickets;
 	}
 	
 	public boolean getDisponibility() {

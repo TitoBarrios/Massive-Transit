@@ -13,13 +13,25 @@ public class Bus {
 	public Bus(String plate, int price, Route[] routes) {
 		this.plate = plate;
 		this.price = price;
-		routes = new Route[MAX_ROUTES];
+		this.routes = new Route[MAX_ROUTES];
 		this.routes = routes;
 		tickets = new Ticket[MAX_TICKETS];
 	}
 	
 	public void setRoutes(Route[] routes) {
 		this.routes = routes;
+	}
+	
+	public void setTicket(Ticket ticket) {
+		for(int i = 0; i < tickets.length; i++) {
+			if(tickets[i] == null) {
+				tickets[i] = ticket;
+			}
+		}
+	}
+	
+	public void eliminateTicket(int ticketPosition) {
+		tickets[ticketPosition] = null;
 	}
 	
 	public void setDisponibility(boolean disponibility) {
@@ -45,5 +57,4 @@ public class Bus {
 	public boolean getDisponiblility() {
 		return disponibility;
 	}
-
 }
