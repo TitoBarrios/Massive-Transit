@@ -13,6 +13,10 @@ public class View {
 		System.out.println(message);
 	}
 
+	public void showCurrentLineMessage(String message) {
+		System.out.print(message);
+	}
+
 	public String readData() {
 		String data;
 		data = console.nextLine();

@@ -117,24 +117,11 @@ public class Calculator {
 		}
 	}
 
-	public void busCreator(String plate, int price, int routeNumber) {
+	public void busCreator(String plate, int price, int capacity, int routeNumber) {
 		for (int i = 0; i < buses.length; i++) {
 			if (buses[i] == null) {
-				buses[i] = new Bus(plate, price, routes[routeNumber]);
+				buses[i] = new Bus(plate, price, capacity, routes[routeNumber]);
 				break;
-			}
-		}
-	}
-
-//Crear una clase heredada, para que funcione con aviones, con ello se pregunta el número de asiento
-	public void ticketCreator(int userNumber, int busPosition, int routePositionEntry, int routePositionExit) {
-		if (enoughMoney(userNumber, busPosition)) {
-			users[userNumber].setWallet(users[userNumber].getWallet() - buses[busPosition].getPrice());
-			Ticket ticket = new Ticket(users[userNumber], buses[busPosition].getRoutes()[routePositionExit].getStop(1));
-			for (int i = 0; i < buses[busPosition].getTickets().length; i++) {
-				if (buses[busPosition].getTickets()[i] == null) {
-					buses[busPosition].setTicket(ticket);
-				}
 			}
 		}
 	}
@@ -147,16 +134,45 @@ public class Calculator {
 		return enoughMoney;
 	}
 
+	public void ticketCreator(int userNumber, int busNumber, int routePositionEntry, int routePositionExit) {
+		if (enoughMoney(userNumber, busNumber)) {
+			users[userNumber].setWallet(users[userNumber].getWallet() - buses[busNumber].getPrice());
+			Ticket ticket = new Ticket(users[userNumber], buses[busNumber],
+					buses[busNumber].getRoutes()[routePositionEntry].getStops()[0],
+					buses[busNumber].getRoutes()[routePositionExit].getStops()[1], routePositionEntry,
+					routePositionExit);
+			String name = currentDate.getYear() + "_" + userNumber + "_" + busNumber + routePositionEntry
+					+ routePositionExit;
+			ticket.setName(name);
+			buses[busNumber].setTicket(ticket);
+			users[userNumber].setTicket(ticket);
+		}
+	}
+
+	public void UsersTicketDisponibilitySetter(Ticket ticket, boolean disponibility) {
+		for (int i = 0; i < users.length; i++) {
+			if (users[i] != null) {
+				for (int j = 0; j < users[i].getTicketHistory().length; j++) {
+					if (users[i].getTicketHistory()[j] != null) {
+						if (users[i].getTicketHistory()[j].equals(ticket)) {
+							users[i].getTicketHistory()[j].setDisponibility(disponibility);
+						}
+					}
+				}
+			}
+		}
+	}
+
 	public void busDisponibilityChecker() {
-		boolean isTicketAvailable = false;
+		boolean isCapacityAvailable = false;
 		boolean isRouteAvailable = false;
+
 		for (int i = 0; i < buses.length; i++) {
 			if (buses[i] != null) {
-
 				for (int j = 0; j < buses[i].getRoutes().length; j++) {
 					if (buses[i].getRoutes()[j] != null) {
-						if (currentDate.isAfter(buses[i].getRoutes()[j].getStops()[1])
-								|| currentDate.isEqual(buses[i].getRoutes()[j].getStops()[1])) {
+						if (currentDate.isAfter(buses[i].getRoutes()[j].getStops()[0])
+								|| currentDate.isEqual(buses[i].getRoutes()[j].getStops()[0])) {
 							buses[i].getRoutes()[j].setDisponibility(false);
 						} else {
 							buses[i].getRoutes()[j].setDisponibility(true);
@@ -165,34 +181,36 @@ public class Calculator {
 					}
 				}
 
-				for (int j = 0; j < buses[i].getRoutes().length; j++) {
-					if (buses[i].getRoutes()[j] != null) {
-						if (buses[i].getRoutes()[j].getDisponibility() == true) {
-							isRouteAvailable = true;
-						}
-					}
-				}
-
 				for (int j = 0; j < buses[i].getTickets().length; j++) {
 					if (buses[i].getTickets()[j] != null) {
-						if (currentDate.isAfter(buses[i].getTickets()[j].getExpirationDate())
-								|| currentDate.isEqual(buses[i].getTickets()[j].getExpirationDate())) {
+						if (currentDate.isAfter(buses[i].getTickets()[j].getDates()[1])
+								|| currentDate.isAfter(buses[i].getTickets()[j].getDates()[1])) {
+							UsersTicketDisponibilitySetter(buses[i].getTickets()[j], false);
 							buses[i].eliminateTicket(j);
-							isTicketAvailable = true;
+							buses[i].setCurrentCapacity(buses[i].getCurrentCapacity() - 1);
+						} else if (!buses[i].getTickets()[j].getDisponibility()
+								&& (buses[i].getTickets()[j].getDates()[0].isAfter(currentDate)
+										|| buses[i].getTickets()[j].getDates()[0].isAfter(currentDate))) {
+							buses[i].getTickets()[j].setDisponibility(true);
+							UsersTicketDisponibilitySetter(buses[i].getTickets()[j], true);
+							buses[i].setCurrentCapacity(buses[i].getCurrentCapacity() + 1);
 						}
-					} else {
-						isTicketAvailable = true;
 					}
 				}
 
-				if (isTicketAvailable && isRouteAvailable) {
+				if (buses[i].getCapacity() <= buses[i].getCurrentCapacity()) {
+					isCapacityAvailable = false;
+				} else {
+					isCapacityAvailable = true;
+				}
+
+				if (isCapacityAvailable && isRouteAvailable) {
 					buses[i].setDisponibility(true);
 				} else {
 					buses[i].setDisponibility(false);
 				}
 			}
 		}
-
 	}
 
 	public boolean UserAvailability(String name) {
@@ -253,6 +271,10 @@ public class Calculator {
 		return adminLogIn;
 	}
 
+	public LocalDateTime getCurrentDate() {
+		return currentDate;
+	}
+
 	public void addWallet(int userNumber, int money) {
 		users[userNumber].setWallet(money + users[userNumber].getWallet());
 	}
@@ -263,6 +285,17 @@ public class Calculator {
 
 	public User[] getUsers() {
 		return users;
+	}
+
+	public int getLastUserTicketNumber(int userNumber) {
+		int lastUserTicketArrayNumber = 0;
+		for (int i = 0; i < users[userNumber].getTicketHistory().length; i++) {
+			if (users[userNumber].getTicketHistory()[i] == null) {
+				lastUserTicketArrayNumber = i--;
+				break;
+			}
+		}
+		return lastUserTicketArrayNumber;
 	}
 
 	public void setBuses(Bus[] buses) {

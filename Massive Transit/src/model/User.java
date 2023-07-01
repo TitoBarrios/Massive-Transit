@@ -11,6 +11,7 @@ public class User {
 	public User(String name, String password) {
 		this.name = name;
 		this.password = password;
+		ticketHistory = new Ticket[MAX_TICKETS];
 	}
 
 	public void setWallet(int wallet) {
@@ -21,6 +22,7 @@ public class User {
 		for (int i = 0; i < ticketHistory.length; i++) {
 			if (ticketHistory[i] == null) {
 				ticketHistory[i] = ticket;
+				break;
 			}
 		}
 	}
