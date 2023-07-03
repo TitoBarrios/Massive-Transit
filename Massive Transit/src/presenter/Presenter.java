@@ -30,13 +30,17 @@ public class Presenter {
 			option = view.readNumber();
 			switch (option) {
 			case 1:
-				view.showMessage("Ingrese su usuario");
+				view.showMessage("Ingrese su usuario\n0. Cancelar");
 				userName = view.readData();
+				if(userName.equals("0")) {
+					view.showMessage("Se ha cancelado la operación");
+					break;
+				}
 				view.showMessage("Ingrese su contraseña");
 				userPassword = view.readData();
-				userNumber = calculate.searchUserArrayNumber(userName, userPassword);
-				view.showMessage("Su número de usuario es: " + userNumber);
 				if (calculate.LogIn(userName, userPassword)) {
+					userNumber = calculate.searchUserArrayNumber(userName, userPassword);
+					view.showMessage("Su número de usuario es: " + userNumber);
 					do {
 						view.showMessage(
 								"¿Qué desea hacer?\n1. Comprar ticket\n2. Crear mi horario(No Disponible)\n3. Agregar fondos a mi billetera\n4. Ver historial y estado de mis tickets\n0. Cerrar sesión");
@@ -122,7 +126,8 @@ public class Presenter {
 														+ calculate.getBuses()[busNumber].getRoutes()[routeNumberExit]
 																.getStops()[1]
 														+ "\nNúmero de ticket: "
-														+ calculate.getUsers()[userNumber].getTicketHistory()[calculate.getLastUserTicketNumber(userNumber)].getName()
+														+ calculate.getUsers()[userNumber].getTicketHistory()[calculate
+																.getLastUserTicketNumber(userNumber)].getName()
 														+ "\nValor Pagado: "
 														+ calculate.getBuses()[busNumber].getPrice() + "\n");
 												option = 0;
@@ -200,7 +205,7 @@ public class Presenter {
 				break;
 			case 2:
 				do {
-					view.showMessage("Seleccione un bus, 0 salir");
+					view.showMessage("Seleccione un bus\n0. Salir");
 					for (int i = 0; i < calculate.getBuses().length; i++) {
 						if (calculate.getBuses()[i] != null) {
 							view.showMessage("Bus " + (i + 1) + "\n Ticket: " + calculate.getBuses()[i].getPrice());
@@ -209,6 +214,7 @@ public class Presenter {
 					busNumber = view.readNumber() - 1;
 					if (busNumber == -1) {
 						option = 0;
+						break;
 					}
 					if (calculate.getBuses()[busNumber] != null) {
 						for (int i = 0; i < calculate.getBuses()[busNumber].getRoutes().length; i++) {
@@ -228,8 +234,11 @@ public class Presenter {
 				option = 1;
 				break;
 			case 3:
-				view.showMessage("Para registrarse, ingrese su nuevo usuario");
+				view.showMessage("Para registrarse, ingrese su nuevo usuario\n0. Volver");
 				userName = view.readData();
+				if(userName.equals("0")) {
+					break;
+				}
 				view.showMessage("Ingrese la contraseña");
 				userPassword = view.readData();
 				if (calculate.UserAvailability(userName)) {
@@ -240,8 +249,11 @@ public class Presenter {
 				}
 				break;
 			case 4:
-				view.showMessage("Ingrese Usuario de administrador");
+				view.showMessage("Ingrese Usuario de administrador\n0. Volver");
 				userName = view.readData();
+				if(userName.equals("0")) {
+					break;
+				}
 				view.showMessage("Ingrese contraseña de administrador");
 				userPassword = view.readData();
 				if (calculate.AdminLogIn(userName, userPassword)) {
@@ -256,6 +268,10 @@ public class Presenter {
 						case 1:
 							view.showMessage("Digite la placa del bus");
 							String busPlate = view.readData();
+							if (busPlate == "0") {
+								view.showMessage("Se ha cancelado la operación");
+								break;
+							}
 							view.showMessage("Digite el precio por ticket del bus");
 							int busPrice = view.readNumber();
 							view.showMessage("Digite la capacidad de transporte del bus");
@@ -285,6 +301,7 @@ public class Presenter {
 							view.showMessage(
 									"Digite los días que estará activa la ruta (1. Lunes, 2. Martes... etc).\n 0. Para terminar\n 8. Para que el bus esté disponible todos los días");
 							int[] daysNumber = new int[7];
+							boolean cancelate = false;
 							for (int i = 0; option != 0 && i < daysNumber.length; i++) {
 								option = view.readNumber();
 								option = Math.min(option, 8);
@@ -295,9 +312,17 @@ public class Presenter {
 										break;
 									}
 									daysNumber[i] = option;
+								} else if (i == 0) {
+									cancelate = true;
+									break;
 								} else {
 									break;
 								}
+							}
+							if (cancelate) {
+								view.showMessage("Se ha cancelado la operación");
+								option = 1;
+								break;
 							}
 							option = 1;
 							view.showMessage("Desde qué hora inicia la ruta (hh:mm:ss)");
@@ -318,7 +343,6 @@ public class Presenter {
 				} else {
 					view.showMessage("Usuario o contraseña inválidos");
 				}
-
 			}
 		} while (option != 0);
 	}
