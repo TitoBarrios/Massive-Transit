@@ -18,21 +18,28 @@ public class Presenter {
 
 	public void run() {
 		int option = 0;
-		String dateDay;
-		String dateMonth;
+		int subscriptionNumber;
 		String userName;
 		String userPassword;
+		int stopsNumber = 0;
 		int userNumber;
 		int busNumber;
+		int routeNumberEntry;
+		int routeNumberExit;
 		do {
 			view.showMessage(
 					"Bienvenido a mi sistema de transporte masivo\n\nSeleccione la opción que más le convenga: \n1. Iniciar sesión\n2. Ver rutas\n3. Registrarse\n4. Ingresar como administrador\n0. Salir");
-			option = view.readNumber();
+			try {
+				option = view.readNumber();
+			} catch (Exception ex) {
+				option = -1;
+				view.showMessage("Escribe un número entero\n");
+			}
 			switch (option) {
 			case 1:
 				view.showMessage("Ingrese su usuario\n0. Cancelar");
 				userName = view.readData();
-				if(userName.equals("0")) {
+				if (userName.equals("0")) {
 					view.showMessage("Se ha cancelado la operación");
 					break;
 				}
@@ -41,10 +48,16 @@ public class Presenter {
 				if (calculate.LogIn(userName, userPassword)) {
 					userNumber = calculate.searchUserArrayNumber(userName, userPassword);
 					view.showMessage("Su número de usuario es: " + userNumber);
+					calculate.subscriptionPaymentChecker(userNumber);
 					do {
 						view.showMessage(
-								"¿Qué desea hacer?\n1. Comprar ticket\n2. Crear mi horario(No Disponible)\n3. Agregar fondos a mi billetera\n4. Ver historial y estado de mis tickets\n0. Cerrar sesión");
-						option = view.readNumber();
+								"¿Qué desea hacer?\n1. Comprar ticket\n2. Subscripciones\n3. Agregar fondos a mi billetera\n4. Ver historial y estado de mis tickets\n0. Cerrar sesión");
+						try {
+							option = view.readNumber();
+						} catch (Exception ex) {
+							option = -1;
+							view.showMessage("Escribe un número entero\n");
+						}
 						switch (option) {
 						case 1:
 							do {
@@ -60,9 +73,15 @@ public class Presenter {
 									}
 								}
 								busNumber = 0;
-								int routeNumberEntry = 0;
-								int routeNumberExit = 0;
-								busNumber = view.readNumber() - 1;
+								routeNumberEntry = 0;
+								routeNumberExit = 0;
+								try {
+									busNumber = view.readNumber() - 1;
+								} catch (Exception ex) {
+									view.showMessage("Escribe un número entero\n");
+									break;
+
+								}
 								if (busNumber == -1) {
 									option = 0;
 									break;
@@ -88,7 +107,12 @@ public class Presenter {
 									}
 									view.showMessage(
 											"Seleccione el número de ruta en el cual va a ingresar, 0 para cancelar");
-									routeNumberEntry = view.readNumber() - 1;
+									try {
+										routeNumberEntry = view.readNumber() - 1;
+									} catch (Exception ex) {
+										view.showMessage("Escribe un número entero\n");
+										break;
+									}
 									if (routeNumberEntry == -1) {
 										option = 0;
 									}
@@ -101,7 +125,12 @@ public class Presenter {
 										option = 1;
 									} else {
 										view.showMessage("Seleccione el número de ruta en el cual saldrá");
-										routeNumberExit = view.readNumber() - 1;
+										try {
+											routeNumberExit = view.readNumber() - 1;
+										} catch (Exception ex) {
+											view.showMessage("Escribe un número entero\n");
+											break;
+										}
 										if (routeNumberExit < routeNumberEntry) {
 											view.showMessage("La entrada no puede ir después de la salida");
 											option = 1;
@@ -117,6 +146,7 @@ public class Presenter {
 											if (calculate.enoughMoney(userNumber, busNumber)) {
 												calculate.ticketCreator(userNumber, busNumber, routeNumberEntry,
 														routeNumberExit);
+
 												view.showMessage("Gracias por usar nuestros servicios!\nBus: "
 														+ (busNumber + 1) + "\nEntrada: " + "Ruta " + routeNumberEntry
 														+ " "
@@ -143,18 +173,193 @@ public class Presenter {
 							option = 1;
 							break;
 						case 2:
-							view.showMessage("Esta sección aún no está disponible\n");
+							view.showMessage(
+									"1. Gestionar mis subscripciones\n2. Crear una nueva subscripción\n0. Volver");
+							try {
+								option = view.readNumber();
+							} catch (Exception ex) {
+								option = -1;
+								view.showMessage("Escribe un número entero\n");
+							}
+							if (option == 0) {
+								option = 1;
+								break;
+							}
+							switch (option) {
+							case 1:
+								boolean hasActiveSubscriptions = false;
+								for (int i = 0; i < calculate.getUsers()[userNumber].getSubscription().length; i++) {
+									if (calculate.getUsers()[userNumber].getSubscription()[i] != null) {
+										if(!hasActiveSubscriptions) {
+											view.showMessage("Estas son tus subscripciones activas: ");
+										}
+										view.showMessage(
+												"Subscripción activa Nro " + (i + 1) + "\nBus: "
+														+ (calculate.getUsers()[userNumber].getSubscription()[i]
+																.getBusArrayNumber() + 1) + " "
+														+ calculate.getBuses()[calculate.getUsers()[userNumber]
+																.getSubscription()[i].getBusArrayNumber()].getPlate()
+														+ "\nEntrada: "
+														+ calculate
+																.getBuses()[calculate.getUsers()[userNumber]
+																		.getSubscription()[i].getBusArrayNumber()]
+																.getRoutes()[calculate.getUsers()[userNumber]
+																		.getSubscription()[i].getRouteExitArrayNumber()]
+																.getName()
+														+ "  "
+														+ calculate
+																.getBuses()[calculate.getUsers()[userNumber]
+																		.getSubscription()[i].getBusArrayNumber()]
+																.getRoutes()[calculate.getUsers()[userNumber]
+																		.getSubscription()[i]
+																		.getRouteEntryArrayNumber()]
+																.getStops()[0]
+														+ "\nSalida: "
+														+ calculate
+																.getBuses()[calculate.getUsers()[userNumber]
+																		.getSubscription()[i].getBusArrayNumber()]
+																.getRoutes()[calculate.getUsers()[userNumber]
+																		.getSubscription()[i].getRouteExitArrayNumber()]
+																.getName()
+														+ "  "
+														+ calculate
+																.getBuses()[calculate.getUsers()[userNumber]
+																		.getSubscription()[i].getBusArrayNumber()]
+																.getRoutes()[calculate.getUsers()[userNumber]
+																		.getSubscription()[i].getRouteExitArrayNumber()]
+																.getStops()[1]
+														+ "\nPrecio: "
+														+ calculate
+																.getBuses()[calculate.getUsers()[userNumber]
+																		.getSubscription()[i].getBusArrayNumber()]
+																.getPrice());
+										hasActiveSubscriptions = true;
+									}
+									if (hasActiveSubscriptions == false) {
+										view.showMessage("No tienes subscripciones Activas\n");
+										option = -1;
+										break;
+									}
+									view.showMessage(
+											"\nDigita el número de una de tus subscripciones activas para cancelarla\n0. Salir");
+									try {
+										subscriptionNumber = view.readNumber() - 1;
+									} catch (Exception ex) {
+										option = -1;
+										view.showMessage("Digita un número entero válido");
+										break;
+									}
+									if(subscriptionNumber == -1) {
+										option = -1;
+										break;
+									}
+									if (calculate.getUsers()[userNumber]
+											.getSubscription()[subscriptionNumber] != null) {
+										view.showMessage("Has seleccionado la subscripción número "
+												+ (subscriptionNumber + 1) + "\n1. Cancelar Subscripción\n0. Volver");
+										try {
+											option = view.readNumber();
+										} catch (Exception ex) {
+											view.showMessage("Debes escribir un número entero válido");
+											break;
+										}
+										if (option == 0) {
+											option = -1;
+											break;
+										}
+										if (option == 1) {
+											calculate.subscriptionDelete(userNumber, subscriptionNumber);
+											view.showMessage("La subscripción se ha cancelado correctamente\n");
+											break;
+										}
+									} else {
+										option = -1;
+										view.showMessage("Has seleccionado una subscripción inválida");
+										break;
+									}
+								}
+								break;
+							case 2:
+								calculate.busDisponibilityChecker();
+								view.showMessage(
+										"¿Qué día de la semana deseas agregar a tu horario?\nCompra automáticamente tus tickets\n1. Lunes\n2. Martes\n3. Miércoles\n4. Jueves\n5. Viernes\n6. Sábado\n7. Domingo\n0. Salir");
+								try {
+									option = view.readNumber();
+								} catch (Exception ex) {
+									option = -1;
+									view.showMessage("Escribe un número entero\n");
+								}
+								if (option == 0) {
+									option = -1;
+									break;
+								}
+								view.showMessage(
+										"Estos son los buses disponibles para el día de la semana que seleccionaste, digita el número del bus para ver más detalles");
+								for (int i = 0; i < calculate.getBuses().length; i++) {
+									if (calculate.getBuses()[i] != null) {
+										if (calculate.getBuses()[i].getRoutes()[0].getStops()[0].getDayOfWeek()
+												.equals(calculate.getCurrentDate().getDayOfWeek())) {
+											view.showMessage("Bus Nro. " + (i + 1));
+										}
+									}
+								}
+								view.showMessage("0. Salir");
+								busNumber = view.readNumber() - 1;
+								if (busNumber == -1) {
+									option = -1;
+									break;
+								}
+								view.showMessage("Estas son las rutas disponibles");
+								for (int i = 0; i < calculate.getBuses()[busNumber].getRoutes().length; i++) {
+									if (calculate.getBuses()[busNumber].getRoutes()[i] != null) {
+										if (calculate.getBuses()[busNumber].getRoutes()[i].getDisponibility()) {
+											view.showMessage("\nRuta " + (i + 1) + "\n"
+													+ calculate.getBuses()[busNumber].getRoutes()[i].getName()
+													+ "\nEntrada: "
+													+ calculate.getBuses()[busNumber].getRoutes()[i].getStops()[0]
+													+ "\nSalida: "
+													+ calculate.getBuses()[busNumber].getRoutes()[i].getStops()[1]);
+										}
+									}
+								}
+								view.showMessage("0. Salir\nDigite el número de la ruta en la cual entrará");
+								routeNumberEntry = view.readNumber() - 1;
+								if (routeNumberEntry == -1) {
+									option = -1;
+									break;
+								}
+								view.showMessage("Digite el número de la ruta en la cual saldrá");
+								routeNumberExit = view.readNumber() - 1;
+								if (routeNumberExit == -1) {
+									option = -1;
+									break;
+								}
+								calculate.subscriptionCreator(userNumber, option, busNumber, routeNumberEntry,
+										routeNumberExit);
+								view.showMessage("La subscripción se ha creado correctamente");
+									break;
+							
+							default:
+								view.showMessage("Opción inválida");
+								option = -1;
+									break;
+							}
 							break;
 						case 3:
 							view.showMessage("Su saldo actual es: " + calculate.getUsers()[userNumber].getWallet()
 									+ " pesos\nDigite 1 para agregar fondos, 2 para volver");
-							option = view.readNumber();
+							try {
+								option = view.readNumber();
+							} catch (Exception ex) {
+								option = -1;
+								view.showMessage("Escribe un número entero\n");
+							}
 							if (option == 1) {
 								view.showMessage("Cuánto dinero desea agregar? Agregue 0 para cancelar la operación");
 								int userAddMoney = view.readNumber();
 								if (userAddMoney != 0) {
 									calculate.addWallet(userNumber, userAddMoney);
-									view.showMessage("Se ha agrega correctamente la cantidad de " + userAddMoney
+									view.showMessage("Se ha agregado correctamente la cantidad de " + userAddMoney
 											+ " pesos\nNuevo saldo disponible: "
 											+ calculate.getUsers()[userNumber].getWallet());
 								} else {
@@ -229,14 +434,19 @@ public class Presenter {
 						view.showMessage("El bus seleccionado es inexistente");
 					}
 					view.showMessage("\n1 Regresar, 0 Salir");
-					option = view.readNumber();
+					try {
+						option = view.readNumber();
+					} catch (Exception ex) {
+						option = -1;
+						view.showMessage("Escribe un número entero\n");
+					}
 				} while (option != 0);
 				option = 1;
 				break;
 			case 3:
 				view.showMessage("Para registrarse, ingrese su nuevo usuario\n0. Volver");
 				userName = view.readData();
-				if(userName.equals("0")) {
+				if (userName.equals("0")) {
 					break;
 				}
 				view.showMessage("Ingrese la contraseña");
@@ -251,7 +461,7 @@ public class Presenter {
 			case 4:
 				view.showMessage("Ingrese Usuario de administrador\n0. Volver");
 				userName = view.readData();
-				if(userName.equals("0")) {
+				if (userName.equals("0")) {
 					break;
 				}
 				view.showMessage("Ingrese contraseña de administrador");
@@ -292,10 +502,15 @@ public class Presenter {
 											+ calculate.getRoutes()[routeArrayNumber][i].getStops()[1] + "\n");
 								}
 								view.showMessage("Digite 1 para seleccionar esta ruta, 0 para regresar");
-								option = view.readNumber();
+								try {
+									option = view.readNumber();
+								} catch (Exception ex) {
+									option = -1;
+									view.showMessage("Escribe un número entero\n");
+								}
 							} while (option != 1);
 							calculate.busCreator(busPlate, busPrice, busCapacity, routeArrayNumber);
-							view.showMessage("Se ha creado el bus correctamente");
+							view.showMessage("El bus se ha creado correctamente\n");
 							break;
 						case 2:
 							view.showMessage(
@@ -328,15 +543,26 @@ public class Presenter {
 							view.showMessage("Desde qué hora inicia la ruta (hh:mm:ss)");
 							String initialTime = view.readData();
 							view.showMessage("¿Cuántas paradas creará?");
-							int stopsNumber = view.readNumber() + 1;
+							try {
+								stopsNumber = view.readNumber() + 1;
+							} catch (Exception ex) {
+								view.showMessage("Escribe un número entero\n");
+								break;
+							}
 							view.showMessage("Digite la duración en minutos");
 							int[] durationTime = new int[stopsNumber];
 							for (int i = 1; i < durationTime.length; i++) {
 								view.showMessage("Duración desde la parada " + i + " hasta la parada " + (i + 1));
-								durationTime[i - 1] = view.readNumber();
+								try {
+									durationTime[i - 1] = view.readNumber();
+								} catch (Exception ex) {
+									view.showMessage("Escribe un número entero\n");
+									i--;
+								}
 							}
 							calculate.RoutesCreator(stopsNumber, initialTime, durationTime, daysNumber);
 							calculate.busDisponibilityChecker();
+							view.showMessage("La ruta se ha creado correctamente\n");
 						}
 					} while (option != 0);
 					option = 1;

@@ -116,6 +116,27 @@ public class Calculator {
 			}
 		}
 	}
+	
+	public void subscriptionCreator(int userArrayNumber, int dayOfWeekNumber, int busArrayNumber, int routeEntryArrayNumber, int routeExitArrayNumber) {
+		int[] dayOfWeekArray = new int[1];
+		dayOfWeekArray[0] = dayOfWeekNumber;
+		SubscriptionDay subscriptionDay = new SubscriptionDay(LaboralDaysCreator(dayOfWeekArray)[0], busArrayNumber, routeEntryArrayNumber, routeExitArrayNumber);
+		users[userArrayNumber].setNewSubscription(subscriptionDay);
+	}
+	
+	public void subscriptionDelete(int userArrayNumber, int subscriptionArrayNumber) {
+		users[userArrayNumber].eliminateSubscription(subscriptionArrayNumber);
+	}
+	
+	public void subscriptionPaymentChecker(int userArrayNumber) {
+		for(int i = 0; i < users[userArrayNumber].getSubscription().length; i++) {
+			if(users[userArrayNumber].getSubscription()[i] != null) {
+				if(users[userArrayNumber].getSubscription()[i].getDayOfWeek().equals(currentDate.getDayOfWeek()) && buses[users[userArrayNumber].getSubscription()[i].getBusArrayNumber()].getRoutes()[users[userArrayNumber].getSubscription()[i].getRouteEntryArrayNumber()].getStops()[0].plusMinutes(5).isAfter(currentDate) && enoughMoney(userArrayNumber, users[userArrayNumber].getSubscription()[i].getBusArrayNumber())) {
+				ticketCreator(userArrayNumber, users[userArrayNumber].getSubscription()[i].getBusArrayNumber(), users[userArrayNumber].getSubscription()[i].getRouteEntryArrayNumber(), users[userArrayNumber].getSubscription()[i].getRouteExitArrayNumber());
+				}
+			}
+		}
+	}
 
 	public void busCreator(String plate, int price, int capacity, int routeNumber) {
 		for (int i = 0; i < buses.length; i++) {
@@ -185,7 +206,7 @@ public class Calculator {
 					if (buses[i].getTickets()[j] != null) {
 						if (currentDate.isAfter(buses[i].getTickets()[j].getDates()[1])
 								|| currentDate.isAfter(buses[i].getTickets()[j].getDates()[1])) {
-							UsersTicketDisponibilitySetter(buses[i].getTickets()[j], false);
+						 	UsersTicketDisponibilitySetter(buses[i].getTickets()[j], false);
 							buses[i].eliminateTicket(j);
 							buses[i].setCurrentCapacity(buses[i].getCurrentCapacity() - 1);
 						} else if (!buses[i].getTickets()[j].getDisponibility()
@@ -291,7 +312,7 @@ public class Calculator {
 		int lastUserTicketArrayNumber = 0;
 		for (int i = 0; i < users[userNumber].getTicketHistory().length; i++) {
 			if (users[userNumber].getTicketHistory()[i] == null) {
-				lastUserTicketArrayNumber = i--;
+				lastUserTicketArrayNumber = i - 1;
 				break;
 			}
 		}
