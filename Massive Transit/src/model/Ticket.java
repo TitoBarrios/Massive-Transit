@@ -6,14 +6,14 @@ public class Ticket {
 	private String name;
 	private User owner;
 	private LocalDateTime[] dates;
-	private Bus bus;
+	private Vehicle vehicle;
 	private int[] routesNumber;
-	private boolean disponibility;
+	private boolean availability;
 
 	public static final int MAX_DATES = 2;
 	private static final int MAX_ROUTES_NUMBER = 2;
 
-	public Ticket(User owner, Bus bus, LocalDateTime startingDate, LocalDateTime expirationDate, int routeEntryNumber,
+	public Ticket(User owner, Vehicle vehicle, LocalDateTime startingDate, LocalDateTime expirationDate, int routeEntryNumber,
 			int routeExitNumber) {
 		routesNumber = new int[MAX_ROUTES_NUMBER];
 		routesNumber[0] = routeEntryNumber + 1;
@@ -22,15 +22,15 @@ public class Ticket {
 		dates[0] = startingDate;
 		dates[1] = expirationDate;
 		this.owner = owner;
-		this.bus = bus;
+		this.vehicle = vehicle;
 	}
 
 	public void setName(String name) {
 		this.name = name;
 	}
 
-	public void setDisponibility(boolean disponibility) {
-		this.disponibility = disponibility;
+	public void setAvailability(boolean availability) {
+		this.availability = availability;
 	}
 
 	public String getName() {
@@ -45,12 +45,12 @@ public class Ticket {
 		return dates;
 	}
 
-	public Bus getBus() {
-		return bus;
+	public Vehicle getVehicle() {
+		return vehicle;
 	}
 
-	public boolean getDisponibility() {
-		return disponibility;
+	public boolean getAvailability() {
+		return availability;
 	}
 
 	public int[] getRoutesNumber() {

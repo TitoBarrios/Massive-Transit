@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 public class Route {
 	String name;
 	LocalDateTime[] stops;
-	boolean disponibility;
+	boolean availability;
 
 	public static final int MAX_TICKETS = 80;
 	public static final int MAX_STOPS = 2;
@@ -16,8 +16,12 @@ public class Route {
 		this.stops = stops;
 	}
 
-	public void setDisponibility(boolean disponibility) {
-		this.disponibility = disponibility;
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setAvailability(boolean availability) {
+		this.availability = availability;
 	}
 
 	public String getName() {
@@ -32,7 +36,7 @@ public class Route {
 		return stops[number];
 	}
 
-	public boolean getDisponibility() {
-		return disponibility;
+	public boolean getAvailability() {
+		return availability;
 	}
 }

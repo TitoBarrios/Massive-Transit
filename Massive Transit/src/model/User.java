@@ -5,7 +5,7 @@ public class User {
 	private String password;
 	private int wallet;
 	private Ticket[] ticketHistory;
-	private SubscriptionDay[] subscription;
+	private Subscription[] subscription;
 
 	public static final int MAX_TICKETS = 50;
 	public static final int MAX_SUBSCRIPTION = 30;
@@ -14,7 +14,7 @@ public class User {
 		this.name = name;
 		this.password = password;
 		ticketHistory = new Ticket[MAX_TICKETS];
-		subscription = new SubscriptionDay[MAX_SUBSCRIPTION];
+		subscription = new Subscription[MAX_SUBSCRIPTION];
 	}
 
 	public void setWallet(int wallet) {
@@ -30,10 +30,10 @@ public class User {
 		}
 	}
 
-	public void setNewSubscription(SubscriptionDay subscriptionDay) {
-		for (int i = 0; i < subscription.length; i++) {
-			if (subscription[i] == null) {
-				subscription[i] = subscriptionDay;
+	public void setNewSubscription(Subscription subscription) {
+		for (int i = 0; i < this.subscription.length; i++) {
+			if (this.subscription[i] == null) {
+				this.subscription[i] = subscription;
 				break;
 			}
 		}
@@ -55,11 +55,11 @@ public class User {
 		return ticketHistory;
 	}
 
-	public SubscriptionDay[] getSubscription() {
+	public Subscription[] getSubscription() {
 		return subscription;
 	}
 
-	public void eliminateSubscription(int subscriptionArrayNumber) {
+	public void deleteSubscription(int subscriptionArrayNumber) {
 		if (subscriptionArrayNumber < subscription.length) {
 			subscription[subscriptionArrayNumber] = null;
 		}
