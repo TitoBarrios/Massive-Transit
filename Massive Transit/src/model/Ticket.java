@@ -1,26 +1,14 @@
 package model;
 
-import java.time.LocalDateTime;
-
 public class Ticket {
 	private String name;
 	private User owner;
-	private LocalDateTime[] dates;
 	private Vehicle vehicle;
-	private int[] routesNumber;
+	private Route[] routes;
 	private boolean availability;
 
-	public static final int MAX_DATES = 2;
-	private static final int MAX_ROUTES_NUMBER = 2;
-
-	public Ticket(User owner, Vehicle vehicle, LocalDateTime startingDate, LocalDateTime expirationDate, int routeEntryNumber,
-			int routeExitNumber) {
-		routesNumber = new int[MAX_ROUTES_NUMBER];
-		routesNumber[0] = routeEntryNumber + 1;
-		routesNumber[1] = routeExitNumber + 1;
-		dates = new LocalDateTime[MAX_DATES];
-		dates[0] = startingDate;
-		dates[1] = expirationDate;
+	public Ticket(User owner, Vehicle vehicle, Route[] routes) {
+		this.routes = routes;
 		this.owner = owner;
 		this.vehicle = vehicle;
 	}
@@ -41,19 +29,16 @@ public class Ticket {
 		return owner;
 	}
 
-	public LocalDateTime[] getDates() {
-		return dates;
-	}
-
 	public Vehicle getVehicle() {
 		return vehicle;
+	}
+
+	public Route[] getRoutes() {
+		return routes;
 	}
 
 	public boolean getAvailability() {
 		return availability;
 	}
 
-	public int[] getRoutesNumber() {
-		return routesNumber;
-	}
 }

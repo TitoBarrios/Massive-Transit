@@ -3,8 +3,8 @@ package model;
 public class Ship extends Vehicle {
 	private Product[] catalogue;
 
-	public Ship(String plate, String company, int price, int capacity, Route[] routes) {
-		super(plate, VehicleType.SHIP, company, price, capacity, routes);
+	public Ship(String company, String plate, Route[] routes, int price, int capacity) {
+		super(VehicleType.SHIP, company, plate, routes, price, capacity);
 	}
 
 	public void addProduct(Product product) {

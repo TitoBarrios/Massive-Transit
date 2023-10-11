@@ -1,38 +1,38 @@
 package model;
 
 public class Vehicle {
-	private String plate;
 	private VehicleType vehicleType;
 	private String company;
+	private String plate;
 	private Route[] routes;
-	private Ticket[] tickets;
 	private int price;
-	private int capacity;
-	private int currentCapacity;
+	private int[] capacity;
+
+	private Ticket[] tickets;
 	private boolean availability;
 
+	private final static int MAX_CAPACITIES = 2;
 	private final static int MAX_TICKETS = 200;
-	private final static int MAX_ROUTES = 30;
 
-	public Vehicle(String plate, VehicleType vehicleType, String company, int price, int capacity, Route[] routes) {
+	public Vehicle(VehicleType vehicleType, String company, String plate, Route[] routes, int price, int capacity) {
 		this.plate = plate;
 		this.vehicleType = vehicleType;
 		this.company = company;
-		this.routes = new Route[MAX_ROUTES];
 		this.routes = routes;
 		tickets = new Ticket[MAX_TICKETS];
 		this.price = price;
-		this.capacity = capacity;
+		this.capacity = new int[MAX_CAPACITIES];
+		this.capacity[Value.MAXIMUM.getValue()] = capacity;
 	}
-	
+
 	public void deleteTicket(int ticketPosition) {
 		tickets[ticketPosition] = null;
 	}
-	
+
 	public void setCompany(String company) {
 		this.company = company;
 	}
-	
+
 	public void setRoutes(Route[] routes) {
 		this.routes = routes;
 	}
@@ -41,12 +41,13 @@ public class Vehicle {
 		for (int i = 0; i < tickets.length; i++) {
 			if (tickets[i] == null) {
 				tickets[i] = ticket;
+				break;
 			}
 		}
 	}
 
 	public void setCurrentCapacity(int currentCapacity) {
-		this.currentCapacity = currentCapacity;
+		this.capacity[Value.CURRENT.getValue()] = currentCapacity;
 	}
 
 	public void setAvailability(boolean availability) {
@@ -56,7 +57,7 @@ public class Vehicle {
 	public String getPlate() {
 		return plate;
 	}
-	
+
 	public VehicleType getVehicleType() {
 		return vehicleType;
 	}
@@ -77,16 +78,11 @@ public class Vehicle {
 		return price;
 	}
 
-	public int getCapacity() {
+	public int[] getCapacity() {
 		return capacity;
-	}
-
-	public int getCurrentCapacity() {
-		return currentCapacity;
 	}
 
 	public boolean getAvailability() {
 		return availability;
 	}
-
 }

@@ -2,8 +2,7 @@ package model;
 
 public enum VehicleType {
 	AIRPLANE("avión", "aviones", "Avión", 0), 
-	BUS("bus", "buses", "Bus", 1), 
-	SHIP("barco", "barcos", "Barco", 2),
+	BUS("bus", "buses", "Bus", 1), SHIP("barco", "barcos", "Barco", 2),
 	TRAVEL_BUS("bus de viaje", "buses de viaje", "Bus de Viaje", 3);
 
 	private VehicleType(String name, String pluralName, String upperCaseName, int value) {

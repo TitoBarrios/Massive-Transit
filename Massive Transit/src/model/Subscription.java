@@ -3,38 +3,25 @@ package model;
 import java.time.DayOfWeek;
 
 public class Subscription {
-	DayOfWeek dayOfWeek;
-	VehicleType vehicleType;
-	int vehicleArrayNumber;
-	int routeEntryArrayNumber;
-	int routeExitArrayNumber;
+	private DayOfWeek dayOfWeek;
+	private Vehicle vehicle;
+	private Route[] routes;
 
-	public Subscription(DayOfWeek dayOfWeek, VehicleType vehicleType, int vehicleArrayNumber, int routeEntryArrayNumber,
-			int routeExitArrayNumber) {
+	public Subscription(DayOfWeek dayOfWeek, Vehicle vehicle, Route[] routes) {
 		this.dayOfWeek = dayOfWeek;
-		this.vehicleType = vehicleType;
-		this.vehicleArrayNumber = vehicleArrayNumber;
-		this.routeEntryArrayNumber = routeEntryArrayNumber;
-		this.routeExitArrayNumber = routeExitArrayNumber;
+		this.vehicle = vehicle;
+		this.routes = routes;
 	}
 
 	public DayOfWeek getDayOfWeek() {
 		return dayOfWeek;
 	}
 
-	public VehicleType getVehicleType() {
-		return vehicleType;
+	public Vehicle getVehicle() {
+		return vehicle;
 	}
 
-	public int getVehicleArrayNumber() {
-		return vehicleArrayNumber;
-	}
-
-	public int getRouteEntryArrayNumber() {
-		return routeEntryArrayNumber;
-	}
-
-	public int getRouteExitArrayNumber() {
-		return routeExitArrayNumber;
+	public Route[] getRoutes() {
+		return routes;
 	}
 }

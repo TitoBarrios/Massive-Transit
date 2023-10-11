@@ -3,10 +3,11 @@ package model;
 import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.time.LocalTime;
+
 import java.time.DayOfWeek;
 
 public class Calculator {
-	DataCenter dataCenter;
+	private DataCenter dataCenter;
 
 	public Calculator() {
 		dataCenter = new DataCenter();
@@ -31,12 +32,11 @@ public class Calculator {
 		return dayForWork;
 	}
 
-	public boolean isEnoughMoney(int userNumber, VehicleType vehicleType, int vehicleNumber) {
-		boolean enoughMoney = false;
-		if (dataCenter.getUsers()[userNumber].getWallet() >= catchVehicle(vehicleType, vehicleNumber).getPrice()) {
-			enoughMoney = true;
+	public boolean isEnoughMoney(User user, Vehicle vehicle) {
+		if (user.getWallet() >= vehicle.getPrice()) {
+			return true;
 		}
-		return enoughMoney;
+		return false;
 	}
 
 	public boolean isUserAvailable(String name) {
@@ -100,25 +100,15 @@ public class Calculator {
 		}
 	}
 
-	public void checkSubscriptionPayment(int userArrayNumber) {
-		for (int i = 0; i < dataCenter.getUsers()[userArrayNumber].getSubscription().length; i++) {
-			if (dataCenter.getUsers()[userArrayNumber].getSubscription()[i] != null) {
-				Vehicle vehicle = catchVehicle(
-						dataCenter.getUsers()[userArrayNumber].getSubscription()[i].getVehicleType(),
-						dataCenter.getUsers()[userArrayNumber].getSubscription()[i].getVehicleArrayNumber());
-				if (dataCenter.getUsers()[userArrayNumber].getSubscription()[i].getDayOfWeek()
-						.equals(dataCenter.getCurrentDate().getDayOfWeek())
-						&& vehicle.getRoutes()[dataCenter.getUsers()[userArrayNumber].getSubscription()[i]
-								.getRouteEntryArrayNumber()].getStops()[0].plusMinutes(5) // Tomo solo 5 minutos pero se
-																							// puede escribir para que
-																							// sea 15 minutos antes, etc
-								.isAfter(dataCenter.getCurrentDate())
-						&& isEnoughMoney(userArrayNumber, vehicle.getVehicleType(),
-								dataCenter.getUsers()[userArrayNumber].getSubscription()[i].getVehicleArrayNumber())) {
-					createTicket(userArrayNumber, vehicle.getVehicleType(),
-							dataCenter.getUsers()[userArrayNumber].getSubscription()[i].getVehicleArrayNumber(),
-							dataCenter.getUsers()[userArrayNumber].getSubscription()[i].getRouteEntryArrayNumber(),
-							dataCenter.getUsers()[userArrayNumber].getSubscription()[i].getRouteExitArrayNumber());
+	public void checkSubscriptionsPayment(User user) {
+		for (int i = 0; i < user.getSubscriptions().length; i++) {
+			if (user.getSubscriptions()[i] != null) {
+				if (user.getSubscriptions()[i].getDayOfWeek().equals(dataCenter.getCurrentDate().getDayOfWeek())
+						&& user.getSubscriptions()[i].getRoutes()[Value.ENTRY.getValue()]
+								// Tomo solo 5 minutos pero se puede escribir para que sea 15 minutos antes, etc
+								.getStops()[0].plusMinutes(5).isAfter(dataCenter.getCurrentDate())
+						&& isEnoughMoney(user, user.getSubscriptions()[i].getVehicle())) {
+					createTicket(user, user.getSubscriptions()[i].getVehicle(), user.getSubscriptions()[i].getRoutes());
 				}
 			}
 		}
@@ -127,9 +117,9 @@ public class Calculator {
 	public void checkVehiclesAvailability(VehicleType vehicleType) {
 		boolean isCapacityAvailable = false;
 		boolean isRouteAvailable = false;
-		
+
 		Vehicle[] vehicles = catchVehicles(vehicleType);
-		
+
 		for (int i = 0; i < vehicles.length; i++) {
 			if (vehicles[i] != null) {
 				for (int j = 0; j < vehicles[i].getRoutes().length; j++) {
@@ -146,23 +136,30 @@ public class Calculator {
 
 				for (int j = 0; j < vehicles[i].getTickets().length; j++) {
 					if (vehicles[i].getTickets()[j] != null) {
-						if (dataCenter.getCurrentDate().isAfter(vehicles[i].getTickets()[j].getDates()[1])
-								|| dataCenter.getCurrentDate().isAfter(vehicles[i].getTickets()[j].getDates()[1])) {
+						if (dataCenter.getCurrentDate()
+								.isAfter(vehicles[i].getTickets()[j].getRoutes()[Value.ENTRY.getValue()]
+										.getStops()[Value.ENTRY.getValue()])
+								|| dataCenter.getCurrentDate()
+										.isAfter(vehicles[i].getTickets()[j].getRoutes()[Value.EXIT.getValue()]
+												.getStops()[Value.EXIT.getValue()])) {
 							setUsersTicketAvailability(vehicles[i].getTickets()[j], false);
 							vehicles[i].deleteTicket(j);
-							vehicles[i].setCurrentCapacity(vehicles[i].getCurrentCapacity() - 1);
+							vehicles[i].setCurrentCapacity(vehicles[i].getCapacity()[Value.CURRENT.getValue()] - 1);
 						} else if (!vehicles[i].getTickets()[j].getAvailability()
-								&& (vehicles[i].getTickets()[j].getDates()[0].isAfter(dataCenter.getCurrentDate())
-										|| vehicles[i].getTickets()[j].getDates()[0]
+								&& (vehicles[i].getTickets()[j].getRoutes()[Value.ENTRY.getValue()]
+										.getStops()[Value.ENTRY.getValue()].isAfter(dataCenter.getCurrentDate())
+										|| vehicles[i].getTickets()[j].getRoutes()[Value.ENTRY.getValue()]
+												.getStops()[Value.ENTRY.getValue()]
 												.isAfter(dataCenter.getCurrentDate()))) {
 							vehicles[i].getTickets()[j].setAvailability(true);
 							setUsersTicketAvailability(vehicles[i].getTickets()[j], true);
-							vehicles[i].setCurrentCapacity(vehicles[i].getCurrentCapacity() + 1);
+							vehicles[i].setCurrentCapacity(vehicles[i].getCapacity()[Value.CURRENT.getValue()] + 1);
 						}
 					}
 				}
 
-				if (vehicles[i].getCapacity() <= vehicles[i].getCurrentCapacity()) {
+				if (vehicles[i].getCapacity()[Value.MAXIMUM.getValue()] <= vehicles[i].getCapacity()[Value.CURRENT
+						.getValue()]) {
 					isCapacityAvailable = false;
 				} else {
 					isCapacityAvailable = true;
@@ -192,21 +189,24 @@ public class Calculator {
 		}
 	}
 
-	public void createRoutes(int stopsNumber, String initialTime, int[] timeLapse, int[] daysActive) {
+	public void createRoutes(String initialTime, DayOfWeek[] laboralDays, int stopsNumber, int[] timeLapse) {
 		Route[] routes = new Route[stopsNumber - 1];
 		LocalTime[] stopTime = new LocalTime[stopsNumber];
 		LocalDateTime[][] stops = new LocalDateTime[stopsNumber][2];
-		DayOfWeek[] laboralDays = readLaboralDays(daysActive);
-		stopTime[0] = LocalTime.parse(initialTime);
-		stops[0][0] = setLaboralDays(laboralDays, stopTime[0]);
-		stopTime[1] = stopTime[0].plusMinutes(timeLapse[0]);
-		stops[0][1] = setLaboralDays(laboralDays, stopTime[1]);
-		routes[0] = new Route("0 a 1", new LocalDateTime[] { stops[0][0], stops[0][1] });
+		stopTime[Value.ENTRY.getValue()] = LocalTime.parse(initialTime);
+		stops[0][Value.ENTRY.getValue()] = setLaboralDays(laboralDays, stopTime[Value.ENTRY.getValue()]);
+		stopTime[Value.EXIT.getValue()] = stopTime[0].plusMinutes(timeLapse[0]);
+		stops[0][Value.EXIT.getValue()] = setLaboralDays(laboralDays, stopTime[Value.EXIT.getValue()]);
+		routes[0] = new Route("0 a 1",
+				new LocalDateTime[] { stops[0][Value.ENTRY.getValue()], stops[0][Value.EXIT.getValue()] },
+				new String[] { "0", "1" });
 		for (int i = 1; i < routes.length; i++) {
 			stopTime[i + 1] = stopTime[i].plusMinutes(timeLapse[i]);
-			stops[i][0] = stops[i - 1][1];
-			stops[i][1] = setLaboralDays(laboralDays, stopTime[i + 1]);
-			routes[i] = new Route(i + " a " + (i + 1), new LocalDateTime[] { stops[i][0], stops[i][1] });
+			stops[i][Value.ENTRY.getValue()] = stops[i - 1][Value.EXIT.getValue()];
+			stops[i][Value.EXIT.getValue()] = setLaboralDays(laboralDays, stopTime[i + 1]);
+			routes[i] = new Route(i + " a " + (i + 1),
+					new LocalDateTime[] { stops[i][Value.ENTRY.getValue()], stops[i][Value.EXIT.getValue()] },
+					new String[] { i + "", (i + 1) + "" });
 		}
 
 		for (int i = 0; i < this.dataCenter.getRoutes().length; i++) {
@@ -222,30 +222,21 @@ public class Calculator {
 		}
 	}
 
-	public void createSubscription(int userArrayNumber, int dayOfWeekNumber, VehicleType vehicleType,
-			int vehicleArrayNumber, int routeEntryArrayNumber, int routeExitArrayNumber) {
-		int[] dayOfWeekArray = new int[1]; // Hecho para que createLaboralDays(...) Detecte el primer parámetro como
-											// array
-		dayOfWeekArray[0] = dayOfWeekNumber;
-		Subscription subscription = new Subscription(readLaboralDays(dayOfWeekArray)[0], vehicleType,
-				vehicleArrayNumber, routeEntryArrayNumber, routeExitArrayNumber);
-		dataCenter.getUsers()[userArrayNumber].setNewSubscription(subscription);
+	public void createSubscription(User user, DayOfWeek dayOfWeek, Vehicle vehicle, Route[] routes) {
+		Subscription subscription = new Subscription(dayOfWeek, vehicle, routes);
+		user.setNewSubscription(subscription);
 	}
 
-	public void createTicket(int userNumber, VehicleType vehicleType, int vehicleNumber, int routePositionEntry,
-			int routePositionExit) {
-		Vehicle vehicle = catchVehicle(vehicleType, vehicleNumber);
-		if (isEnoughMoney(userNumber, vehicleType, vehicleNumber)) {
-			dataCenter.getUsers()[userNumber]
-					.setWallet(dataCenter.getUsers()[userNumber].getWallet() - vehicle.getPrice());
-			Ticket ticket = new Ticket(dataCenter.getUsers()[userNumber], vehicle,
-					vehicle.getRoutes()[routePositionEntry].getStops()[0],
-					vehicle.getRoutes()[routePositionExit].getStops()[1], routePositionEntry, routePositionExit);
-			String name = dataCenter.getCurrentDate().getYear() + "_" + userNumber + "_" + vehicleType.getValue()
-					+ vehicleNumber + routePositionEntry + routePositionExit;
-			ticket.setName(name);
+	public void createTicket(User user, Vehicle vehicle, Route[] routes) {
+		if (isEnoughMoney(user, vehicle)) {
+			user.setWallet(user.getWallet() - vehicle.getPrice());
+			Ticket ticket = new Ticket(user, vehicle, routes);
+			// String name = dataCenter.getCurrentDate().getYear() + "_" + userNumber + "_"
+			// + vehicleType.getValue() + vehicleNumber + routePositionEntry +
+			// routePositionExit;
+			ticket.setName("DEFAULT NAME");
 			vehicle.setTicket(ticket);
-			dataCenter.getUsers()[userNumber].setTicket(ticket);
+			user.setTicket(ticket);
 		}
 	}
 
@@ -260,23 +251,23 @@ public class Calculator {
 		}
 	}
 
-	public void createVehicle(String plate, VehicleType vehicleType, String company, int price, int capacity,
-			int routeNumber) {
+	public void createVehicle(VehicleType vehicleType, String company, String plate, Route[] routes, int price,
+			int capacity) {
 		Vehicle[] vehicles = catchVehicles(vehicleType);
 		for (int i = 0; i < vehicles.length; i++) {
 			if (vehicles[i] == null) {
 				switch (vehicleType) {
 				case AIRPLANE:
-					vehicles[i] = new Airplane(plate, company, price, capacity, dataCenter.getRoutes()[routeNumber]);
+					vehicles[i] = new Airplane(company, plate, routes, price, capacity);
 					break;
 				case BUS:
-					vehicles[i] = new Bus(plate, company, price, capacity, dataCenter.getRoutes()[routeNumber]);
+					vehicles[i] = new Bus(company, plate, routes, price, capacity);
 					break;
 				case SHIP:
-					vehicles[i] = new Ship(plate, company, price, capacity, dataCenter.getRoutes()[routeNumber]);
+					vehicles[i] = new Ship(company, plate, routes, price, capacity);
 					break;
 				case TRAVEL_BUS:
-					vehicles[i] = new TravelBus(plate, company, price, capacity, dataCenter.getRoutes()[routeNumber]);
+					vehicles[i] = new TravelBus(company, plate, routes, price, capacity);
 					break;
 				}
 				break;
@@ -388,17 +379,6 @@ public class Calculator {
 				}
 			}
 		}
-	}
-
-	public int getLastUserTicketNumber(int userNumber) {
-		int lastUserTicketArrayNumber = 0;
-		for (int i = 0; i < dataCenter.getUsers()[userNumber].getTicketHistory().length; i++) {
-			if (dataCenter.getUsers()[userNumber].getTicketHistory()[i] == null) {
-				lastUserTicketArrayNumber = i - 1;
-				break;
-			}
-		}
-		return lastUserTicketArrayNumber;
 	}
 
 	public DataCenter getDataCenter() {

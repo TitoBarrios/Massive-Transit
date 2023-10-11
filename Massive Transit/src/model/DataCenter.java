@@ -5,12 +5,13 @@ import java.time.LocalDateTime;
 public class DataCenter {
 
 	private LocalDateTime currentDate;
-	Bus[] buses;
-	Airplane[] airplanes;
-	Ship[] ships;
-	TravelBus[] travelBuses;
-	Route[][] routes;
-	User[] users;
+	private Bus[] buses;
+	private Airplane[] airplanes;
+	private Ship[] ships;
+	private TravelBus[] travelBuses;
+	private Route[][] routes;
+	private User[] users;
+
 	public static final int MAX_BUSES = 30;
 	public static final int MAX_AIRPLANES = 30;
 	public static final int MAX_SHIPS = 30;
@@ -46,10 +47,6 @@ public class DataCenter {
 
 	public LocalDateTime getCurrentDate() {
 		return currentDate;
-	}
-
-	public Bus[] Ships() {
-		return buses;
 	}
 
 	public Airplane[] getAirplanes() {

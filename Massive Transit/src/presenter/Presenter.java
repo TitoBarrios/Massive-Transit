@@ -1,8 +1,11 @@
 package presenter;
 
 import java.time.format.DateTimeParseException;
+import java.time.DayOfWeek;
 
 import model.Calculator;
+import model.Route;
+import model.Value;
 import model.Vehicle;
 import model.VehicleType;
 import view.View;
@@ -12,7 +15,7 @@ public class Presenter {
 	private Calculator calculate;
 	// Option se usa en todos los menús y está enlazado entre ellos
 	int option;
-	
+
 	public Presenter() {
 		view = new View();
 		calculate = new Calculator();
@@ -27,33 +30,42 @@ public class Presenter {
 		calculate.checkVehiclesAvailability(VehicleType.BUS);
 		calculate.checkVehiclesAvailability(VehicleType.SHIP);
 		calculate.checkVehiclesAvailability(VehicleType.TRAVEL_BUS);
-		view.showCurrentLineMessage("Número de Ticket: "
-				+ calculate.getDataCenter().getUsers()[userNumber].getTicketHistory()[ticketNumber].getName() + "\n"
-				+ calculate.getDataCenter().getUsers()[userNumber].getTicketHistory()[ticketNumber].getVehicle()
-						.getVehicleType().getUpperCaseName()
-				+ ": "
-				+ calculate.getDataCenter().getUsers()[userNumber].getTicketHistory()[ticketNumber].getVehicle()
-						.getPlate()
-				+ "\nEmpresa: "
-				+ calculate.getDataCenter().getUsers()[userNumber].getTicketHistory()[ticketNumber].getVehicle()
-						.getCompany()
-				+ "\nPrecio pagado: "
-				+ calculate.getDataCenter().getUsers()[userNumber].getTicketHistory()[ticketNumber].getVehicle()
-						.getPrice()
-				+ "\nEntrada: " + "Ruta "
-				+ calculate.getDataCenter().getUsers()[userNumber].getTicketHistory()[ticketNumber].getRoutesNumber()[0]
-				+ " " + calculate.getDataCenter().getUsers()[userNumber].getTicketHistory()[ticketNumber].getDates()[0]
-				+ "\nSalida: " + "Ruta "
-				+ calculate.getDataCenter().getUsers()[userNumber].getTicketHistory()[ticketNumber].getRoutesNumber()[1]
-				+ " " + calculate.getDataCenter().getUsers()[userNumber].getTicketHistory()[ticketNumber].getDates()[1]
-				+ "\nEstado Actual: ");
+		view.showCurrentLineMessage(
+				"Número de Ticket: "
+						+ calculate.getDataCenter().getUsers()[userNumber].getTicketHistory()[ticketNumber].getName()
+						+ "\n"
+						+ calculate.getDataCenter().getUsers()[userNumber].getTicketHistory()[ticketNumber].getVehicle()
+								.getVehicleType().getUpperCaseName()
+						+ ": "
+						+ calculate.getDataCenter().getUsers()[userNumber].getTicketHistory()[ticketNumber].getVehicle()
+								.getPlate()
+						+ "\nEmpresa: "
+						+ calculate.getDataCenter().getUsers()[userNumber].getTicketHistory()[ticketNumber].getVehicle()
+								.getCompany()
+						+ "\nPrecio pagado: "
+						+ calculate.getDataCenter().getUsers()[userNumber].getTicketHistory()[ticketNumber].getVehicle()
+								.getPrice()
+						+ "\nEntrada: " + "Ruta "
+						+ calculate.getDataCenter().getUsers()[userNumber].getTicketHistory()[ticketNumber]
+								.getRoutes()[Value.ENTRY.getValue()].getStopsName()[Value.ENTRY.getValue()]
+						+ " "
+						+ calculate.getDataCenter().getUsers()[userNumber].getTicketHistory()[ticketNumber]
+								.getRoutes()[Value.ENTRY.getValue()].getStops()[Value.ENTRY.getValue()]
+						+ "\nSalida: " + "Ruta "
+						+ calculate.getDataCenter().getUsers()[userNumber].getTicketHistory()[ticketNumber]
+								.getRoutes()[Value.EXIT.getValue()].getStopsName()[Value.EXIT.getValue()]
+						+ " "
+						+ calculate.getDataCenter().getUsers()[userNumber].getTicketHistory()[ticketNumber]
+								.getRoutes()[Value.EXIT.getValue()].getStops()[Value.EXIT.getValue()]
+						+ "\nEstado Actual: ");
 		if (calculate.getDataCenter().getUsers()[userNumber].getTicketHistory()[ticketNumber].getAvailability()) {
 			view.showMessage("Activo");
-		} else if (calculate.getDataCenter().getCurrentDate().isBefore(
-				calculate.getDataCenter().getUsers()[userNumber].getTicketHistory()[ticketNumber].getDates()[0])
+		} else if (calculate.getDataCenter().getCurrentDate()
+				.isBefore(calculate.getDataCenter().getUsers()[userNumber].getTicketHistory()[ticketNumber]
+						.getRoutes()[Value.ENTRY.getValue()].getStops()[Value.ENTRY.getValue()])
 				|| calculate.getDataCenter().getCurrentDate()
 						.isEqual(calculate.getDataCenter().getUsers()[userNumber].getTicketHistory()[ticketNumber]
-								.getDates()[0])) {
+								.getRoutes()[Value.ENTRY.getValue()].getStops()[Value.ENTRY.getValue()])) {
 			view.showMessage("Confirmado");
 		} else {
 			view.showMessage("Inactivo");
@@ -75,8 +87,8 @@ public class Presenter {
 			for (int i = 0; i < vehicles.length; i++) {
 				if (vehicles[i] != null) {
 					if (vehicles[i].getAvailability()) {
-						view.showMessage("Bus " + (i + 1) + "   " + vehicles[i].getCompany() + "\n Ticket: "
-								+ vehicles[i].getPrice());
+						view.showMessage(type.getUpperCaseName() + " " + (i + 1) + "   " + vehicles[i].getCompany()
+								+ "\n Ticket: " + vehicles[i].getPrice());
 					}
 				}
 			}
@@ -148,8 +160,12 @@ public class Presenter {
 						view.showMessage("La ruta seleccionada no está disponible");
 						option = 1;
 					} else {
-						if (calculate.isEnoughMoney(userNumber, type, vehicleNumber)) {
-							calculate.createTicket(userNumber, type, vehicleNumber, routeNumberEntry, routeNumberExit);
+						if (calculate.isEnoughMoney(calculate.getDataCenter().getUsers()[userNumber],
+								vehicles[vehicleNumber])) {
+							calculate.createTicket(calculate.getDataCenter().getUsers()[userNumber],
+									vehicles[vehicleNumber],
+									new Route[] { vehicles[vehicleNumber].getRoutes()[routeNumberEntry],
+											vehicles[vehicleNumber].getRoutes()[routeNumberExit] });
 
 							view.showMessage("Gracias por usar nuestros servicios!\n");
 							int ticketNumber = 0;
@@ -227,7 +243,10 @@ public class Presenter {
 			option = -1;
 			return;
 		}
-		calculate.createSubscription(userNumber, option, type, vehicleNumber, routeNumberEntry, routeNumberExit);
+		Vehicle vehicle = calculate.catchVehicle(type, vehicleNumber);
+		calculate.createSubscription(calculate.getDataCenter().getUsers()[userNumber],
+				calculate.readLaboralDays(new int[] { option })[0], vehicle,
+				new Route[] { vehicle.getRoutes()[routeNumberEntry], vehicle.getRoutes()[routeNumberExit] });
 		view.showMessage("La suscripción se ha creado correctamente");
 	}
 
@@ -284,7 +303,8 @@ public class Presenter {
 				option = -1;
 				view.showMessage("Escribe un número entero\n");
 			}
-			calculate.createVehicle(plate, type, company, price, capacity, routeNumber);
+			calculate.createVehicle(type, company, plate, calculate.getDataCenter().getRoutes()[routeNumber], price,
+					capacity);
 			view.showMessage("El " + type.getName() + " se ha creado correctamente\n");
 			cancelate = false;
 		} while (option != 1);
@@ -304,9 +324,9 @@ public class Presenter {
 			view.showMessage("Seleccione un " + type.getName() + "\n0. Salir");
 			for (int i = 0; i < vehicles.length; i++) {
 				if (vehicles[i] != null) {
-					view.showCurrentLineMessage(type.getUpperCaseName() + ": " + (i + 1) + "\n Ticket: " + vehicles[i].getPrice()
-							+ "\n Disponibilidad: ");
-					if(vehicles[i].getAvailability()) {
+					view.showCurrentLineMessage(type.getUpperCaseName() + ": " + (i + 1) + "\n Ticket: "
+							+ vehicles[i].getPrice() + "\n Disponibilidad: ");
+					if (vehicles[i].getAvailability()) {
 						view.showMessage(available);
 					} else {
 						view.showMessage(unavailable);
@@ -321,10 +341,11 @@ public class Presenter {
 			if (vehicles[vehicleNumber] != null) {
 				for (int i = 0; i < vehicles[vehicleNumber].getRoutes().length; i++) {
 					if (vehicles[vehicleNumber].getRoutes()[i] != null) {
-						view.showCurrentLineMessage("\nRuta " + (i + 1) + "\n" + vehicles[vehicleNumber].getRoutes()[i].getName()
-								+ "\n Entrada: " + vehicles[vehicleNumber].getRoutes()[i].getStops()[0] + "\n Salida: "
+						view.showCurrentLineMessage("\nRuta " + (i + 1) + "\n"
+								+ vehicles[vehicleNumber].getRoutes()[i].getName() + "\n Entrada: "
+								+ vehicles[vehicleNumber].getRoutes()[i].getStops()[0] + "\n Salida: "
 								+ vehicles[vehicleNumber].getRoutes()[i].getStops()[1] + "\n Disponibilidad: ");
-						if(vehicles[vehicleNumber].getRoutes()[i].getAvailability()) {
+						if (vehicles[vehicleNumber].getRoutes()[i].getAvailability()) {
 							view.showMessage(available);
 						} else {
 							view.showMessage(unavailable);
@@ -375,7 +396,7 @@ public class Presenter {
 				if (calculate.logIn(userName, userPassword)) {
 					userNumber = calculate.searchUserArrayNumber(userName, userPassword);
 					view.showMessage("Su número de usuario es: " + userNumber);
-					calculate.checkSubscriptionPayment(userNumber);
+					calculate.checkSubscriptionsPayment(calculate.getDataCenter().getUsers()[userNumber]);
 					do {
 						view.showMessage(
 								"¿Qué desea hacer?\n1. Comprar ticket\n2. Suscripciones\n3. Agregar fondos a mi billetera\n4. Ver historial y estado de mis tickets\n0. Cerrar sesión");
@@ -388,8 +409,9 @@ public class Presenter {
 						switch (option) {
 						case 1:
 							view.showMessage("¿Para qué tipo de vehículo desea su reserva?\n1. "
-									+ VehicleType.AIRPLANE.getUpperCaseName() + "\n2. " + VehicleType.BUS.getUpperCaseName() + "\n3. "
-									+ VehicleType.SHIP.getUpperCaseName() + "\n4. " + VehicleType.TRAVEL_BUS.getUpperCaseName() + "\n0. Salir");
+									+ VehicleType.AIRPLANE.getUpperCaseName() + "\n2. "
+									+ VehicleType.BUS.getUpperCaseName() + "\n3. " + VehicleType.SHIP.getUpperCaseName()
+									+ "\n4. " + VehicleType.TRAVEL_BUS.getUpperCaseName() + "\n0. Salir");
 							try {
 								vehicleTypeInt = view.readNumber() - 1;
 							} catch (NumberFormatException ex) {
@@ -437,58 +459,40 @@ public class Presenter {
 							case 1:
 								boolean hasActiveSubscriptions = false;
 								for (int i = 0; i < calculate.getDataCenter().getUsers()[userNumber]
-										.getSubscription().length; i++) {
-									if (calculate.getDataCenter().getUsers()[userNumber].getSubscription()[i] != null) {
+										.getSubscriptions().length; i++) {
+									if (calculate.getDataCenter().getUsers()[userNumber]
+											.getSubscriptions()[i] != null) {
 										if (!hasActiveSubscriptions) {
 											view.showMessage("Estas son tus suscripciones activas: ");
 										}
-										view.showMessage("Suscripción activa Nro " + (i + 1) + "\nBus: "
-												+ (calculate.getDataCenter().getUsers()[userNumber].getSubscription()[i]
-														.getVehicleArrayNumber() + 1)
+										view.showMessage("Suscripción activa Nro " + (i + 1) + "\nVehículo: "
+												+ calculate.getDataCenter().getUsers()[userNumber].getSubscriptions()[i]
+														.getVehicle().getVehicleType().getUpperCaseName()
 												+ " "
-												+ calculate.getDataCenter()
-														.getBuses()[calculate.getDataCenter().getUsers()[userNumber]
-																.getSubscription()[i].getVehicleArrayNumber()]
-														.getPlate()
+												+ calculate.getDataCenter().getUsers()[userNumber].getSubscriptions()[i]
+														.getVehicle().getPlate()
 												+ "\nEmpresa: "
-												+ calculate.getDataCenter()
-														.getBuses()[calculate.getDataCenter().getUsers()[userNumber]
-																.getSubscription()[i].getVehicleArrayNumber()]
-														.getCompany()
+												+ calculate.getDataCenter().getUsers()[userNumber].getSubscriptions()[i]
+														.getVehicle().getCompany()
 												+ "\nEntrada: "
-												+ calculate.getDataCenter()
-														.getBuses()[calculate.getDataCenter().getUsers()[userNumber]
-																.getSubscription()[i].getVehicleArrayNumber()]
-														.getRoutes()[calculate.getDataCenter().getUsers()[userNumber]
-																.getSubscription()[i].getRouteExitArrayNumber()]
-														.getName()
+												+ calculate.getDataCenter().getUsers()[userNumber].getSubscriptions()[i]
+														.getRoutes()[Value.ENTRY.getValue()]
+														.getStopsName()[Value.ENTRY.getValue()]
 												+ "  "
-												+ calculate.getDataCenter()
-														.getBuses()[calculate.getDataCenter().getUsers()[userNumber]
-																.getSubscription()[i].getVehicleArrayNumber()]
-														.getRoutes()[calculate.getDataCenter().getUsers()[userNumber]
-																.getSubscription()[i]
-																.getRouteEntryArrayNumber()]
-														.getStops()[0]
+												+ calculate.getDataCenter().getUsers()[userNumber].getSubscriptions()[i]
+														.getRoutes()[Value.ENTRY.getValue()]
+														.getStops()[Value.ENTRY.getValue()]
 												+ "\nSalida: "
-												+ calculate.getDataCenter()
-														.getBuses()[calculate.getDataCenter().getUsers()[userNumber]
-																.getSubscription()[i].getVehicleArrayNumber()]
-														.getRoutes()[calculate.getDataCenter().getUsers()[userNumber]
-																.getSubscription()[i].getRouteExitArrayNumber()]
-														.getName()
+												+ calculate.getDataCenter().getUsers()[userNumber].getSubscriptions()[i]
+														.getRoutes()[Value.EXIT.getValue()]
+														.getStopsName()[Value.EXIT.getValue()]
 												+ "  "
-												+ calculate.getDataCenter()
-														.getBuses()[calculate.getDataCenter().getUsers()[userNumber]
-																.getSubscription()[i].getVehicleArrayNumber()]
-														.getRoutes()[calculate.getDataCenter().getUsers()[userNumber]
-																.getSubscription()[i].getRouteExitArrayNumber()]
-														.getStops()[1]
+												+ calculate.getDataCenter().getUsers()[userNumber].getSubscriptions()[i]
+														.getRoutes()[Value.EXIT.getValue()]
+														.getStops()[Value.EXIT.getValue()]
 												+ "\nPrecio: "
-												+ calculate.getDataCenter()
-														.getBuses()[calculate.getDataCenter().getUsers()[userNumber]
-																.getSubscription()[i].getVehicleArrayNumber()]
-														.getPrice());
+												+ calculate.getDataCenter().getUsers()[userNumber].getSubscriptions()[i]
+														.getVehicle().getPrice());
 										hasActiveSubscriptions = true;
 									}
 									if (hasActiveSubscriptions == false) {
@@ -510,7 +514,7 @@ public class Presenter {
 										break;
 									}
 									if (calculate.getDataCenter().getUsers()[userNumber]
-											.getSubscription()[subscriptionNumber] != null) {
+											.getSubscriptions()[subscriptionNumber] != null) {
 										view.showMessage("Has seleccionado la suscripción número "
 												+ (subscriptionNumber + 1) + "\n1. Cancelar Suscripción\n0. Volver");
 										try {
@@ -539,8 +543,9 @@ public class Presenter {
 							case 2:
 								view.showMessage(
 										"¿Para qué tipo de vehículo deseas crear tu suscripción?\nSuscríbete y así compramos automáticamente tus tickets\n\n1. "
-												+ VehicleType.AIRPLANE.getUpperCaseName() + "\n2. " + VehicleType.BUS.getUpperCaseName()
-												+ "\n3. " + VehicleType.SHIP.getUpperCaseName() + "\n4. "
+												+ VehicleType.AIRPLANE.getUpperCaseName() + "\n2. "
+												+ VehicleType.BUS.getUpperCaseName() + "\n3. "
+												+ VehicleType.SHIP.getUpperCaseName() + "\n4. "
 												+ VehicleType.TRAVEL_BUS.getUpperCaseName() + "\n0. Salir");
 								try {
 									vehicleTypeInt = view.readNumber() - 1;
@@ -593,6 +598,8 @@ public class Presenter {
 									showBill(userNumber, i);
 								}
 							}
+							view.showMessage("Digite cualquier tecla para volver");
+							view.readData();
 							break;
 						}
 					} while (option != 0);
@@ -602,8 +609,9 @@ public class Presenter {
 				}
 				break;
 			case 2:
-				view.showMessage("¿De cuál vehículo desea consultar las rutas?\n1. " + VehicleType.AIRPLANE.getUpperCaseName()
-						+ "\n2. " + VehicleType.BUS.getUpperCaseName() + "\n3. " + VehicleType.SHIP.getUpperCaseName() + "\n4. "
+				view.showMessage("¿De cuál vehículo desea consultar las rutas?\n1. "
+						+ VehicleType.AIRPLANE.getUpperCaseName() + "\n2. " + VehicleType.BUS.getUpperCaseName()
+						+ "\n3. " + VehicleType.SHIP.getUpperCaseName() + "\n4. "
 						+ VehicleType.TRAVEL_BUS.getUpperCaseName() + "\n0. Salir");
 				try {
 					vehicleTypeInt = view.readNumber() - 1;
@@ -651,8 +659,9 @@ public class Presenter {
 							option = 0;
 							break;
 						case 1:
-							view.showMessage("¿Qué tipo de vehículo desea crear?\n1. " + VehicleType.AIRPLANE.getUpperCaseName()
-									+ "\n2. " + VehicleType.BUS.getUpperCaseName() + "\n3. " + VehicleType.SHIP.getUpperCaseName()
+							view.showMessage("¿Qué tipo de vehículo desea crear?\n1. "
+									+ VehicleType.AIRPLANE.getUpperCaseName() + "\n2. "
+									+ VehicleType.BUS.getUpperCaseName() + "\n3. " + VehicleType.SHIP.getUpperCaseName()
 									+ "\n4. " + VehicleType.TRAVEL_BUS.getUpperCaseName() + "\n0. Salir");
 							try {
 								vehicleTypeInt = view.readNumber() - 1;
@@ -722,7 +731,8 @@ public class Presenter {
 								}
 							}
 							try {
-								calculate.createRoutes(stopsNumber, initialTime, durationTime, daysNumber);
+								calculate.createRoutes(initialTime, calculate.readLaboralDays(daysNumber), stopsNumber,
+										durationTime);
 							} catch (DateTimeParseException ex) {
 								view.showMessage("Se ha digitado mal la hora, inténtelo nuevamente");
 								option = -1;

@@ -16,5 +16,7 @@ Future Features (Sorted by priority, highest-lowest):
 - Statistics.
 - Friends and Family options.
 - Hotels.
+- Java UI
 - My SQL Data Base.
+- SOLID code.
 - Functional Website.
