@@ -1,49 +1,59 @@
 package model;
 
-public class Vehicle {
+public abstract class Vehicle {
 	private VehicleType vehicleType;
-	private String company;
+	private Company company;
 	private String plate;
-	private Route[] routes;
+	private RouteSequence routeSeq;
 	private int price;
 	private int[] capacity;
 
 	private Ticket[] tickets;
 	private boolean availability;
 
+	private int[][] revenue;
+
 	private final static int MAX_CAPACITIES = 2;
+	private final static int REVENUE_Y = 2;
+	private final static int STATISTICS_TYPES = 4;
 	private final static int MAX_TICKETS = 200;
 
-	public Vehicle(VehicleType vehicleType, String company, String plate, Route[] routes, int price, int capacity) {
+	public Vehicle(VehicleType vehicleType, Company company, String plate, RouteSequence routeSeq, int price,
+			int capacity) {
 		this.plate = plate;
 		this.vehicleType = vehicleType;
 		this.company = company;
-		this.routes = routes;
-		tickets = new Ticket[MAX_TICKETS];
+		this.routeSeq = routeSeq;
 		this.price = price;
 		this.capacity = new int[MAX_CAPACITIES];
 		this.capacity[Value.MAXIMUM.getValue()] = capacity;
+		tickets = new Ticket[MAX_TICKETS];
+		revenue = new int[STATISTICS_TYPES][REVENUE_Y];
 	}
 
-	public void deleteTicket(int ticketPosition) {
-		tickets[ticketPosition] = null;
-	}
-
-	public void setCompany(String company) {
-		this.company = company;
-	}
-
-	public void setRoutes(Route[] routes) {
-		this.routes = routes;
-	}
-
-	public void setTicket(Ticket ticket) {
+	public void addTicket(Ticket ticket) {
 		for (int i = 0; i < tickets.length; i++) {
 			if (tickets[i] == null) {
 				tickets[i] = ticket;
 				break;
 			}
 		}
+	}
+
+	public void deleteTicket(int ticketPosition) {
+		tickets[ticketPosition] = null;
+	}
+
+	public void setCompany(Company company) {
+		this.company = company;
+	}
+
+	public void setRouteSequence(RouteSequence routeSeq) {
+		this.routeSeq = routeSeq;
+	}
+
+	public void setPrice(int price) {
+		this.price = price;
 	}
 
 	public void setCurrentCapacity(int currentCapacity) {
@@ -54,6 +64,10 @@ public class Vehicle {
 		this.availability = availability;
 	}
 
+	public void setRevenue(int[][] revenue) {
+		this.revenue = revenue;
+	}
+
 	public String getPlate() {
 		return plate;
 	}
@@ -62,12 +76,12 @@ public class Vehicle {
 		return vehicleType;
 	}
 
-	public String getCompany() {
+	public Company getCompany() {
 		return company;
 	}
 
-	public Route[] getRoutes() {
-		return routes;
+	public RouteSequence getRouteSeq() {
+		return routeSeq;
 	}
 
 	public Ticket[] getTickets() {
@@ -84,5 +98,9 @@ public class Vehicle {
 
 	public boolean getAvailability() {
 		return availability;
+	}
+
+	public int[][] getRevenue() {
+		return revenue;
 	}
 }

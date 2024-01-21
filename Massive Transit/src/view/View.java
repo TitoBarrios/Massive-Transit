@@ -18,14 +18,10 @@ public class View {
 	}
 
 	public String readData() {
-		String data;
-		data = console.nextLine();
-		return data;
+		return console.nextLine();
 	}
 
 	public int readNumber() {
-		int number;
-		number = Integer.parseInt(console.nextLine());
-		return number;
+		return Integer.parseInt(console.nextLine());
 	}
 }

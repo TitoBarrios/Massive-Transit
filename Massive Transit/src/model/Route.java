@@ -8,6 +8,12 @@ public class Route {
 	private String[] stopsName;
 	private boolean availability;
 
+	public Route(Route route) {
+		this.name = route.getName();
+		this.stops = route.getStops();
+		this.stopsName = route.getStopsName();
+	}
+	
 	public Route(String name, LocalDateTime[] stops, String[] stopsName) {
 		this.name = name;
 		this.stops = stops;

@@ -6,9 +6,9 @@ public class Airplane extends Vehicle {
 
 	public static final int MAX_PRODUCTS = 30;
 
-	public Airplane(String company, String plate, Route[] routes, int price, int capacity) {
-		super(VehicleType.AIRPLANE, company, plate, routes, price, capacity);
-		catalogue = new Product[30];
+	public Airplane(Company company, String plate, RouteSequence routeSeq, int price, int capacity) {
+		super(VehicleType.AIRPLANE, company, plate, routeSeq, price, capacity);
+		catalogue = new Product[MAX_PRODUCTS];
 	}
 
 	public void addProduct(Product product) {

@@ -13,23 +13,25 @@ public class Calculator {
 		dataCenter = new DataCenter();
 	}
 
-	public void addWallet(int userNumber, int money) {
-		dataCenter.getUsers()[userNumber].setWallet(money + dataCenter.getUsers()[userNumber].getWallet());
+	public void addWallet(User user, int money) {
+		user.setWallet(money + user.getWallet());
 	}
 
-	public void deleteSubscription(int userArrayNumber, int subscriptionArrayNumber) {
-		dataCenter.getUsers()[userArrayNumber].deleteSubscription(subscriptionArrayNumber);
+	public void deleteRelationship(User user, Value type, int relationshipArrayNumber) {
+		user.deleteRelationship(type, relationshipArrayNumber);
+	}
+
+	public void deleteSubscription(User user, int subscriptionArrayNumber) {
+		user.deleteSubscription(subscriptionArrayNumber);
 	}
 
 	public boolean isDayForWork(DayOfWeek[] laboralDays, LocalDateTime timeToCheck) {
-		boolean dayForWork = false;
 		for (int i = 0; i < laboralDays.length; i++) {
 			if (timeToCheck.getDayOfWeek().equals(laboralDays[i])) {
-				dayForWork = true;
-				break;
+				return true;
 			}
 		}
-		return dayForWork;
+		return false;
 	}
 
 	public boolean isEnoughMoney(User user, Vehicle vehicle) {
@@ -40,125 +42,180 @@ public class Calculator {
 	}
 
 	public boolean isUserAvailable(String name) {
-		boolean availability = true;
-		for (int i = 0; i < dataCenter.getUsers().length; i++) {
-			if (dataCenter.getUsers()[i] != null) {
-				if (dataCenter.getUsers()[i].getName().equals(name)) {
-					availability = false;
-					break;
+		for (User[] users : dataCenter.getUsers()) {
+			for (User user : users) {
+				if (user != null) {
+					if (user.getName().equals(name)) {
+						return false;
+					}
+				}
+
+			}
+		}
+		return true;
+	}
+
+	public void editCompanyDescription(Company company, String description) {
+		company.setDescription(description);
+	}
+
+	public void editRoute(RouteSequence routeSeq, String[] routesName) {
+		if (routeSeq != null) {
+			if (routesName.length == routeSeq.getRoutes().length) {
+				for (int i = 0; i < routeSeq.getRoutes().length; i++) {
+					routeSeq.getRoutes()[i].setName(routesName[i]);
 				}
 			}
 		}
-		return availability;
 	}
 
-	public void editRoute(int routeArrayNumber, String[] routesName) {
-		if (dataCenter.getRoutes()[routeArrayNumber] != null) {
-			if (routesName.length == dataCenter.getRoutes().length) {
-				for (int i = 0; i < dataCenter.getRoutes().length; i++) {
-					dataCenter.getRoutes()[routeArrayNumber][i].setName(routesName[i]);
-				}
-			}
-		}
-	}
-
-	public Vehicle catchVehicle(VehicleType vehicleType, int vehicleNumber) {
-		try {
-			switch (vehicleType) {
-			case AIRPLANE:
-				return dataCenter.getAirplanes()[vehicleNumber];
-			case BUS:
-				return dataCenter.getBuses()[vehicleNumber];
-			case SHIP:
-				return dataCenter.getShips()[vehicleNumber];
-			case TRAVEL_BUS:
-				return dataCenter.getTravelBuses()[vehicleNumber];
-			default:
-				return null;
-			}
-		} catch (ArrayIndexOutOfBoundsException | NullPointerException ex) {
-			return null;
-		}
-	}
-
-	public Vehicle[] catchVehicles(VehicleType vehicleType) {
-		try {
-			switch (vehicleType) {
-			case AIRPLANE:
-				return dataCenter.getAirplanes();
-			case BUS:
-				return dataCenter.getBuses();
-			case SHIP:
-				return dataCenter.getShips();
-			case TRAVEL_BUS:
-				return dataCenter.getTravelBuses();
-			default:
-				return null;
-			}
-		} catch (NullPointerException ex) {
-			return null;
-		}
+	public void editVehicle(Vehicle vehicle, RouteSequence route, int ticketPrice) {
+		vehicle.setRouteSequence(route);
+		vehicle.setPrice(ticketPrice);
 	}
 
 	public void checkSubscriptionsPayment(User user) {
-		for (int i = 0; i < user.getSubscriptions().length; i++) {
-			if (user.getSubscriptions()[i] != null) {
-				if (user.getSubscriptions()[i].getDayOfWeek().equals(dataCenter.getCurrentDate().getDayOfWeek())
-						&& user.getSubscriptions()[i].getRoutes()[Value.ENTRY.getValue()]
+		for (Subscription subscription : user.getSubscriptions()) {
+			if (subscription != null) {
+				if (subscription.getDayOfWeek().equals(dataCenter.getCurrentDate().getDayOfWeek())
+						&& subscription.getRoutes()[Value.ENTRY.getValue()]
 								// Tomo solo 5 minutos pero se puede escribir para que sea 15 minutos antes, etc
 								.getStops()[0].plusMinutes(5).isAfter(dataCenter.getCurrentDate())
-						&& isEnoughMoney(user, user.getSubscriptions()[i].getVehicle())) {
-					createTicket(user, user.getSubscriptions()[i].getVehicle(), user.getSubscriptions()[i].getRoutes());
+						&& isEnoughMoney(user, subscription.getVehicle())) {
+					createTicket(user, subscription.getVehicle(), subscription.getRoutes());
+				}
+			}
+		}
+	}
+
+	public void checkVehicleRevenue(Vehicle vehicle, Value statisticsType) {
+		LocalDateTime currentDate = dataCenter.getCurrentDate();
+		int[][] revenue = vehicle.getRevenue();
+		int startingTicket = revenue[Value.GENERAL.getValue()][Value.CURRENT_TICKET.getValue()] + 1;
+		boolean[] firstTime = new boolean[revenue.length];
+
+		for (int i = 0; i < revenue.length; i++) {
+			int currentTicketNumber = revenue[i][Value.CURRENT_TICKET.getValue()] + 1;
+			if (currentTicketNumber < startingTicket) {
+				startingTicket = currentTicketNumber;
+			}
+			if (revenue[i][Value.REVENUE.getValue()] == 0) {
+				firstTime[i] = true;
+				startingTicket = 0;
+			}
+		}
+
+		if (vehicle.getTickets()[startingTicket] != null) {
+			for (int i = startingTicket; i < vehicle.getTickets().length; i++) {
+				if (vehicle.getTickets()[i] != null) {
+					int price = vehicle.getTickets()[i].getPrice();
+					switch (statisticsType) {
+					case GENERAL:
+						int generalLastTicketNumber = revenue[Value.GENERAL.getValue()][Value.CURRENT_TICKET
+								.getValue()];
+						if (i > generalLastTicketNumber
+								|| (firstTime[Value.GENERAL.getValue()] && generalLastTicketNumber == i)) {
+							revenue[Value.GENERAL.getValue()][Value.REVENUE.getValue()] += price;
+							revenue[Value.GENERAL.getValue()][Value.CURRENT_TICKET.getValue()] = i;
+						}
+					case YEARLY:
+						int yearlyLastTicketNumber = revenue[Value.YEARLY.getValue()][Value.CURRENT_TICKET.getValue()];
+						if (i > yearlyLastTicketNumber
+								|| (firstTime[Value.YEARLY.getValue()] && startingTicket == yearlyLastTicketNumber)) {
+							if (vehicle.getTickets()[yearlyLastTicketNumber].getRoutes()[Value.EXIT.getValue()]
+									.getStops()[Value.EXIT.getValue()].getYear() != currentDate.getYear()) {
+								revenue[Value.YEARLY.getValue()][Value.REVENUE.getValue()] = 0;
+							}
+							revenue[Value.YEARLY.getValue()][Value.REVENUE.getValue()] += price;
+							revenue[Value.YEARLY.getValue()][Value.CURRENT_TICKET.getValue()] = i;
+						}
+						if (statisticsType != Value.GENERAL) {
+							break;
+						}
+					case MONTHLY:
+						int monthlyLastTicketNumber = revenue[Value.MONTHLY.getValue()][Value.CURRENT_TICKET
+								.getValue()];
+						if (i > monthlyLastTicketNumber
+								|| (firstTime[Value.MONTHLY.getValue()] && monthlyLastTicketNumber == i)) {
+							if (vehicle.getTickets()[monthlyLastTicketNumber].getRoutes()[Value.EXIT.getValue()]
+									.getStops()[Value.EXIT.getValue()].getMonthValue() != currentDate.getMonthValue()
+									|| vehicle.getTickets()[monthlyLastTicketNumber].getRoutes()[Value.EXIT.getValue()]
+											.getStops()[Value.EXIT.getValue()].getYear() != currentDate.getYear()) {
+
+								revenue[Value.MONTHLY.getValue()][Value.REVENUE.getValue()] = 0;
+							}
+							revenue[Value.MONTHLY.getValue()][Value.REVENUE.getValue()] += price;
+							revenue[Value.MONTHLY.getValue()][Value.CURRENT_TICKET.getValue()] = i;
+						}
+						if (statisticsType != Value.GENERAL) {
+							break;
+						}
+					case DAILY:
+						int dailyLastTicketNumber = revenue[Value.DAILY.getValue()][Value.CURRENT_TICKET.getValue()];
+						if (i > dailyLastTicketNumber
+								|| (firstTime[Value.DAILY.getValue()] && dailyLastTicketNumber == i)) {
+							if (vehicle.getTickets()[dailyLastTicketNumber].getRoutes()[Value.EXIT.getValue()]
+									.getStops()[Value.EXIT.getValue()].getDayOfMonth() != currentDate.getDayOfMonth()
+									|| vehicle.getTickets()[dailyLastTicketNumber].getRoutes()[Value.EXIT.getValue()]
+											.getStops()[Value.EXIT.getValue()]
+											.getMonthValue() != currentDate.getMonthValue()
+									|| vehicle.getTickets()[dailyLastTicketNumber].getRoutes()[Value.EXIT.getValue()]
+											.getStops()[Value.EXIT.getValue()].getYear() != currentDate.getYear()) {
+								revenue[Value.DAILY.getValue()][Value.REVENUE.getValue()] = 0;
+							}
+							revenue[Value.DAILY.getValue()][Value.REVENUE.getValue()] += price;
+							revenue[Value.DAILY.getValue()][Value.CURRENT_TICKET.getValue()] = i;
+						}
+						break;
+					default:
+						break;
+					}
+				} else {
+					break;
 				}
 			}
 		}
 	}
 
 	public void checkVehiclesAvailability(VehicleType vehicleType) {
+		LocalDateTime currentDate = dataCenter.getCurrentDate();
 		boolean isCapacityAvailable = false;
 		boolean isRouteAvailable = false;
 
-		Vehicle[] vehicles = catchVehicles(vehicleType);
-
-		for (int i = 0; i < vehicles.length; i++) {
-			if (vehicles[i] != null) {
-				for (int j = 0; j < vehicles[i].getRoutes().length; j++) {
-					if (vehicles[i].getRoutes()[j] != null) {
-						if (dataCenter.getCurrentDate().isAfter(vehicles[i].getRoutes()[j].getStops()[0])
-								|| dataCenter.getCurrentDate().isEqual(vehicles[i].getRoutes()[j].getStops()[0])) {
-							vehicles[i].getRoutes()[j].setAvailability(false);
+		for (Vehicle vehicle : dataCenter.getVehicles()[vehicleType.getValue()]) {
+			if (vehicle != null) {
+				for (Route route : vehicle.getRouteSeq().getRoutes()) {
+					if (route != null) {
+						if (currentDate.isAfter(route.getStops()[0]) || currentDate.isEqual(route.getStops()[0])) {
+							route.setAvailability(false);
 						} else {
-							vehicles[i].getRoutes()[j].setAvailability(true);
+							route.setAvailability(true);
 							isRouteAvailable = true;
 						}
 					}
 				}
 
-				for (int j = 0; j < vehicles[i].getTickets().length; j++) {
-					if (vehicles[i].getTickets()[j] != null) {
-						if (dataCenter.getCurrentDate()
-								.isAfter(vehicles[i].getTickets()[j].getRoutes()[Value.ENTRY.getValue()]
-										.getStops()[Value.ENTRY.getValue()])
-								|| dataCenter.getCurrentDate()
-										.isAfter(vehicles[i].getTickets()[j].getRoutes()[Value.EXIT.getValue()]
-												.getStops()[Value.EXIT.getValue()])) {
-							setUsersTicketAvailability(vehicles[i].getTickets()[j], false);
-							vehicles[i].deleteTicket(j);
-							vehicles[i].setCurrentCapacity(vehicles[i].getCapacity()[Value.CURRENT.getValue()] - 1);
-						} else if (!vehicles[i].getTickets()[j].getAvailability()
-								&& (vehicles[i].getTickets()[j].getRoutes()[Value.ENTRY.getValue()]
-										.getStops()[Value.ENTRY.getValue()].isAfter(dataCenter.getCurrentDate())
-										|| vehicles[i].getTickets()[j].getRoutes()[Value.ENTRY.getValue()]
-												.getStops()[Value.ENTRY.getValue()]
-												.isAfter(dataCenter.getCurrentDate()))) {
-							vehicles[i].getTickets()[j].setAvailability(true);
-							setUsersTicketAvailability(vehicles[i].getTickets()[j], true);
-							vehicles[i].setCurrentCapacity(vehicles[i].getCapacity()[Value.CURRENT.getValue()] + 1);
+				for (Ticket ticket : vehicle.getTickets()) {
+					if (ticket != null) {
+						if (currentDate
+								.isAfter(ticket.getRoutes()[Value.ENTRY.getValue()].getStops()[Value.ENTRY.getValue()])
+								|| currentDate.isAfter(
+										ticket.getRoutes()[Value.EXIT.getValue()].getStops()[Value.EXIT.getValue()])) {
+							setUsersTicketAvailability(ticket, false);
+							vehicle.setCurrentCapacity(vehicle.getCapacity()[Value.CURRENT.getValue()] - 1);
+						} else if (!ticket.getAvailability()
+								&& (ticket.getRoutes()[Value.ENTRY.getValue()].getStops()[Value.ENTRY.getValue()]
+										.isAfter(currentDate)
+										|| ticket.getRoutes()[Value.ENTRY.getValue()].getStops()[Value.ENTRY.getValue()]
+												.isAfter(currentDate))) {
+							ticket.setAvailability(true);
+							setUsersTicketAvailability(ticket, true);
+							vehicle.setCurrentCapacity(vehicle.getCapacity()[Value.CURRENT.getValue()] + 1);
 						}
 					}
 				}
 
-				if (vehicles[i].getCapacity()[Value.MAXIMUM.getValue()] <= vehicles[i].getCapacity()[Value.CURRENT
+				if (vehicle.getCapacity()[Value.MAXIMUM.getValue()] <= vehicle.getCapacity()[Value.CURRENT
 						.getValue()]) {
 					isCapacityAvailable = false;
 				} else {
@@ -166,9 +223,9 @@ public class Calculator {
 				}
 
 				if (isCapacityAvailable && isRouteAvailable) {
-					vehicles[i].setAvailability(true);
+					vehicle.setAvailability(true);
 				} else {
-					vehicles[i].setAvailability(false);
+					vehicle.setAvailability(false);
 				}
 			}
 		}
@@ -189,113 +246,115 @@ public class Calculator {
 		}
 	}
 
-	public void createRoutes(String initialTime, DayOfWeek[] laboralDays, int stopsNumber, int[] timeLapse) {
+	public void createRelationship(Value type, User user, User relationship) {
+		user.addRelationship(relationship, type);
+	}
+
+	public void createRouteSeq(Company owner, String name, String initialTime, DayOfWeek[] laboralDays, int stopsNumber,
+			int[] timeLapse) {
 		Route[] routes = new Route[stopsNumber - 1];
-		LocalTime[] stopTime = new LocalTime[stopsNumber];
 		LocalDateTime[][] stops = new LocalDateTime[stopsNumber][2];
-		stopTime[Value.ENTRY.getValue()] = LocalTime.parse(initialTime);
-		stops[0][Value.ENTRY.getValue()] = setLaboralDays(laboralDays, stopTime[Value.ENTRY.getValue()]);
-		stopTime[Value.EXIT.getValue()] = stopTime[0].plusMinutes(timeLapse[0]);
-		stops[0][Value.EXIT.getValue()] = setLaboralDays(laboralDays, stopTime[Value.EXIT.getValue()]);
+		stops[0][Value.ENTRY.getValue()] = setLaboralDays(laboralDays,
+				LocalDateTime.of(dataCenter.getCurrentDate().toLocalDate(), LocalTime.parse(initialTime)));
+		stops[0][Value.EXIT.getValue()] = setLaboralDays(laboralDays,
+				stops[0][Value.ENTRY.getValue()].plusMinutes(timeLapse[0]));
 		routes[0] = new Route("0 a 1",
 				new LocalDateTime[] { stops[0][Value.ENTRY.getValue()], stops[0][Value.EXIT.getValue()] },
 				new String[] { "0", "1" });
 		for (int i = 1; i < routes.length; i++) {
-			stopTime[i + 1] = stopTime[i].plusMinutes(timeLapse[i]);
 			stops[i][Value.ENTRY.getValue()] = stops[i - 1][Value.EXIT.getValue()];
-			stops[i][Value.EXIT.getValue()] = setLaboralDays(laboralDays, stopTime[i + 1]);
+			stops[i][Value.EXIT.getValue()] = setLaboralDays(laboralDays,
+					stops[i][Value.ENTRY.getValue()].plusMinutes(timeLapse[i]));
 			routes[i] = new Route(i + " a " + (i + 1),
 					new LocalDateTime[] { stops[i][Value.ENTRY.getValue()], stops[i][Value.EXIT.getValue()] },
 					new String[] { i + "", (i + 1) + "" });
 		}
-
-		for (int i = 0; i < this.dataCenter.getRoutes().length; i++) {
-			if (this.dataCenter.getRoutes()[i] == null) {
-				this.dataCenter.getRoutes()[i] = new Route[routes.length];
-				for (int j = 0; j < this.dataCenter.getRoutes()[i].length; j++) {
-					if (this.dataCenter.getRoutes()[i][j] == null) {
-						this.dataCenter.getRoutes()[i][j] = routes[j];
-					}
-				}
-				break;
-			}
-		}
+		RouteSequence routeSeq = new RouteSequence(name, owner, routes);
+		dataCenter.addRouteSeq(routeSeq);
+		owner.addRouteSeq(routeSeq);
 	}
 
 	public void createSubscription(User user, DayOfWeek dayOfWeek, Vehicle vehicle, Route[] routes) {
-		Subscription subscription = new Subscription(dayOfWeek, vehicle, routes);
-		user.setNewSubscription(subscription);
+		user.addSubscription(new Subscription(dayOfWeek, vehicle, routes));
 	}
 
 	public void createTicket(User user, Vehicle vehicle, Route[] routes) {
 		if (isEnoughMoney(user, vehicle)) {
 			user.setWallet(user.getWallet() - vehicle.getPrice());
-			Ticket ticket = new Ticket(user, vehicle, routes);
+			Ticket ticket = new Ticket(user, vehicle,
+					new Route[] { new Route(routes[Value.ENTRY.getValue()]), new Route(routes[Value.EXIT.getValue()]) },
+					vehicle.getPrice());
 			// String name = dataCenter.getCurrentDate().getYear() + "_" + userNumber + "_"
 			// + vehicleType.getValue() + vehicleNumber + routePositionEntry +
 			// routePositionExit;
 			ticket.setName("DEFAULT NAME");
-			vehicle.setTicket(ticket);
-			user.setTicket(ticket);
+			vehicle.addTicket(ticket);
+			user.addTicket(ticket);
 		}
 	}
 
-	public void createUser(String name, String password) {
+	public void createUser(Value type, String name, String password) {
 		if (isUserAvailable(name)) {
-			for (int i = 0; i < dataCenter.getUsers().length; i++) {
-				if (dataCenter.getUsers()[i] == null) {
-					dataCenter.getUsers()[i] = new User(name, password);
-					break;
-				}
-			}
-		}
-	}
-
-	public void createVehicle(VehicleType vehicleType, String company, String plate, Route[] routes, int price,
-			int capacity) {
-		Vehicle[] vehicles = catchVehicles(vehicleType);
-		for (int i = 0; i < vehicles.length; i++) {
-			if (vehicles[i] == null) {
-				switch (vehicleType) {
-				case AIRPLANE:
-					vehicles[i] = new Airplane(company, plate, routes, price, capacity);
-					break;
-				case BUS:
-					vehicles[i] = new Bus(company, plate, routes, price, capacity);
-					break;
-				case SHIP:
-					vehicles[i] = new Ship(company, plate, routes, price, capacity);
-					break;
-				case TRAVEL_BUS:
-					vehicles[i] = new TravelBus(company, plate, routes, price, capacity);
-					break;
-				}
+			switch (type) {
+			case USER:
+				dataCenter.addUser(type, new User(name, password));
 				break;
+			case COMPANY:
+				dataCenter.addUser(type, new Company(name, password));
+				break;
+			default:
+				return;
 			}
 		}
 	}
 
-	public boolean logIn(String name, String password) {
-		boolean logIn = false;
-		for (int i = 0; i < dataCenter.getUsers().length; i++) {
-			if (dataCenter.getUsers()[i] != null) {
-				if (dataCenter.getUsers()[i].getName().equals(name)
-						&& dataCenter.getUsers()[i].getPassword().equals(password)) {
-					logIn = true;
-					break;
+	public void createVehicle(VehicleType vehicleType, Company company, String plate, RouteSequence routeSeq, int price,
+			int capacity) {
+		switch (vehicleType) {
+		case AIRPLANE:
+			Airplane airplane = new Airplane(company, plate, routeSeq, price, capacity);
+			dataCenter.addVehicle(vehicleType, airplane);
+			company.addVehicle(vehicleType, airplane);
+			break;
+		case BUS:
+			Bus bus = new Bus(company, plate, routeSeq, price, capacity);
+			dataCenter.addVehicle(vehicleType, bus);
+			company.addVehicle(vehicleType, bus);
+			break;
+		case SHIP:
+			Ship ship = new Ship(company, plate, routeSeq, price, capacity);
+			dataCenter.addVehicle(vehicleType, ship);
+			company.addVehicle(vehicleType, ship);
+			break;
+		case TRAVEL_BUS:
+			TravelBus travelBus = new TravelBus(company, plate, routeSeq, price, capacity);
+			dataCenter.addVehicle(vehicleType, travelBus);
+			company.addVehicle(vehicleType, travelBus);
+			break;
+		}
+	}
+
+	public void deleteVehicle(Vehicle vehicle) {
+		vehicle = null;
+	}
+
+	public boolean logIn(Value type, String name, String password) {
+		for (User user : dataCenter.getUsers()[type.getValue()]) {
+			if (user != null) {
+				if (user.getName().equals(name) && user.getPassword().equals(password)) {
+					return true;
 				}
 			}
 		}
-		return logIn;
+		return false;
 	}
 
 	public boolean logInAdmin(String name, String password) {
-		boolean adminLogIn = false;
-		if (dataCenter.getUsers()[0].getName().equals(name)
-				&& dataCenter.getUsers()[0].getPassword().equals(password)) {
-			adminLogIn = true;
+		User admin = dataCenter.getUsers()[Value.USER.getValue()][0];
+		if (admin.getName().equals(name) && admin.getPassword().equals(password)) {
+			return true;
 		}
-		return adminLogIn;
+		return false;
 	}
 
 	public DayOfWeek[] readLaboralDays(int[] laboralDaysNumber) {
@@ -340,40 +399,34 @@ public class Calculator {
 		return daysOfWeek;
 	}
 
-	public int searchUserArrayNumber(String name, String password) {
-		int arrayNumber = 0;
-		for (int i = 0; i < dataCenter.getUsers().length; i++) {
-			if (dataCenter.getUsers()[i] != null) {
-				if (dataCenter.getUsers()[i].getName().equals(name)
-						&& dataCenter.getUsers()[i].getPassword().equals(password)) {
-					arrayNumber = i;
-					break;
+	public int searchUserArrayNumber(Value type, String name, String password) {
+		for (int i = 0; i < dataCenter.getUsers()[type.getValue()].length; i++) {
+			if (dataCenter.getUsers()[type.getValue()][i] != null) {
+				if (dataCenter.getUsers()[type.getValue()][i].getName().equals(name)
+						&& dataCenter.getUsers()[type.getValue()][i].getPassword().equals(password)) {
+					return i;
 				}
 			}
 		}
-		return arrayNumber;
+		return -1;
 	}
 
-	public LocalDateTime setLaboralDays(DayOfWeek[] laboralDays, LocalTime time) {
-		LocalDate dateForWork = dataCenter.getCurrentDate().toLocalDate();
-		LocalDateTime dateForWorkTime;
-		boolean isDayForWork = isDayForWork(laboralDays, dataCenter.getCurrentDate());
+	public LocalDateTime setLaboralDays(DayOfWeek[] laboralDays, LocalDateTime time) {
+		boolean isDayForWork = isDayForWork(laboralDays, time);
 		while (!isDayForWork) {
-			dateForWork = dateForWork.plusDays(1);
-			dateForWorkTime = LocalDateTime.of(dateForWork, dataCenter.getCurrentDate().toLocalTime());
-			isDayForWork = isDayForWork(laboralDays, dateForWorkTime);
+			time = time.plusDays(1);
+			isDayForWork = isDayForWork(laboralDays, time);
 		}
-		LocalDateTime timeForWork = LocalDateTime.of(dateForWork, time);
-		return timeForWork;
+		return time;
 	}
 
 	public void setUsersTicketAvailability(Ticket ticket, boolean availability) {
-		for (int i = 0; i < dataCenter.getUsers().length; i++) {
-			if (dataCenter.getUsers()[i] != null) {
-				for (int j = 0; j < dataCenter.getUsers()[i].getTicketHistory().length; j++) {
-					if (dataCenter.getUsers()[i].getTicketHistory()[j] != null) {
-						if (dataCenter.getUsers()[i].getTicketHistory()[j].equals(ticket)) {
-							dataCenter.getUsers()[i].getTicketHistory()[j].setAvailability(availability);
+		for (User user : dataCenter.getUsers()[Value.USER.getValue()]) {
+			if (user != null) {
+				for (Ticket currentTicket : user.getTicketHistory()) {
+					if (currentTicket != null) {
+						if (currentTicket.equals(ticket)) {
+							currentTicket.setAvailability(availability);
 						}
 					}
 				}
