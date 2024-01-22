@@ -15,12 +15,12 @@ public class Ship extends Vehicle {
 			}
 		}
 	}
+	
+	public Product[] getCatalogue() {
+		return catalogue;
+	}
 
 	public void setCatalogue(Product[] catalogue) {
 		this.catalogue = catalogue;
-	}
-
-	public Product[] getCatalogue() {
-		return catalogue;
 	}
 }

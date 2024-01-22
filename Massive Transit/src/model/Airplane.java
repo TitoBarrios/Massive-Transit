@@ -1,10 +1,10 @@
 package model;
 
 public class Airplane extends Vehicle {
+	public static final int MAX_PRODUCTS = 30;
+
 	private Product[] catalogue;
 	private String description;
-
-	public static final int MAX_PRODUCTS = 30;
 
 	public Airplane(Company company, String plate, RouteSequence routeSeq, int price, int capacity) {
 		super(VehicleType.AIRPLANE, company, plate, routeSeq, price, capacity);
@@ -24,12 +24,12 @@ public class Airplane extends Vehicle {
 		this.catalogue = catalogue;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
 	public Product[] getCatalogue() {
 		return catalogue;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public String getDescription() {

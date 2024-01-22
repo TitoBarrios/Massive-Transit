@@ -21,7 +21,7 @@ public class Presenter {
 		calculate.createUser(Value.COMPANY, "default", "0000");
 		int number = calculate.searchUserArrayNumber(Value.COMPANY, "default");
 		calculate.createRouteSeq((Company) calculate.getDataCenter().getUsers()[Value.COMPANY.getValue()][number],
-				"Ruta 1", "20:30:00", calculate.readLaboralDays(new int[] { 8 }), 6, new int[] { 10, 15, 30, 40, 15 });
+				"Ruta 1", "22:30:00", calculate.readLaboralDays(new int[] { 8 }), 6, new int[] { 10, 15, 30, 40, 15 });
 		calculate.createVehicle(VehicleType.BUS,
 				(Company) calculate.getDataCenter().getUsers()[Value.COMPANY.getValue()][number], "default",
 				calculate.getDataCenter().getRouteSeqs()[0], 3500, 30);
@@ -49,6 +49,7 @@ public class Presenter {
 		if (!ticket.getOwner().getName().equals(ticket.getBuyer().getName())) {
 			view.showMessage("Comprador: " + ticket.getBuyer().getName());
 		}
+		view.showMessage("");
 	}
 
 	public void showCreateTicketMenu(User user, User userWallet) {
@@ -379,25 +380,12 @@ public class Presenter {
 	}
 
 	public void showStatistics(Company company, Value value) {
-		int totalRevenue = 0;
-		int yearlyRevenue = 0;
-		int monthlyRevenue = 0;
-		int dailyRevenue = 0;
+		calculate.checkCompanyRevenue(company);
 
-		for (Vehicle[] vehicles : company.getVehicles()) {
-			for (Vehicle vehicle : vehicles) {
-				if (vehicle != null) {
-					calculate.checkVehicleRevenue(vehicle, Value.GENERAL);
-					totalRevenue += vehicle.getRevenue()[Value.GENERAL.getValue()][Value.REVENUE.getValue()];
-					yearlyRevenue += vehicle.getRevenue()[Value.YEARLY.getValue()][Value.REVENUE.getValue()];
-					monthlyRevenue += vehicle.getRevenue()[Value.MONTHLY.getValue()][Value.REVENUE.getValue()];
-					dailyRevenue += vehicle.getRevenue()[Value.DAILY.getValue()][Value.REVENUE.getValue()];
-				}
-			}
-		}
-
-		view.showMessage("\nIngresos totales: " + totalRevenue + "\nIngreso anuales: " + yearlyRevenue
-				+ "\nIngresos mensuales: " + monthlyRevenue + "\nIngresos diarios: " + dailyRevenue);
+		view.showMessage("Ingresos: " + company.getRevenue()[Value.GENERAL.getValue()] + "\n Anuales:    "
+				+ company.getRevenue()[Value.YEARLY.getValue()] + "\n Mensuales: "
+				+ company.getRevenue()[Value.MONTHLY.getValue()] + "\n Diarios:   "
+				+ company.getRevenue()[Value.DAILY.getValue()]);
 		do {
 			view.showMessage("\n-2 Informe Completo\n-1. Informe completo (Sin Mostrar Tickets)\n"
 					+ (VehicleType.AIRPLANE.getValue() + 1) + "." + VehicleType.AIRPLANE.getUpperCaseName() + "\n"
@@ -1315,11 +1303,10 @@ public class Presenter {
 				password = view.readData();
 				if (calculate.logInAdmin(name, password)) {
 					do {
-						view.showMessage("Funcionalidad en proceso");
-						// break;
-						view.showMessage("1. Eliminar empresa\n2. Eliminar Usuario\n0. Cerrar Sesión");
+						view.showMessage(
+								"1. Ver estadísticas generales y por empresa\n2. Eliminar empresa\n3. Eliminar Usuario\n0. Cerrar Sesión");
 						try {
-							option = view.readNumber() - 1;
+							option = view.readNumber();
 						} catch (NumberFormatException ex) {
 							view.showMessage("Digite un número entero e inténtelo de nuevo\n");
 							break;
@@ -1331,6 +1318,23 @@ public class Presenter {
 						}
 						switch (option) {
 						case 1:
+							for (int i = 0; i < calculate.getDataCenter().getUsers()[Value.COMPANY
+									.getValue()].length; i++) {
+								Company company = (Company) calculate.getDataCenter().getUsers()[Value.COMPANY
+										.getValue()][i];
+								if (company != null) {
+									calculate.checkCompanyRevenue(company);
+									view.showMessage(company.getName() + "\n Ingresos: "
+											+ company.getRevenue()[Value.GENERAL.getValue()] + "\n Anuales:    "
+											+ company.getRevenue()[Value.YEARLY.getValue()] + "\n Mensuales: "
+											+ company.getRevenue()[Value.MONTHLY.getValue()] + "\n Diarios:   "
+											+ company.getRevenue()[Value.DAILY.getValue()]);
+								}
+							}
+							view.showMessage("Digite cualquier tecla para salir");
+							view.readData();
+							break;
+						case 2:
 							User currentCompany = null;
 							for (int i = 0; i < calculate.getDataCenter().getUsers()[Value.COMPANY
 									.getValue()].length; i++) {
@@ -1382,7 +1386,7 @@ public class Presenter {
 								break;
 							}
 							break;
-						case 2:
+						case 3:
 							User currentUser = null;
 							for (int i = 1; i < calculate.getDataCenter().getUsers()[Value.USER
 									.getValue()].length; i++) {

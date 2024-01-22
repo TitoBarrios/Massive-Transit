@@ -74,6 +74,24 @@ public class Calculator {
 		vehicle.setPrice(ticketPrice);
 	}
 
+	public void checkCompanyRevenue(Company company) {
+		for (Vehicle[] vehicles : company.getVehicles()) {
+			for (Vehicle vehicle : vehicles) {
+				if (vehicle != null) {
+					checkVehicleRevenue(vehicle, Value.GENERAL);
+					company.getRevenue()[Value.GENERAL
+							.getValue()] += vehicle.getRevenue()[Value.GENERAL.getValue()][Value.REVENUE.getValue()];
+					company.getRevenue()[Value.YEARLY
+							.getValue()] += vehicle.getRevenue()[Value.YEARLY.getValue()][Value.REVENUE.getValue()];
+					company.getRevenue()[Value.MONTHLY
+							.getValue()] += vehicle.getRevenue()[Value.MONTHLY.getValue()][Value.REVENUE.getValue()];
+					company.getRevenue()[Value.DAILY
+							.getValue()] += vehicle.getRevenue()[Value.DAILY.getValue()][Value.REVENUE.getValue()];
+				}
+			}
+		}
+	}
+
 	public void checkRouteSequenceAvailability(RouteSequence routeSeq) {
 		boolean isLaboralDay = false;
 		for (int i = 0; i < routeSeq.getLaboralDays().length; i++) {
@@ -228,7 +246,7 @@ public class Calculator {
 						|| currentDate
 								.isAfter(ticket.getRoutes()[Value.EXIT.getValue()].getStops()[Value.EXIT.getValue()])) {
 					setUsersTicketAvailability(ticket, false);
-					vehicle.setCurrentCapacity(vehicle.getCapacity()[Value.CURRENT.getValue()] - 1);
+					vehicle.changeCurrentCapacity(vehicle.getCapacity()[Value.CURRENT.getValue()] - 1);
 				} else if (!ticket.getAvailability()
 						&& (ticket.getRoutes()[Value.ENTRY.getValue()].getStops()[Value.ENTRY.getValue()]
 								.isAfter(currentDate)
@@ -236,7 +254,7 @@ public class Calculator {
 										.isAfter(currentDate))) {
 					ticket.setAvailability(true);
 					setUsersTicketAvailability(ticket, true);
-					vehicle.setCurrentCapacity(vehicle.getCapacity()[Value.CURRENT.getValue()] + 1);
+					vehicle.changeCurrentCapacity(vehicle.getCapacity()[Value.CURRENT.getValue()] + 1);
 				}
 			}
 		}

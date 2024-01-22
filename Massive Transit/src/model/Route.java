@@ -3,9 +3,9 @@ package model;
 import java.time.LocalDateTime;
 
 public class Route {
-	private String name;
 	private LocalDateTime[] stops;
 	private String[] stopsName;
+	private String name;
 	private boolean availability;
 
 	public Route(Route route) {
@@ -19,32 +19,37 @@ public class Route {
 		this.stops = stops;
 		this.stopsName = stopsName;
 	}
-
-	public void setName(String name) {
-		this.name = name;
+	
+	public LocalDateTime[] getStops() {
+		return stops;
+	}
+	
+	public void setStops(LocalDateTime[] stops) {
+		this.stops = stops;
+	}
+	
+	public String[] getStopsName() {
+		return stopsName;
 	}
 	
 	public void setStopsName(String[] stopsName) {
 		this.stopsName = stopsName;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public boolean getAvailability() {
+		return availability;
 	}
 
 	public void setAvailability(boolean availability) {
 		this.availability = availability;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public LocalDateTime[] getStops() {
-		return stops;
-	}
-	
-	public String[] getStopsName() {
-		return stopsName;
-	}
-
-	public boolean getAvailability() {
-		return availability;
-	}
 }

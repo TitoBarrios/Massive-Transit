@@ -1,11 +1,11 @@
 package model;
 
 public class Ticket {
-	private String name;
-	private User owner;
-	private User buyer;
-	private Vehicle vehicle;
 	private Route[] routes;
+	private User buyer;
+	private User owner;
+	private Vehicle vehicle;
+	private String name;
 	private int price;
 	private boolean availability;
 
@@ -17,43 +17,59 @@ public class Ticket {
 		this.vehicle = vehicle;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public Route[] getRoutes() {
+		return routes;
 	}
 
-	public void setPrice(int price) {
-		this.price = price;
-	}
-
-	public void setAvailability(boolean availability) {
-		this.availability = availability;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public User getOwner() {
-		return owner;
+	public void setRoutes(Route[] routes) {
+		this.routes = routes;
 	}
 
 	public User getBuyer() {
 		return buyer;
 	}
 
+	public void setBuyer(User buyer) {
+		this.buyer = buyer;
+	}
+
+	public User getOwner() {
+		return owner;
+	}
+
+	public void setOwner(User owner) {
+		this.owner = owner;
+	}
+
 	public Vehicle getVehicle() {
 		return vehicle;
 	}
 
-	public Route[] getRoutes() {
-		return routes;
+	public void setVehicle(Vehicle vehicle) {
+		this.vehicle = vehicle;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public int getPrice() {
 		return price;
 	}
 
+	public void setPrice(int price) {
+		this.price = price;
+	}
+
 	public boolean getAvailability() {
 		return availability;
+	}
+
+	public void setAvailability(boolean availability) {
+		this.availability = availability;
 	}
 }

@@ -1,16 +1,16 @@
 package model;
 
 public class User {
-	private String name;
-	private String password;
-	private int wallet;
-	private Ticket[] ticketHistory;
-	private Subscription[] subscriptions;
-	private User[] relationships;
-
 	public static final int MAX_TICKETS = 50;
 	public static final int MAX_SUBSCRIPTIONS = 30;
 	public static final int MAX_RELATIONSHIPS = 50;
+
+	private User[] relationships;
+	private Subscription[] subscriptions;
+	private Ticket[] ticketHistory;
+	private String name;
+	private String password;
+	private int wallet;
 
 	public User(String name, String password) {
 		this.name = name;
@@ -18,15 +18,6 @@ public class User {
 		ticketHistory = new Ticket[MAX_TICKETS];
 		subscriptions = new Subscription[MAX_SUBSCRIPTIONS];
 		relationships = new User[MAX_RELATIONSHIPS];
-	}
-
-	public void addTicket(Ticket ticket) {
-		for (int i = 0; i < ticketHistory.length; i++) {
-			if (ticketHistory[i] == null) {
-				ticketHistory[i] = ticket;
-				break;
-			}
-		}
 	}
 
 	public void addRelationship(User user) {
@@ -47,6 +38,15 @@ public class User {
 		}
 	}
 
+	public void addTicket(Ticket ticket) {
+		for (int i = 0; i < ticketHistory.length; i++) {
+			if (ticketHistory[i] == null) {
+				ticketHistory[i] = ticket;
+				break;
+			}
+		}
+	}
+
 	public void deleteRelationship(int relationshipArrayNumber) {
 		relationships[relationshipArrayNumber] = null;
 	}
@@ -55,8 +55,40 @@ public class User {
 		subscriptions[subscriptionArrayNumber] = null;
 	}
 
+	public User[] getRelationships() {
+		return relationships;
+	}
+
+	public void setRelationships(User[] relationships) {
+		this.relationships = relationships;
+	}
+
+	public Subscription[] getSubscriptions() {
+		return subscriptions;
+	}
+
+	public void setSubscriptions(Subscription[] subscriptions) {
+		this.subscriptions = subscriptions;
+	}
+
+	public Ticket[] getTicketHistory() {
+		return ticketHistory;
+	}
+
+	public void setTicketHistory(Ticket[] ticketHistory) {
+		this.ticketHistory = ticketHistory;
+	}
+
+	public String getName() {
+		return name;
+	}
+
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getPassword() {
+		return password;
 	}
 
 	public void setPassword(String password) {
@@ -67,39 +99,7 @@ public class User {
 		this.wallet = wallet;
 	}
 
-	public void setTicketHistory(Ticket[] ticketHistory) {
-		this.ticketHistory = ticketHistory;
-	}
-
-	public void setRelationships(User[] relationships) {
-		this.relationships = relationships;
-	}
-
-	public void setSubscriptions(Subscription[] subscriptions) {
-		this.subscriptions = subscriptions;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
 	public int getWallet() {
 		return wallet;
-	}
-
-	public Ticket[] getTicketHistory() {
-		return ticketHistory;
-	}
-
-	public User[] getRelationships() {
-		return relationships;
-	}
-
-	public Subscription[] getSubscriptions() {
-		return subscriptions;
 	}
 }
