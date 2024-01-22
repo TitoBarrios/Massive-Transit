@@ -6,18 +6,18 @@ public class User {
 	private int wallet;
 	private Ticket[] ticketHistory;
 	private Subscription[] subscriptions;
-	private User[][] relationships;
+	private User[] relationships;
 
 	public static final int MAX_TICKETS = 50;
 	public static final int MAX_SUBSCRIPTIONS = 30;
-	public static final int MAX_RELATIONSHIPSX = 2;
+	public static final int MAX_RELATIONSHIPS = 50;
 
 	public User(String name, String password) {
 		this.name = name;
 		this.password = password;
 		ticketHistory = new Ticket[MAX_TICKETS];
 		subscriptions = new Subscription[MAX_SUBSCRIPTIONS];
-		relationships = new User[MAX_RELATIONSHIPSX][];
+		relationships = new User[MAX_RELATIONSHIPS];
 	}
 
 	public void addTicket(Ticket ticket) {
@@ -29,10 +29,10 @@ public class User {
 		}
 	}
 
-	public void addRelationship(User user, Value type) {
-		for (int i = 0; i < relationships[type.getValue()].length; i++) {
-			if (relationships[type.getValue()][i] == null) {
-				relationships[type.getValue()][i] = user;
+	public void addRelationship(User user) {
+		for (int i = 0; i < relationships.length; i++) {
+			if (relationships[i] == null) {
+				relationships[i] = user;
 				break;
 			}
 		}
@@ -47,8 +47,8 @@ public class User {
 		}
 	}
 
-	public void deleteRelationship(Value type, int relationshipArrayNumber) {
-		relationships[type.getValue()][relationshipArrayNumber] = null;
+	public void deleteRelationship(int relationshipArrayNumber) {
+		relationships[relationshipArrayNumber] = null;
 	}
 
 	public void deleteSubscription(int subscriptionArrayNumber) {
@@ -71,7 +71,7 @@ public class User {
 		this.ticketHistory = ticketHistory;
 	}
 
-	public void setRelationships(User[][] relationships) {
+	public void setRelationships(User[] relationships) {
 		this.relationships = relationships;
 	}
 
@@ -95,7 +95,7 @@ public class User {
 		return ticketHistory;
 	}
 
-	public User[][] getRelationships() {
+	public User[] getRelationships() {
 		return relationships;
 	}
 

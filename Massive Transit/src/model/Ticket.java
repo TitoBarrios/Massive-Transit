@@ -3,15 +3,17 @@ package model;
 public class Ticket {
 	private String name;
 	private User owner;
+	private User buyer;
 	private Vehicle vehicle;
 	private Route[] routes;
 	private int price;
 	private boolean availability;
 
-	public Ticket(User owner, Vehicle vehicle, Route[] routes, int price) {
+	public Ticket(User owner, User buyer, Vehicle vehicle, Route[] routes, int price) {
+		this.owner = owner;
+		this.buyer = buyer;
 		this.routes = routes;
 		this.price = price;
-		this.owner = owner;
 		this.vehicle = vehicle;
 	}
 
@@ -33,6 +35,10 @@ public class Ticket {
 
 	public User getOwner() {
 		return owner;
+	}
+
+	public User getBuyer() {
+		return buyer;
 	}
 
 	public Vehicle getVehicle() {

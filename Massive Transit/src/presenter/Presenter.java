@@ -19,61 +19,69 @@ public class Presenter {
 	public void defaultValues() {
 		calculate.createUser(Value.USER, "administrador", "0000");
 		calculate.createUser(Value.COMPANY, "default", "0000");
-		int number = calculate.searchUserArrayNumber(Value.COMPANY, "default", "0000");
+		int number = calculate.searchUserArrayNumber(Value.COMPANY, "default");
 		calculate.createRouteSeq((Company) calculate.getDataCenter().getUsers()[Value.COMPANY.getValue()][number],
-				"Ruta 1", "23:30:00", calculate.readLaboralDays(new int[] { 8 }), 6, new int[] { 10, 15, 30, 40, 15 });
+				"Ruta 1", "20:30:00", calculate.readLaboralDays(new int[] { 8 }), 6, new int[] { 10, 15, 30, 40, 15 });
 		calculate.createVehicle(VehicleType.BUS,
 				(Company) calculate.getDataCenter().getUsers()[Value.COMPANY.getValue()][number], "default",
 				calculate.getDataCenter().getRouteSeqs()[0], 3500, 30);
 	}
 
-	public void showBill(User user, int ticketNumber) {
-		calculate.checkVehiclesAvailability(VehicleType.AIRPLANE);
-		calculate.checkVehiclesAvailability(VehicleType.BUS);
-		calculate.checkVehiclesAvailability(VehicleType.SHIP);
-		calculate.checkVehiclesAvailability(VehicleType.TRAVEL_BUS);
-		view.showCurrentLineMessage("Número de Ticket: " + user.getTicketHistory()[ticketNumber].getName() + "\n"
-				+ user.getTicketHistory()[ticketNumber].getVehicle().getVehicleType().getUpperCaseName() + ": "
-				+ user.getTicketHistory()[ticketNumber].getVehicle().getPlate() + "\nEmpresa: "
-				+ user.getTicketHistory()[ticketNumber].getVehicle().getCompany().getName() + "\nPrecio pagado: "
-				+ user.getTicketHistory()[ticketNumber].getVehicle().getPrice() + "\nEntrada: " + "Ruta "
-				+ user.getTicketHistory()[ticketNumber].getRoutes()[Value.ENTRY.getValue()].getStopsName()[Value.ENTRY
-						.getValue()]
-				+ " "
-				+ user.getTicketHistory()[ticketNumber].getRoutes()[Value.ENTRY.getValue()].getStops()[Value.ENTRY
-						.getValue()]
-				+ "\nSalida: " + "Ruta "
-				+ user.getTicketHistory()[ticketNumber].getRoutes()[Value.EXIT.getValue()].getStopsName()[Value.EXIT
-						.getValue()]
-				+ " " + user.getTicketHistory()[ticketNumber].getRoutes()[Value.EXIT.getValue()].getStops()[Value.EXIT
-						.getValue()]
-				+ "\nEstado Actual: ");
-		if (user.getTicketHistory()[ticketNumber].getAvailability()) {
+	public void showBill(User user, Ticket ticket) {
+		view.showCurrentLineMessage("Número de Ticket: " + ticket.getName() + "\n"
+				+ ticket.getVehicle().getVehicleType().getUpperCaseName() + ": " + ticket.getVehicle().getPlate()
+				+ "\nEmpresa: " + ticket.getVehicle().getCompany().getName() + "\nPrecio pagado: "
+				+ ticket.getVehicle().getPrice() + "\nEntrada: " + "Ruta "
+				+ ticket.getRoutes()[Value.ENTRY.getValue()].getStopsName()[Value.ENTRY.getValue()] + " "
+				+ ticket.getRoutes()[Value.ENTRY.getValue()].getStops()[Value.ENTRY.getValue()] + "\nSalida: " + "Ruta "
+				+ ticket.getRoutes()[Value.EXIT.getValue()].getStopsName()[Value.EXIT.getValue()] + " "
+				+ ticket.getRoutes()[Value.EXIT.getValue()].getStops()[Value.EXIT.getValue()] + "\nEstado Actual: ");
+		if (ticket.getAvailability()) {
 			view.showMessage("Activo");
 		} else if (calculate.getDataCenter().getCurrentDate()
-				.isBefore(user.getTicketHistory()[ticketNumber].getRoutes()[Value.ENTRY.getValue()]
-						.getStops()[Value.ENTRY.getValue()])
+				.isBefore(ticket.getRoutes()[Value.ENTRY.getValue()].getStops()[Value.ENTRY.getValue()])
 				|| calculate.getDataCenter().getCurrentDate()
-						.isEqual(user.getTicketHistory()[ticketNumber].getRoutes()[Value.ENTRY.getValue()]
-								.getStops()[Value.ENTRY.getValue()])) {
+						.isEqual(ticket.getRoutes()[Value.ENTRY.getValue()].getStops()[Value.ENTRY.getValue()])) {
 			view.showMessage("Confirmado");
 		} else {
 			view.showMessage("Inactivo");
 		}
-		view.showMessage("");
+		if (!ticket.getOwner().getName().equals(ticket.getBuyer().getName())) {
+			view.showMessage("Comprador: " + ticket.getBuyer().getName());
+		}
 	}
 
-	public void showCreateTicketMenu(VehicleType type, User user) {
+	public void showCreateTicketMenu(User user, User userWallet) {
 		int vehicleNumber = 0;
+		int vehicleTypeInt = 0;
 		int routeNumberEntry = 0;
 		int routeNumberExit = 0;
+		view.showMessage("1. " + VehicleType.AIRPLANE.getUpperCaseName() + "\n2. " + VehicleType.BUS.getUpperCaseName()
+				+ "\n3. " + VehicleType.SHIP.getUpperCaseName() + "\n4. " + VehicleType.TRAVEL_BUS.getUpperCaseName()
+				+ "\n0. Salir");
+		try {
+			vehicleTypeInt = view.readNumber() - 1;
+		} catch (NumberFormatException ex) {
+			vehicleTypeInt = 0;
+			option = -1;
+			view.showMessage("Digite un número entero e intételo de nuevo\n");
+			return;
+		}
+
+		if (vehicleTypeInt == -1 || vehicleTypeInt > 3) {
+			view.showMessage("La operación se ha cancelado");
+			option = -1;
+			return;
+		}
+		VehicleType type = calculate.convertIntToVehicleType(vehicleTypeInt);
 
 		Vehicle[] vehicles = calculate.getDataCenter().getVehicles()[type.getValue()];
 
 		do {
+			calculate.checkVehiclesAvailability(vehicles);
 			view.showMessage("\nDigite el número del " + type.getName() + " para ver más información");
 			view.showMessage("Los " + type.getPluralName() + " disponibles son los siguientes: \n0. Cancelar");
-			calculate.checkVehiclesAvailability(type);
+			calculate.checkVehiclesAvailability(calculate.getDataCenter().getVehicles()[type.getValue()]);
 			for (int i = 0; i < vehicles.length; i++) {
 				if (vehicles[i] != null) {
 					if (vehicles[i].getAvailability()) {
@@ -87,7 +95,6 @@ public class Presenter {
 			routeNumberExit = 0;
 			try {
 				vehicleNumber = view.readNumber() - 1;
-				calculate.checkVehiclesAvailability(type);
 			} catch (NumberFormatException ex) {
 				view.showMessage("Digite un número entero e intételo de nuevo\n");
 				break;
@@ -96,6 +103,7 @@ public class Presenter {
 				option = 0;
 				break;
 			}
+			calculate.checkVehicleAvailability(vehicles[vehicleNumber]);
 			if (vehicles[vehicleNumber] == null) {
 				view.showMessage("El " + type.getName() + " seleccionado es inexistente");
 				option = 1;
@@ -108,8 +116,10 @@ public class Presenter {
 						if (vehicles[vehicleNumber].getRouteSeq().getRoutes()[i].getAvailability()) {
 							view.showMessage("\nRuta " + (i + 1) + "\n"
 									+ vehicles[vehicleNumber].getRouteSeq().getRoutes()[i].getName() + "\nEntrada: "
-									+ vehicles[vehicleNumber].getRouteSeq().getRoutes()[i].getStops()[0] + "\nSalida: "
-									+ vehicles[vehicleNumber].getRouteSeq().getRoutes()[i].getStops()[1]);
+									+ vehicles[vehicleNumber].getRouteSeq().getRoutes()[i].getStops()[Value.ENTRY
+											.getValue()]
+									+ "\nSalida: " + vehicles[vehicleNumber].getRouteSeq().getRoutes()[i]
+											.getStops()[Value.EXIT.getValue()]);
 						}
 					}
 				}
@@ -120,7 +130,6 @@ public class Presenter {
 					view.showMessage("Digite un número entero e intételo de nuevo\n");
 					break;
 				}
-				calculate.checkVehiclesAvailability(type);
 				if (routeNumberEntry == -1) {
 					view.showMessage("Se ha cancelado la operación\n");
 					option = -1;
@@ -131,6 +140,8 @@ public class Presenter {
 					option = -1;
 					break;
 				}
+
+				calculate.checkRouteSequenceAvailability(vehicles[vehicleNumber].getRouteSeq());
 				if (vehicles[vehicleNumber].getRouteSeq().getRoutes()[routeNumberEntry] == null) {
 					view.showMessage("La ruta seleccionada no existe");
 					option = -1;
@@ -150,7 +161,7 @@ public class Presenter {
 						option = -1;
 						break;
 					}
-					calculate.checkVehiclesAvailability(type);
+					calculate.checkRouteSequenceAvailability(vehicles[vehicleNumber].getRouteSeq());
 					if (routeNumberExit < routeNumberEntry) {
 						view.showMessage("La entrada no puede ir después de la salida");
 						option = 1;
@@ -161,11 +172,10 @@ public class Presenter {
 						view.showMessage("La ruta seleccionada no está disponible");
 						option = 1;
 					} else {
-						if (calculate.isEnoughMoney(user, vehicles[vehicleNumber])) {
-							calculate.createTicket(user, vehicles[vehicleNumber],
+						if (calculate.isEnoughMoney(userWallet, vehicles[vehicleNumber])) {
+							calculate.createTicket(user, userWallet, vehicles[vehicleNumber],
 									new Route[] { vehicles[vehicleNumber].getRouteSeq().getRoutes()[routeNumberEntry],
 											vehicles[vehicleNumber].getRouteSeq().getRoutes()[routeNumberExit] });
-
 							view.showMessage("Gracias por usar nuestros servicios!\n");
 							int ticketNumber = 0;
 							for (int i = 0; i < user.getTicketHistory().length; i++) {
@@ -174,7 +184,7 @@ public class Presenter {
 									break;
 								}
 							}
-							showBill(user, ticketNumber);
+							showBill(user, user.getTicketHistory()[ticketNumber]);
 							option = 0;
 						} else {
 							view.showMessage("Su saldo no es suficiente para realizar la transacción\n");
@@ -275,7 +285,7 @@ public class Presenter {
 				routeNumber = view.readNumber() - 1;
 			} catch (NumberFormatException ex) {
 				option = -1;
-				view.showMessage("Digite un número entero e intételo de nuevo, por favor, inténtelo de nuevo\n");
+				view.showMessage("Digite un número entero e intételo de nuevo\n");
 				continue;
 			}
 			if (routeNumber == -1) {
@@ -285,8 +295,10 @@ public class Presenter {
 			try {
 				for (int i = 0; i < company.getRouteSeqs()[routeNumber].getRoutes().length; i++) {
 					view.showMessage(company.getRouteSeqs()[routeNumber].getRoutes()[i].getName() + "\nInicio: "
-							+ company.getRouteSeqs()[routeNumber].getRoutes()[i].getStops()[0] + "\nFin: "
-							+ company.getRouteSeqs()[routeNumber].getRoutes()[i].getStops()[1] + "\n");
+							+ company.getRouteSeqs()[routeNumber].getRoutes()[i].getStops()[Value.ENTRY.getValue()]
+							+ "\nFin: "
+							+ company.getRouteSeqs()[routeNumber].getRoutes()[i].getStops()[Value.EXIT.getValue()]
+							+ "\n");
 				}
 			} catch (NullPointerException ex) {
 				view.showMessage("La ruta seleccionada es inexistente, por favor, inténtelo de nuevo");
@@ -317,7 +329,7 @@ public class Presenter {
 		String unavailable = "No disponible";
 
 		do {
-			calculate.checkVehiclesAvailability(type);
+			calculate.checkVehiclesAvailability(vehicles);
 			view.showMessage("Seleccione un " + type.getName() + "\n0. Salir");
 			for (int i = 0; i < vehicles.length; i++) {
 				if (vehicles[i] != null) {
@@ -484,13 +496,13 @@ public class Presenter {
 				view.showMessage("Ingrese su contraseña");
 				password = view.readData();
 				if (calculate.logIn(Value.USER, name, password)) {
-					int userNumber = calculate.searchUserArrayNumber(Value.USER, name, password);
+					int userNumber = calculate.searchUserArrayNumber(Value.USER, name);
 					User currentUser = calculate.getDataCenter().getUsers()[Value.USER.getValue()][userNumber];
 					view.showMessage("Su número de usuario es: " + userNumber);
 					calculate.checkSubscriptionsPayment(currentUser);
 					do {
 						view.showMessage(
-								"¿Qué desea hacer?\n1. Comprar ticket\n2. Suscripciones\n3. Agregar fondos a mi billetera\n4. Ver historial y estado de mis tickets\n5. Perfil\n0. Cerrar sesión");
+								"¿Qué desea hacer?\n1. Comprar ticket\n2. Suscripciones\n3. Mi billetera\n4. Ver historial y estado de mis tickets\n5. Familia y Amigos\n6. Perfil\n0. Cerrar sesión");
 						try {
 							option = view.readNumber();
 						} catch (NumberFormatException ex) {
@@ -504,39 +516,8 @@ public class Presenter {
 						}
 						switch (option) {
 						case 1:
-							view.showMessage("¿Para qué tipo de vehículo desea su reserva?\n1. "
-									+ VehicleType.AIRPLANE.getUpperCaseName() + "\n2. "
-									+ VehicleType.BUS.getUpperCaseName() + "\n3. " + VehicleType.SHIP.getUpperCaseName()
-									+ "\n4. " + VehicleType.TRAVEL_BUS.getUpperCaseName() + "\n0. Salir");
-							try {
-								vehicleTypeInt = view.readNumber() - 1;
-							} catch (NumberFormatException ex) {
-								vehicleTypeInt = 0;
-								option = -1;
-								view.showMessage("Digite un número entero e intételo de nuevo\n");
-								break;
-							}
-							if (vehicleTypeInt != -1 && vehicleTypeInt < 5) {
-								switch (calculate.convertIntToVehicleType(vehicleTypeInt)) {
-								case AIRPLANE:
-									showCreateTicketMenu(VehicleType.AIRPLANE, currentUser);
-									break;
-								case BUS:
-									showCreateTicketMenu(VehicleType.BUS, currentUser);
-									break;
-								case SHIP:
-									showCreateTicketMenu(VehicleType.SHIP, currentUser);
-									break;
-								case TRAVEL_BUS:
-									showCreateTicketMenu(VehicleType.TRAVEL_BUS, currentUser);
-									break;
-								default:
-									view.showCurrentLineMessage("Opción inválida\n");
-								}
-							} else {
-								view.showMessage("La operación se ha cancelado\n");
-								break;
-							}
+							view.showMessage("¿Para qué tipo de vehículo desea su reserva?");
+							showCreateTicketMenu(currentUser, currentUser);
 							break;
 						case 2:
 							view.showMessage(
@@ -677,13 +658,114 @@ public class Presenter {
 							view.showMessage("Su historial de compras es el siguiente: ");
 							for (int i = 0; i < currentUser.getTicketHistory().length; i++) {
 								if (currentUser.getTicketHistory()[i] != null) {
-									showBill(currentUser, i);
+									calculate.checkRouteSequenceAvailability(
+											currentUser.getTicketHistory()[i].getVehicle().getRouteSeq());
+									showBill(currentUser, currentUser.getTicketHistory()[i]);
 								}
 							}
 							view.showMessage("Digite cualquier tecla para volver");
 							view.readData();
 							break;
 						case 5:
+							view.showMessage(
+									"Familiares y Amigos\n1. Ver usuarios\n2. Agregar nuevo usuario\n0. Salir");
+							try {
+								option = view.readNumber();
+							} catch (NumberFormatException ex) {
+								option = -1;
+								view.showMessage("Digite un número entero e intételo de nuevo\n");
+							}
+							if (option == 0) {
+								option = -1;
+								break;
+							}
+							switch (option) {
+							case 1:
+								view.showMessage("Digite el número de un usuario para ver más opciones");
+								for (int i = 0; i < currentUser.getRelationships().length; i++) {
+									if (currentUser.getRelationships()[i] != null) {
+										view.showMessage(
+												(i + 1) + ". Nombre: " + currentUser.getRelationships()[i].getName());
+									}
+								}
+								view.showMessage("0. Salir");
+								int relationshipUserNumber = 0;
+								try {
+									relationshipUserNumber = view.readNumber() - 1;
+								} catch (NumberFormatException ex) {
+									option = -1;
+									view.showMessage("Digite un número entero e intételo de nuevo\n");
+								}
+								if (relationshipUserNumber == -1
+										|| relationshipUserNumber >= currentUser.getRelationships().length) {
+									option = -1;
+									break;
+								}
+								User relationship = currentUser.getRelationships()[relationshipUserNumber];
+								if (relationship == null) {
+									view.showMessage("Opción Inválida, por favor, inténtelo de nuevo");
+									option = -1;
+									break;
+								}
+								view.showMessage("Opciones para " + relationship.getName()
+										+ "\n1. Comprar ticket\n2. Eliminar de mi lista\n0. Salir");
+								try {
+									option = view.readNumber();
+								} catch (NumberFormatException ex) {
+									option = -1;
+									view.showMessage("Digite un número entero e intételo de nuevo\n");
+								}
+								if (option == 0) {
+									option = -1;
+									break;
+								}
+								switch (option) {
+								case 1:
+									showCreateTicketMenu(relationship, currentUser);
+									break;
+								case 2:
+									view.showMessage("Está seguro de que desea eliminar el usuario "
+											+ relationship.getName() + " de su lista de amigos?\n1. Sí 0. No");
+									try {
+										option = view.readNumber();
+									} catch (NumberFormatException ex) {
+										option = -1;
+										view.showMessage("Digite un número entero e intételo de nuevo\n");
+									}
+									if (option == 0) {
+										view.showMessage("Se ha cancelado la operación");
+									}
+									if (option == 1) {
+										currentUser.getRelationships()[relationshipUserNumber] = null;
+										view.showMessage("Se ha eliminado al usuario de su lista de amigos");
+									} else {
+										view.showMessage("Digite un número entero válido");
+									}
+									option = -1;
+									break;
+								default:
+									break;
+								}
+
+								break;
+							case 2:
+								view.showMessage("Digite el nombre del usuario a agregar");
+								String userRelationshipName = view.readData();
+								if (!calculate.isUserAvailable(userRelationshipName)) {
+									calculate.createRelationship(currentUser,
+											calculate.getDataCenter().getUsers()[Value.USER.getValue()][calculate
+													.searchUserArrayNumber(Value.USER, userRelationshipName)]);
+									view.showMessage(
+											"Se ha añadido a su lista de amigos el usuario " + userRelationshipName);
+									option = -1;
+								}
+								break;
+							default:
+								view.showMessage("Digite un número válido e inténtelo de nuevo");
+								break;
+							}
+							break;
+						case 6:
 							if (userNumber == 0) {
 								view.showMessage("El administrador no puede cambiar sus credenciales");
 								option = -1;
@@ -827,7 +909,7 @@ public class Presenter {
 					password = view.readData();
 					if (calculate.logIn(Value.COMPANY, name, password)) {
 						Company currentCompany = (Company) calculate.getDataCenter().getUsers()[Value.COMPANY
-								.getValue()][calculate.searchUserArrayNumber(Value.COMPANY, name, password)];
+								.getValue()][calculate.searchUserArrayNumber(Value.COMPANY, name)];
 						do {
 							view.showMessage(
 									"¿Qué desea hacer?\n1. Datos de mis vehículos\n2. Crear nuevo vehículo\n3. Crear nueva ruta\n4. Editar vehículo existente\n5. Borrar ruta\n0. Cerrar sesión");
@@ -1210,10 +1292,11 @@ public class Presenter {
 						view.showMessage(
 								"La empresa se ha creado correctamente\n¿Cuál es la descripción de su empresa? (Esto se puede modificar en el futuro)");
 						String description = view.readData();
-						calculate.editCompanyDescription(
-								(Company) calculate.getDataCenter().getUsers()[Value.COMPANY.getValue()][calculate
-										.searchUserArrayNumber(Value.COMPANY, name, password)],
-								description);
+						calculate
+								.editCompanyDescription(
+										(Company) calculate.getDataCenter().getUsers()[Value.COMPANY
+												.getValue()][calculate.searchUserArrayNumber(Value.COMPANY, name)],
+										description);
 					} else {
 						view.showMessage("El nombre de usuario ya está en uso");
 						option = -1;

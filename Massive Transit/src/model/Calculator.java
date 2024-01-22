@@ -1,10 +1,10 @@
 package model;
 
 import java.time.LocalDateTime;
-import java.time.LocalDate;
 import java.time.LocalTime;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 
 public class Calculator {
 	private DataCenter dataCenter;
@@ -17,8 +17,8 @@ public class Calculator {
 		user.setWallet(money + user.getWallet());
 	}
 
-	public void deleteRelationship(User user, Value type, int relationshipArrayNumber) {
-		user.deleteRelationship(type, relationshipArrayNumber);
+	public void deleteRelationship(User user, int relationshipArrayNumber) {
+		user.deleteRelationship(relationshipArrayNumber);
 	}
 
 	public void deleteSubscription(User user, int subscriptionArrayNumber) {
@@ -74,6 +74,46 @@ public class Calculator {
 		vehicle.setPrice(ticketPrice);
 	}
 
+	public void checkRouteSequenceAvailability(RouteSequence routeSeq) {
+		boolean isLaboralDay = false;
+		for (int i = 0; i < routeSeq.getLaboralDays().length; i++) {
+			DayOfWeek laboralDay = routeSeq.getLaboralDays()[i];
+			if (laboralDay != null) {
+				if (laboralDay.equals(dataCenter.getCurrentDate().getDayOfWeek())) {
+					routeSeq.setAvailability(true);
+					isLaboralDay = true;
+					break;
+				}
+			}
+		}
+
+		if (!isLaboralDay) {
+			routeSeq.setAvailability(false);
+		}
+
+		boolean isAnyRouteAvailable = false;
+		for (Route route : routeSeq.getRoutes()) {
+			checkRouteAvailability(route);
+			if (route.getAvailability()) {
+				isAnyRouteAvailable = true;
+			}
+		}
+
+		if (!isAnyRouteAvailable) {
+			routeSeq.setAvailability(false);
+		}
+	}
+
+	public void checkRouteAvailability(Route route) {
+		LocalDateTime currentDate = dataCenter.getCurrentDate();
+		if (currentDate.isAfter(route.getStops()[Value.ENTRY.getValue()])
+				|| currentDate.isEqual(route.getStops()[Value.ENTRY.getValue()])) {
+			route.setAvailability(false);
+			return;
+		}
+		route.setAvailability(true);
+	}
+
 	public void checkSubscriptionsPayment(User user) {
 		for (Subscription subscription : user.getSubscriptions()) {
 			if (subscription != null) {
@@ -82,7 +122,7 @@ public class Calculator {
 								// Tomo solo 5 minutos pero se puede escribir para que sea 15 minutos antes, etc
 								.getStops()[0].plusMinutes(5).isAfter(dataCenter.getCurrentDate())
 						&& isEnoughMoney(user, subscription.getVehicle())) {
-					createTicket(user, subscription.getVehicle(), subscription.getRoutes());
+					createTicket(user, user, subscription.getVehicle(), subscription.getRoutes());
 				}
 			}
 		}
@@ -177,56 +217,48 @@ public class Calculator {
 		}
 	}
 
-	public void checkVehiclesAvailability(VehicleType vehicleType) {
+	public void checkVehicleAvailability(Vehicle vehicle) {
 		LocalDateTime currentDate = dataCenter.getCurrentDate();
 		boolean isCapacityAvailable = false;
-		boolean isRouteAvailable = false;
+		refreshRouteSeq(vehicle.getRouteSeq(), currentDate.toLocalDate());
 
-		for (Vehicle vehicle : dataCenter.getVehicles()[vehicleType.getValue()]) {
+		for (Ticket ticket : vehicle.getTickets()) {
+			if (ticket != null) {
+				if (currentDate.isAfter(ticket.getRoutes()[Value.ENTRY.getValue()].getStops()[Value.ENTRY.getValue()])
+						|| currentDate
+								.isAfter(ticket.getRoutes()[Value.EXIT.getValue()].getStops()[Value.EXIT.getValue()])) {
+					setUsersTicketAvailability(ticket, false);
+					vehicle.setCurrentCapacity(vehicle.getCapacity()[Value.CURRENT.getValue()] - 1);
+				} else if (!ticket.getAvailability()
+						&& (ticket.getRoutes()[Value.ENTRY.getValue()].getStops()[Value.ENTRY.getValue()]
+								.isAfter(currentDate)
+								|| ticket.getRoutes()[Value.ENTRY.getValue()].getStops()[Value.ENTRY.getValue()]
+										.isAfter(currentDate))) {
+					ticket.setAvailability(true);
+					setUsersTicketAvailability(ticket, true);
+					vehicle.setCurrentCapacity(vehicle.getCapacity()[Value.CURRENT.getValue()] + 1);
+				}
+			}
+		}
+
+		if (vehicle.getCapacity()[Value.MAXIMUM.getValue()] <= vehicle.getCapacity()[Value.CURRENT.getValue()]) {
+			isCapacityAvailable = false;
+		} else {
+			isCapacityAvailable = true;
+		}
+
+		if (isCapacityAvailable && vehicle.getRouteSeq().getAvailability()) {
+			vehicle.setAvailability(true);
+			return;
+		}
+		vehicle.setAvailability(false);
+
+	}
+
+	public void checkVehiclesAvailability(Vehicle[] vehicles) {
+		for (Vehicle vehicle : vehicles) {
 			if (vehicle != null) {
-				for (Route route : vehicle.getRouteSeq().getRoutes()) {
-					if (route != null) {
-						if (currentDate.isAfter(route.getStops()[0]) || currentDate.isEqual(route.getStops()[0])) {
-							route.setAvailability(false);
-						} else {
-							route.setAvailability(true);
-							isRouteAvailable = true;
-						}
-					}
-				}
-
-				for (Ticket ticket : vehicle.getTickets()) {
-					if (ticket != null) {
-						if (currentDate
-								.isAfter(ticket.getRoutes()[Value.ENTRY.getValue()].getStops()[Value.ENTRY.getValue()])
-								|| currentDate.isAfter(
-										ticket.getRoutes()[Value.EXIT.getValue()].getStops()[Value.EXIT.getValue()])) {
-							setUsersTicketAvailability(ticket, false);
-							vehicle.setCurrentCapacity(vehicle.getCapacity()[Value.CURRENT.getValue()] - 1);
-						} else if (!ticket.getAvailability()
-								&& (ticket.getRoutes()[Value.ENTRY.getValue()].getStops()[Value.ENTRY.getValue()]
-										.isAfter(currentDate)
-										|| ticket.getRoutes()[Value.ENTRY.getValue()].getStops()[Value.ENTRY.getValue()]
-												.isAfter(currentDate))) {
-							ticket.setAvailability(true);
-							setUsersTicketAvailability(ticket, true);
-							vehicle.setCurrentCapacity(vehicle.getCapacity()[Value.CURRENT.getValue()] + 1);
-						}
-					}
-				}
-
-				if (vehicle.getCapacity()[Value.MAXIMUM.getValue()] <= vehicle.getCapacity()[Value.CURRENT
-						.getValue()]) {
-					isCapacityAvailable = false;
-				} else {
-					isCapacityAvailable = true;
-				}
-
-				if (isCapacityAvailable && isRouteAvailable) {
-					vehicle.setAvailability(true);
-				} else {
-					vehicle.setAvailability(false);
-				}
+				checkVehicleAvailability(vehicle);
 			}
 		}
 	}
@@ -246,8 +278,8 @@ public class Calculator {
 		}
 	}
 
-	public void createRelationship(Value type, User user, User relationship) {
-		user.addRelationship(relationship, type);
+	public void createRelationship(User user, User relationship) {
+		user.addRelationship(relationship);
 	}
 
 	public void createRouteSeq(Company owner, String name, String initialTime, DayOfWeek[] laboralDays, int stopsNumber,
@@ -269,7 +301,7 @@ public class Calculator {
 					new LocalDateTime[] { stops[i][Value.ENTRY.getValue()], stops[i][Value.EXIT.getValue()] },
 					new String[] { i + "", (i + 1) + "" });
 		}
-		RouteSequence routeSeq = new RouteSequence(name, owner, routes);
+		RouteSequence routeSeq = new RouteSequence(name, owner, laboralDays, routes);
 		dataCenter.addRouteSeq(routeSeq);
 		owner.addRouteSeq(routeSeq);
 	}
@@ -278,18 +310,21 @@ public class Calculator {
 		user.addSubscription(new Subscription(dayOfWeek, vehicle, routes));
 	}
 
-	public void createTicket(User user, Vehicle vehicle, Route[] routes) {
-		if (isEnoughMoney(user, vehicle)) {
-			user.setWallet(user.getWallet() - vehicle.getPrice());
-			Ticket ticket = new Ticket(user, vehicle,
+	public void createTicket(User owner, User buyer, Vehicle vehicle, Route[] routes) {
+		if (isEnoughMoney(buyer, vehicle)) {
+			buyer.setWallet(owner.getWallet() - vehicle.getPrice());
+			Ticket ticket = new Ticket(owner, buyer, vehicle,
 					new Route[] { new Route(routes[Value.ENTRY.getValue()]), new Route(routes[Value.EXIT.getValue()]) },
 					vehicle.getPrice());
-			// String name = dataCenter.getCurrentDate().getYear() + "_" + userNumber + "_"
-			// + vehicleType.getValue() + vehicleNumber + routePositionEntry +
-			// routePositionExit;
-			ticket.setName("DEFAULT NAME");
+			String name = dataCenter.getCurrentDate().getYear() + "_" + "_" + vehicle.getVehicleType().getValue()
+					+ ticket.getRoutes()[Value.ENTRY.getValue()].getStops()[Value.ENTRY.getValue()].getDayOfMonth()
+					+ ticket.getRoutes()[Value.ENTRY.getValue()].getStops()[Value.ENTRY.getValue()].getMonth()
+					+ ticket.getRoutes()[Value.ENTRY.getValue()].getStops()[Value.ENTRY.getValue()].toLocalTime()
+					+ ticket.getRoutes()[Value.EXIT.getValue()].getStops()[Value.EXIT.getValue()].toLocalTime();
+			ticket.setName(name);
 			vehicle.addTicket(ticket);
-			user.addTicket(ticket);
+			owner.addTicket(ticket);
+			buyer.addTicket(ticket);
 		}
 	}
 
@@ -399,11 +434,22 @@ public class Calculator {
 		return daysOfWeek;
 	}
 
-	public int searchUserArrayNumber(Value type, String name, String password) {
+	public void refreshRouteSeq(RouteSequence routeSeq, LocalDate currentDate) {
+		if (routeSeq.getRoutes()[0].getStops()[Value.ENTRY.getValue()].getDayOfMonth() != currentDate.getDayOfMonth()) {
+			for (Route route : routeSeq.getRoutes()) {
+				route.getStops()[Value.ENTRY.getValue()] = LocalDateTime.of(currentDate,
+						route.getStops()[Value.ENTRY.getValue()].toLocalTime());
+				route.getStops()[Value.EXIT.getValue()] = LocalDateTime.of(currentDate,
+						route.getStops()[Value.EXIT.getValue()].toLocalTime());
+			}
+		}
+		checkRouteSequenceAvailability(routeSeq);
+	}
+
+	public int searchUserArrayNumber(Value type, String name) {
 		for (int i = 0; i < dataCenter.getUsers()[type.getValue()].length; i++) {
 			if (dataCenter.getUsers()[type.getValue()][i] != null) {
-				if (dataCenter.getUsers()[type.getValue()][i].getName().equals(name)
-						&& dataCenter.getUsers()[type.getValue()][i].getPassword().equals(password)) {
+				if (dataCenter.getUsers()[type.getValue()][i].getName().equals(name)) {
 					return i;
 				}
 			}
