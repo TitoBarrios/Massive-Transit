@@ -1,19 +1,31 @@
 package model;
 
 import java.time.DayOfWeek;
+import java.util.Arrays;
 
 public class RouteSequence {
-	DayOfWeek[] laboralDays;
-	Route[] routes;
-	Company owner;
-	String name;
-	boolean availability;
+	private DayOfWeek[] laboralDays;
+	private Route[] routes;
+	private Coupon[] applicableCoupons;
+	private Company owner;
+	private String name;
+	private boolean isAvailable;
 
 	public RouteSequence(String name, Company owner, DayOfWeek[] laboralDays, Route[] routes) {
 		this.name = name;
 		this.owner = owner;
 		this.laboralDays = laboralDays;
 		this.routes = routes;
+		applicableCoupons = new Coupon[100];
+	}
+
+	public void addCoupon(Coupon coupon) {
+		for (int i = 0; i < applicableCoupons.length; i++) {
+			if (applicableCoupons[i] == null) {
+				applicableCoupons[i] = coupon;
+				break;
+			}
+		}
 	}
 
 	public void editRoute(Route newRoute, int routeNumber) {
@@ -36,6 +48,14 @@ public class RouteSequence {
 		this.routes = routes;
 	}
 
+	public Coupon[] getApplicableCoupons() {
+		return applicableCoupons;
+	}
+
+	public void setApplicableCoupons(Coupon[] applicableCoupons) {
+		this.applicableCoupons = applicableCoupons;
+	}
+
 	public Company getOwner() {
 		return owner;
 	}
@@ -52,11 +72,18 @@ public class RouteSequence {
 		this.name = name;
 	}
 
-	public boolean getAvailability() {
-		return availability;
+	public boolean getIsAvailable() {
+		return isAvailable;
 	}
 
-	public void setAvailability(boolean availability) {
-		this.availability = availability;
+	public void setAvailable(boolean isAvailable) {
+		this.isAvailable = isAvailable;
+	}
+
+	@Override
+	public String toString() {
+		return "RouteSequence [laboralDays=" + Arrays.toString(laboralDays) + ", routes=" + Arrays.toString(routes)
+				+ ", applicableCoupons=" + Arrays.toString(applicableCoupons) + ", owner=" + owner + ", name=" + name
+				+ ", isAvailable=" + isAvailable + "]";
 	}
 }

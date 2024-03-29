@@ -1,10 +1,18 @@
 package model;
 
+import java.util.Arrays;
+
 public class User {
+	
+	public static enum Type{
+		USER, COMPANY;
+	}
+	
 	public static final int MAX_TICKETS = 50;
 	public static final int MAX_SUBSCRIPTIONS = 30;
 	public static final int MAX_RELATIONSHIPS = 50;
 
+	private Type type;
 	private User[] relationships;
 	private Subscription[] subscriptions;
 	private Ticket[] ticketHistory;
@@ -54,6 +62,14 @@ public class User {
 	public void deleteSubscription(int subscriptionArrayNumber) {
 		subscriptions[subscriptionArrayNumber] = null;
 	}
+	
+	public Type getType() {
+		return type;
+	}
+	
+	public void setType(Type type) {
+		this.type = type;
+	}
 
 	public User[] getRelationships() {
 		return relationships;
@@ -101,5 +117,12 @@ public class User {
 
 	public int getWallet() {
 		return wallet;
+	}
+
+	@Override
+	public String toString() {
+		return "User [type=" + type + ", relationships=" + Arrays.toString(relationships) + ", subscriptions="
+				+ Arrays.toString(subscriptions) + ", ticketHistory=" + Arrays.toString(ticketHistory) + ", name="
+				+ name + ", password=" + password + ", wallet=" + wallet + "]";
 	}
 }

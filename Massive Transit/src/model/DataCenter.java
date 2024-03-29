@@ -1,8 +1,11 @@
 package model;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 public class DataCenter {
+
+	public static final int MAX_COUPONS = 100;
 	public static final int MAX_ROUTE_SEQS = 30;
 	public static final int MAX_USERS = 100;
 	public static final int MAX_USERS_TYPE = 2;
@@ -12,28 +15,30 @@ public class DataCenter {
 	private User[][] users;
 	private Vehicle[][] vehicles;
 	private RouteSequence[] routeSeqs;
+	private Coupon[] coupons;
 	private LocalDateTime currentDate;
 
 	public DataCenter() {
 		users = new User[MAX_USERS_TYPE][MAX_USERS];
 		vehicles = new Vehicle[MAX_VEHICLES_X][MAX_VEHICLES_Y];
 		routeSeqs = new RouteSequence[MAX_ROUTE_SEQS];
+		coupons = new Coupon[MAX_COUPONS];
 		currentDate = LocalDateTime.now();
 	}
 
-	public void addUser(Value type, User user) {
-		for (int i = 0; i < users[type.getValue()].length; i++) {
-			if (users[type.getValue()][i] == null) {
-				users[type.getValue()][i] = user;
+	public void addUser(User.Type type, User user) {
+		for (int i = 0; i < users[type.ordinal()].length; i++) {
+			if (users[type.ordinal()][i] == null) {
+				users[type.ordinal()][i] = user;
 				break;
 			}
 		}
 	}
 
-	public void addVehicle(VehicleType type, Vehicle vehicle) {
-		for (int i = 0; i < vehicles[type.getValue()].length; i++) {
-			if (vehicles[type.getValue()][i] == null) {
-				vehicles[type.getValue()][i] = vehicle;
+	public void addVehicle(Vehicle.Type type, Vehicle vehicle) {
+		for (int i = 0; i < vehicles[type.ordinal()].length; i++) {
+			if (vehicles[type.ordinal()][i] == null) {
+				vehicles[type.ordinal()][i] = vehicle;
 				break;
 			}
 		}
@@ -43,6 +48,15 @@ public class DataCenter {
 		for (int i = 0; i < routeSeqs.length; i++) {
 			if (routeSeqs[i] == null) {
 				routeSeqs[i] = routeSeq;
+				break;
+			}
+		}
+	}
+
+	public void addCoupon(Coupon coupon) {
+		for (int i = 0; i < coupons.length; i++) {
+			if (coupons[i] == null) {
+				coupons[i] = coupon;
 				break;
 			}
 		}
@@ -72,11 +86,27 @@ public class DataCenter {
 		this.routeSeqs = routeSeqs;
 	}
 
+
+	public Coupon[] getCoupons() {
+		return coupons;
+	}
+
+	public void setCoupons(Coupon[] coupons) {
+		this.coupons = coupons;
+	}
+
 	public LocalDateTime getCurrentDate() {
 		return currentDate;
 	}
 
 	public void setCurrentDate(LocalDateTime currentDate) {
 		this.currentDate = currentDate;
+	}
+	
+	@Override
+	public String toString() {
+		return "DataCenter [users=" + Arrays.toString(users) + ", vehicles=" + Arrays.toString(vehicles)
+				+ ", routeSeqs=" + Arrays.toString(routeSeqs) + ", coupons=" + Arrays.toString(coupons)
+				+ ", currentDate=" + currentDate + "]";
 	}
 }

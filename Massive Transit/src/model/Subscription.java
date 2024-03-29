@@ -1,6 +1,7 @@
 package model;
 
 import java.time.DayOfWeek;
+import java.util.Arrays;
 
 public class Subscription {
 	private Route[] routes;
@@ -35,5 +36,11 @@ public class Subscription {
 
 	public void setRoutes(Route[] routes) {
 		this.routes = routes;
+	}
+
+	@Override
+	public String toString() {
+		return "Subscription [routes=" + Arrays.toString(routes) + ", dayOfWeek=" + dayOfWeek + ", vehicle=" + vehicle
+				+ "]";
 	}
 }

@@ -1,17 +1,26 @@
 package model;
 
+import java.util.Arrays;
+
 public class Ticket {
+
+	public static enum PriceType{
+		PAID, REAL;
+	}
+
 	private Route[] routes;
 	private User buyer;
 	private User owner;
 	private Vehicle vehicle;
+	private RedeemedCoupon coupon;
 	private String name;
-	private int price;
-	private boolean availability;
+	private int[] price;
+	private boolean isAvailable;
 
-	public Ticket(User owner, User buyer, Vehicle vehicle, Route[] routes, int price) {
+	public Ticket(User owner, User buyer, RedeemedCoupon coupon, Vehicle vehicle, Route[] routes, int[] price) {
 		this.owner = owner;
 		this.buyer = buyer;
+		this.coupon = coupon;
 		this.routes = routes;
 		this.price = price;
 		this.vehicle = vehicle;
@@ -48,6 +57,14 @@ public class Ticket {
 	public void setVehicle(Vehicle vehicle) {
 		this.vehicle = vehicle;
 	}
+	
+	public RedeemedCoupon getCoupon() {
+		return coupon;
+	}
+	
+	public void setCoupon(RedeemedCoupon coupon) {
+		this.coupon = coupon;
+	}
 
 	public String getName() {
 		return name;
@@ -57,19 +74,26 @@ public class Ticket {
 		this.name = name;
 	}
 
-	public int getPrice() {
+	public int[] getPrice() {
 		return price;
 	}
 
-	public void setPrice(int price) {
+	public void setPrice(int[] price) {
 		this.price = price;
 	}
 
-	public boolean getAvailability() {
-		return availability;
+	public boolean getIsAvailable() {
+		return isAvailable;
 	}
 
-	public void setAvailability(boolean availability) {
-		this.availability = availability;
+	public void setAvailable(boolean isAvailable) {
+		this.isAvailable = isAvailable;
+	}
+
+	@Override
+	public String toString() {
+		return "Ticket [routes=" + Arrays.toString(routes) + ", buyer=" + buyer + ", owner=" + owner + ", vehicle="
+				+ vehicle + ", coupon=" + coupon + ", name=" + name + ", price=" + price + ", isAvailable="
+				+ isAvailable + "]";
 	}
 }

@@ -1,27 +1,59 @@
 package model;
 
+import java.util.Arrays;
+
 public abstract class Vehicle {
-	private final static int MAX_CAPACITIES = 2;
+
+	public static enum Type {
+		AIRPLANE("avión", "aviones", "Avión"), BUS("bus", "buses", "Bus"), SHIP("barco", "barcos", "Barco"),
+		TRAVEL_BUS("bus de viaje", "buses de viaje", "Bus de Viaje");
+
+		private Type(String name, String pluralName, String upperCaseName) {
+			this.name = name;
+			this.pluralName = pluralName;
+			this.upperCaseName = upperCaseName;
+		}
+
+		private String name;
+		private String pluralName;
+		private String upperCaseName;
+
+		public String getName() {
+			return name;
+		}
+
+		public String getPluralName() {
+			return pluralName;
+		}
+
+		public String getUpperCaseName() {
+			return upperCaseName;
+		}
+	}
+
 	private final static int REVENUE_Y = 2;
 	private final static int STATISTICS_TYPES = 4;
+	private final static int MAX_COUPONS = 20;
 	private final static int MAX_TICKETS = 200;
+	private final static int MAX_CAPACITY_X = 2;
 
-	private VehicleType vehicleType;
+	private Type type;
 	private int[][] revenue;
 	private Ticket[] tickets;
+	private Coupon[] applicableCoupons;
 	private int[] capacity;
 	private Company company;
 	private RouteSequence routeSeq;
 	private String plate;
 	private int price;
-	private boolean availability;
+	private boolean isAvailable;
 
-	public Vehicle(VehicleType vehicleType, Company company, String plate, RouteSequence routeSeq, int price,
-			int capacity) {
-		this.vehicleType = vehicleType;
+	public Vehicle(Type type, Company company, String plate, RouteSequence routeSeq, int price, int capacity) {
+		this.type = type;
 		revenue = new int[STATISTICS_TYPES][REVENUE_Y];
 		tickets = new Ticket[MAX_TICKETS];
-		this.capacity = new int[MAX_CAPACITIES];
+		applicableCoupons = new Coupon[MAX_COUPONS];
+		this.capacity = new int[MAX_CAPACITY_X];
 		this.capacity[Value.MAXIMUM.getValue()] = capacity;
 		this.company = company;
 		this.routeSeq = routeSeq;
@@ -38,6 +70,15 @@ public abstract class Vehicle {
 		}
 	}
 
+	public void addCoupon(Coupon coupon) {
+		for(int i = 0; i < applicableCoupons.length; i++){
+			if(applicableCoupons[i] == null){
+				applicableCoupons[i] = coupon;
+				break;
+			}
+		}
+	}
+
 	public void deleteTicket(int ticketPosition) {
 		tickets[ticketPosition] = null;
 	}
@@ -46,8 +87,8 @@ public abstract class Vehicle {
 		this.capacity[Value.CURRENT.getValue()] = currentCapacity;
 	}
 
-	public VehicleType getVehicleType() {
-		return vehicleType;
+	public Type getType() {
+		return type;
 	}
 
 	public int[][] getRevenue() {
@@ -64,6 +105,14 @@ public abstract class Vehicle {
 
 	public void setTickets(Ticket[] tickets) {
 		this.tickets = tickets;
+	}
+
+	public Coupon[] getApplicableCoupons() {
+		return applicableCoupons;
+	}
+
+	public void setApplicableCoupons(Coupon[] applicableCoupons) {
+		this.applicableCoupons = applicableCoupons;
 	}
 
 	public int[] getCapacity() {
@@ -106,11 +155,19 @@ public abstract class Vehicle {
 		this.price = price;
 	}
 
-	public boolean getAvailability() {
-		return availability;
+	public boolean getIsAvailable() {
+		return isAvailable;
 	}
 
-	public void setAvailability(boolean availability) {
-		this.availability = availability;
+	public void setAvailable(boolean isAvailable) {
+		this.isAvailable = isAvailable;
+	}
+
+	@Override
+	public String toString() {
+		return "Vehicle [type=" + type + ", revenue=" + Arrays.toString(revenue) + ", tickets="
+				+ Arrays.toString(tickets) + ", applicableCoupons=" + Arrays.toString(applicableCoupons) + ", capacity="
+				+ Arrays.toString(capacity) + ", company=" + company + ", routeSeq=" + routeSeq + ", plate=" + plate
+				+ ", price=" + price + ", isAvailable=" + isAvailable + "]";
 	}
 }

@@ -1,12 +1,12 @@
 package model;
 
 public class Ship extends Vehicle {
-	private Product[] catalogue;
+//	private Product[] catalogue;
 
 	public Ship(Company company, String plate, RouteSequence routeSeq, int price, int capacity) {
-		super(VehicleType.SHIP, company, plate, routeSeq, price, capacity);
+		super(Type.SHIP, company, plate, routeSeq, price, capacity);
 	}
-
+/*
 	public void addProduct(Product product) {
 		for (int i = 0; i < catalogue.length; i++) {
 			if (catalogue[i] == null) {
@@ -23,4 +23,5 @@ public class Ship extends Vehicle {
 	public void setCatalogue(Product[] catalogue) {
 		this.catalogue = catalogue;
 	}
+*/
 }
