@@ -20,13 +20,13 @@ public class Presenter {
 	}
 
 	public void defaultValues() {
-		calculate.createUser(User.Type.USER, "administrador", "0000");
-		calculate.createUser(User.Type.COMPANY, "default", "0000");
-		int number = calculate.searchUserArrayNumber(User.Type.COMPANY, "default");
-		calculate.createRouteSeq((Company) calculate.getDataCenter().getUsers()[User.Type.COMPANY.ordinal()][number],
+		calculate.createUser(Account.Type.USER, "administrador", "0000");
+		calculate.createUser(Account.Type.COMPANY, "default", "0000");
+		int number = calculate.searchUserArrayNumber(Account.Type.COMPANY, "default");
+		calculate.createRouteSeq((Company) calculate.getDataCenter().getUsers()[Account.Type.COMPANY.ordinal()][number],
 				"Ruta 1", "22:30:00", calculate.readLaboralDays(new int[] { 8 }), 6, new int[] { 10, 15, 30, 40, 15 });
 		calculate.createVehicle(Vehicle.Type.BUS,
-				(Company) calculate.getDataCenter().getUsers()[User.Type.COMPANY.ordinal()][number], "default",
+				(Company) calculate.getDataCenter().getUsers()[Account.Type.COMPANY.ordinal()][number], "default",
 				calculate.getDataCenter().getRouteSeqs()[0], 3500, 30);
 	}
 
@@ -44,7 +44,7 @@ public class Presenter {
 		}
 	}
 
-	public void showBill(User user, Ticket ticket) {
+	public void showBill(Account user, Ticket ticket) {
 		view.showCurrentLineMessage("Número de Ticket: " + ticket.getName() + "\n"
 				+ ticket.getVehicle().getType().getUpperCaseName() + ": " + ticket.getVehicle().getPlate()
 				+ "\nEmpresa: " + ticket.getVehicle().getCompany().getName() + "\nPrecio pagado: "
@@ -146,7 +146,7 @@ public class Presenter {
 		}
 	}
 
-	public void showCreateTicketMenu(User user, User userWallet) {
+	public void showCreateTicketMenu(Account user, Account userWallet) {
 		int vehicleNumber = 0, vehicleTypeInt = 0, routeNumberEntry = 0, routeNumberExit = 0;
 
 		view.showMessage("1. " + Vehicle.Type.AIRPLANE.getUpperCaseName() + "\n2. "
@@ -348,7 +348,7 @@ public class Presenter {
 		option = 1;
 	}
 
-	public void showCreateSubscriptionMenu(User user) {
+	public void showCreateSubscriptionMenu(Account user) {
 		view.showMessage("1. "
 				+ Vehicle.Type.AIRPLANE.getUpperCaseName() + "\n2. "
 				+ Vehicle.Type.BUS.getUpperCaseName() + "\n3. "
@@ -765,9 +765,9 @@ public class Presenter {
 					}
 					view.showMessage("Ingrese su contraseña");
 					String password = view.readData();
-					if (calculate.logIn(User.Type.USER, name, password)) {
-						int userNumber = calculate.searchUserArrayNumber(User.Type.USER, name);
-						User currentUser = calculate.getDataCenter().getUsers()[User.Type.USER.ordinal()][userNumber];
+					if (calculate.logIn(Account.Type.USER, name, password)) {
+						int userNumber = calculate.searchUserArrayNumber(Account.Type.USER, name);
+						Account currentUser = calculate.getDataCenter().getUsers()[Account.Type.USER.ordinal()][userNumber];
 						view.showMessage("Su número de usuario es: " + userNumber);
 						calculate.checkSubscriptionsPayment(currentUser);
 						do {
@@ -930,7 +930,7 @@ public class Presenter {
 												break;
 											}
 
-											User relationship = currentUser.getRelationships()[relationshipUserNumber];
+											Account relationship = currentUser.getRelationships()[relationshipUserNumber];
 											if (relationship == null) {
 												view.showMessage("Opción Inválida, por favor, inténtelo de nuevo");
 												option = -1;
@@ -968,9 +968,9 @@ public class Presenter {
 											String userRelationshipName = view.readData();
 											if (!calculate.isUserAvailable(userRelationshipName)) {
 												calculate.createRelationship(currentUser,
-														calculate.getDataCenter().getUsers()[User.Type.USER
+														calculate.getDataCenter().getUsers()[Account.Type.USER
 																.ordinal()][calculate
-																		.searchUserArrayNumber(User.Type.USER,
+																		.searchUserArrayNumber(Account.Type.USER,
 																				userRelationshipName)]);
 												view.showMessage(
 														"Se ha añadido a su lista de amigos el usuario "
@@ -1076,7 +1076,7 @@ public class Presenter {
 					view.showMessage("Ingrese la contraseña");
 					password = view.readData();
 					if (calculate.isUserAvailable(name)) {
-						calculate.createUser(User.Type.USER, name, password);
+						calculate.createUser(Account.Type.USER, name, password);
 						view.showMessage("Se ha registrado correctamente");
 					} else {
 						view.showMessage("El nombre de usuario digitado ya está en uso");
@@ -1097,10 +1097,10 @@ public class Presenter {
 							name = view.readData();
 							view.showMessage("Digite su contraseña");
 							password = view.readData();
-							if (calculate.logIn(User.Type.COMPANY, name, password)) {
+							if (calculate.logIn(Account.Type.COMPANY, name, password)) {
 								Company company = (Company) calculate.getDataCenter()
-										.getUsers()[User.Type.COMPANY
-												.ordinal()][calculate.searchUserArrayNumber(User.Type.COMPANY, name)];
+										.getUsers()[Account.Type.COMPANY
+												.ordinal()][calculate.searchUserArrayNumber(Account.Type.COMPANY, name)];
 								do {
 									view.showMessage(
 											"¿Qué desea hacer?\n1. Datos financieros\n2. Cupones\n3. Vehículos\n4. Crear Ruta\n0. Cerrar sesión");
@@ -2321,13 +2321,13 @@ public class Presenter {
 							view.showMessage("Digite su contraseña");
 							password = view.readData();
 							if (calculate.isUserAvailable(name)) {
-								calculate.createUser(User.Type.COMPANY, name, password);
+								calculate.createUser(Account.Type.COMPANY, name, password);
 								view.showMessage(
 										"La empresa se ha creado correctamente\n¿Cuál es la descripción de su empresa? (Esto se puede modificar en el futuro)");
 								String description = view.readData();
 								calculate.editCompanyDescription(
-										(Company) calculate.getDataCenter().getUsers()[User.Type.COMPANY
-												.ordinal()][calculate.searchUserArrayNumber(User.Type.COMPANY,
+										(Company) calculate.getDataCenter().getUsers()[Account.Type.COMPANY
+												.ordinal()][calculate.searchUserArrayNumber(Account.Type.COMPANY,
 														name)],
 										description);
 							} else {
@@ -2357,11 +2357,11 @@ public class Presenter {
 							}
 							switch (option) {
 								case 1:
-									for (int i = 0; i < calculate.getDataCenter().getUsers()[User.Type.COMPANY
+									for (int i = 0; i < calculate.getDataCenter().getUsers()[Account.Type.COMPANY
 
 											.ordinal()].length; i++) {
 										Company company = (Company) calculate.getDataCenter()
-												.getUsers()[User.Type.COMPANY
+												.getUsers()[Account.Type.COMPANY
 														.ordinal()][i];
 										if (company != null) {
 											calculate.checkCompanyRevenue(company);
@@ -2376,10 +2376,10 @@ public class Presenter {
 									view.readData();
 									break;
 								case 2:
-									User company = null;
-									for (int i = 0; i < calculate.getDataCenter().getUsers()[User.Type.COMPANY
+									Account company = null;
+									for (int i = 0; i < calculate.getDataCenter().getUsers()[Account.Type.COMPANY
 											.ordinal()].length; i++) {
-										company = calculate.getDataCenter().getUsers()[User.Type.COMPANY
+										company = calculate.getDataCenter().getUsers()[Account.Type.COMPANY
 												.ordinal()][i];
 										if (company != null) {
 											view.showMessage((i + 1) + ". " + company.getName());
@@ -2389,14 +2389,14 @@ public class Presenter {
 											"Digite el número de la empresa que desea eliminar\n0. Cancelar y salir");
 
 									option = readOption(true,
-											calculate.getDataCenter().getUsers()[User.Type.COMPANY.ordinal()].length
+											calculate.getDataCenter().getUsers()[Account.Type.COMPANY.ordinal()].length
 													- 1)
 											- 1;
-									if (option <= -1 || option >= calculate.getDataCenter().getUsers()[User.Type.COMPANY
+									if (option <= -1 || option >= calculate.getDataCenter().getUsers()[Account.Type.COMPANY
 											.ordinal()].length) {
 										break;
 									}
-									company = calculate.getDataCenter().getUsers()[User.Type.COMPANY
+									company = calculate.getDataCenter().getUsers()[Account.Type.COMPANY
 											.ordinal()][option];
 									view.showMessage(
 											"Está seguro de que desea eliminar la empresa " + company.getName()
@@ -2410,10 +2410,10 @@ public class Presenter {
 									view.showMessage("La empresa se ha eliminado exitosamente");
 									break;
 								case 3:
-									User currentUser = null;
-									for (int i = 1; i < calculate.getDataCenter().getUsers()[User.Type.USER
+									Account currentUser = null;
+									for (int i = 1; i < calculate.getDataCenter().getUsers()[Account.Type.USER
 											.ordinal()].length; i++) {
-										currentUser = calculate.getDataCenter().getUsers()[User.Type.USER.ordinal()][i];
+										currentUser = calculate.getDataCenter().getUsers()[Account.Type.USER.ordinal()][i];
 										if (currentUser != null) {
 											view.showMessage(i + ". " + currentUser.getName());
 										}
@@ -2422,12 +2422,12 @@ public class Presenter {
 											"Digite el número del usuario que desea eliminar\n0. Cancelar y salir");
 
 									option = readOption(true,
-											calculate.getDataCenter().getUsers()[User.Type.USER.ordinal()].length - 1);
-									if (option <= 0 || option >= calculate.getDataCenter().getUsers()[User.Type.USER
+											calculate.getDataCenter().getUsers()[Account.Type.USER.ordinal()].length - 1);
+									if (option <= 0 || option >= calculate.getDataCenter().getUsers()[Account.Type.USER
 											.ordinal()].length) {
 										break;
 									}
-									currentUser = calculate.getDataCenter().getUsers()[User.Type.USER
+									currentUser = calculate.getDataCenter().getUsers()[Account.Type.USER
 											.ordinal()][option];
 									if (currentUser == null) {
 										view.showMessage(

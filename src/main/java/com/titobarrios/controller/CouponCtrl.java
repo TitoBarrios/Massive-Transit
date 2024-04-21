@@ -2,8 +2,6 @@ package com.titobarrios.controller;
 
 import java.util.ArrayList;
 
-import org.springframework.beans.factory.annotation.Value;
-
 import com.titobarrios.db.DB;
 import com.titobarrios.model.Coupon;
 import com.titobarrios.model.Route;
@@ -19,7 +17,7 @@ public class CouponCtrl {
         coupon.setApplicable(Coupon.AppliesTo.VEHICLES);
         for (Vehicle vehicle : vehicles)
             vehicle.add(coupon);
-        coupon.setApplicableVehicles(vehicles);
+        coupon.setVehicles(vehicles);
     }
 
     public static void editObjects(Coupon coupon, RouteSequence[] routeSeqs) {
@@ -27,7 +25,7 @@ public class CouponCtrl {
         coupon.setApplicable(Coupon.AppliesTo.ROUTE_SEQS);
         for (RouteSequence routeSeq : routeSeqs)
             routeSeq.add(coupon);
-        coupon.setApplicableRouteSeqs(routeSeqs);
+        coupon.setRouteSeqs(routeSeqs);
     }
 
     public static void editObjects(Coupon coupon, Route[] routes) {
@@ -35,29 +33,29 @@ public class CouponCtrl {
         coupon.setApplicable(Coupon.AppliesTo.ROUTES);
         for (Route route : routes)
             route.add(coupon);
-        coupon.setApplicableRoutes(routes);
+        coupon.setRoutes(routes);
     }
 
     public static void deleteObjects(Coupon coupon) {
         deleteCouponFromObjects(coupon);
-        coupon.setApplicableVehicles(null);
-        coupon.setApplicableRouteSeqs(null);
-        coupon.setApplicableRoutes(null);
+        coupon.setVehicles(null);
+        coupon.setRouteSeqs(null);
+        coupon.setRoutes(null);
     }
 
     private static void deleteCouponFromObjects(Coupon coupon) {
         switch (coupon.getApplicable()) {
             case VEHICLES:
-                for (Vehicle vehicle : coupon.getApplicableVehicles())
-                    ArraysUtil.deleteSlot(vehicle.getApplicableCoupons(), coupon);
+                for (Vehicle vehicle : coupon.getVehicles())
+                    ArraysUtil.deleteSlot(vehicle.getCoupons(), coupon);
                 break;
             case ROUTE_SEQS:
-                for (RouteSequence routeSeq : coupon.getApplicableRouteSeqs())
+                for (RouteSequence routeSeq : coupon.getRouteSeqs())
                     ArraysUtil.deleteSlot(routeSeq.getApplicableCoupons(), coupon);
                 break;
             case ROUTES:
-                for (Route route : coupon.getApplicableRoutes())
-                    ArraysUtil.deleteSlot(route.getApplicableCoupons(), coupon);
+                for (Route route : coupon.getRoutes())
+                    ArraysUtil.deleteSlot(route.getCoupons(), coupon);
                 break;
             default:
                 break;
@@ -65,10 +63,10 @@ public class CouponCtrl {
     }
 
     public static Coupon[] filterAvailable(Vehicle vehicle, RouteSequence routeSeq, Route[] routes) {
-        Coupon[] coupons = ArraysUtil.combineArrays(filterAvailable(vehicle.getApplicableCoupons()),
+        Coupon[] coupons = ArraysUtil.combineArrays(filterAvailable(vehicle.getCoupons()),
                 filterAvailable(routeSeq.getApplicableCoupons()));
         for (Route route : routes)
-            ArraysUtil.combineArrays(coupons, route.getApplicableCoupons());
+            ArraysUtil.combineArrays(coupons, route.getCoupons());
         return coupons;
     }
 
@@ -82,7 +80,7 @@ public class CouponCtrl {
         return filtered.toArray(Coupon[]::new);
     }
 
-    public Coupon[] filterPublic(Coupon[] coupons) {
+    public static Coupon[] filterPublic(Coupon[] coupons) {
         ArrayList<Coupon> publics = new ArrayList<Coupon>();
         for (Coupon coupon : coupons)
             if (coupon.getType().equals(Coupon.Type.PUBLIC))
@@ -90,7 +88,7 @@ public class CouponCtrl {
         return publics.toArray(new Coupon[publics.size()]);
     }
 
-    public Coupon findBestCoupon(Coupon[] coupons, int price) {
+    public static Coupon findBestCoupon(Coupon[] coupons, int price) {
         Coupon bestCoupon = null;
         int bestPrice = Integer.MAX_VALUE;
         for (Coupon coupon : coupons)
@@ -104,14 +102,14 @@ public class CouponCtrl {
         return bestCoupon;
     }
 
-    public boolean isRedeemWordAvailable(String redeemWord) {
+    public static boolean isRedeemWordAvailable(String redeemWord) {
         for (Coupon coupon : DB.getCoupons())
             if (coupon.getRedeemWord().equals(redeemWord))
                 return false;
         return true;
     }
 
-    public Coupon searchCouponByWord(String redeemWord) {
+    public static Coupon searchCouponByWord(String redeemWord) {
 		for (Coupon coupon : DB.getCoupons())
 				if (coupon.getRedeemWord().equals(redeemWord))
 					return coupon;

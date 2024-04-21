@@ -1,8 +1,9 @@
 package com.titobarrios.model;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 
 import com.titobarrios.constants.Value;
+import com.titobarrios.controller.AccountsCtrl;
 import com.titobarrios.db.CurrentDate;
 import com.titobarrios.db.DB;
 
@@ -37,14 +38,12 @@ public abstract class Vehicle {
 
 	private final static int REVENUE_Y = 2;
 	private final static int STATISTICS_TYPES = 4;
-	private final static int MAX_COUPONS = 20;
-	private final static int MAX_TICKETS = 200;
 	private final static int MAX_CAPACITY_X = 2;
 
 	private Type type;
 	private int[][] revenue;
-	private Ticket[] tickets;
-	private Coupon[] applicableCoupons;
+	private ArrayList<Ticket> tickets;
+	private ArrayList<Coupon> coupons;
 	private int[] capacity;
 	private Company company;
 	private RouteSequence routeSeq;
@@ -55,59 +54,48 @@ public abstract class Vehicle {
 	public Vehicle(Type type, Company company, String plate, RouteSequence routeSeq, int price, int capacity) {
 		this.type = type;
 		revenue = new int[STATISTICS_TYPES][REVENUE_Y];
-		tickets = new Ticket[MAX_TICKETS];
-		applicableCoupons = new Coupon[MAX_COUPONS];
+		tickets = new ArrayList<Ticket>();
+		coupons = new ArrayList<Coupon>();
 		this.capacity = new int[MAX_CAPACITY_X];
 		this.capacity[Value.MAXIMUM.value()] = capacity;
 		this.company = company;
 		this.routeSeq = routeSeq;
 		this.plate = plate;
 		this.price = price;
-		company.add(type, this);
+		company.add(this);
 		DB.store(this);
 	}
 
 	public void add(Ticket ticket) {
-		for (int i = 0; i < tickets.length; i++)
-			if (tickets[i] == null) {
-				tickets[i] = ticket;
-				break;
-			}
+		tickets.add(ticket);
 	}
 
 	public void add(Coupon coupon) {
-		for(int i = 0; i < applicableCoupons.length; i++)
-			if(applicableCoupons[i] == null){
-				applicableCoupons[i] = coupon;
-				break;
-			}
-		
+		coupons.add(coupon);
 	}
 
-	public void deleteTicket(int ticketPosition) {
-		tickets[ticketPosition] = null;
+	public void deleteTicket(int position) {
+		tickets.remove(position);
 	}
 
 	public void checkAvailability() {
 		boolean isCapacityAvailable = false;
-		refreshRouteSeq(this.getRouteSeq(), CurrentDate.get().toLocalDate());
+		routeSeq.refresh();
 
 		for (Ticket ticket : this.getTickets()) {
-			if (ticket != null) {
-				if (CurrentDate.get().isAfter(
-						ticket.getRoutes()[Route.StopType.ENTRY.ordinal()].getStops()[Route.StopType.ENTRY.ordinal()])
-						|| CurrentDate.get().isAfter(ticket.getRoutes()[Route.StopType.EXIT.ordinal()]
-								.getStops()[Route.StopType.EXIT.ordinal()])) {
-					setUsersTicketAvailability(ticket, false);
-					this.changeCurrentCapacity(this.getCapacity()[Value.CURRENT.value()] - 1);
-				} else if (!ticket.getIsAvailable() && (ticket.getRoutes()[Route.StopType.ENTRY.ordinal()]
-						.getStops()[Route.StopType.ENTRY.ordinal()].isAfter(CurrentDate.get())
-						|| ticket.getRoutes()[Route.StopType.ENTRY.ordinal()].getStops()[Route.StopType.ENTRY.ordinal()]
-								.isAfter(CurrentDate.get()))) {
-					ticket.setAvailable(true);
-					setUsersTicketAvailability(ticket, true);
-					this.changeCurrentCapacity(this.getCapacity()[Value.CURRENT.value()] + 1);
-				}
+			if (CurrentDate.get().isAfter(
+					ticket.getRoutes()[Route.StopType.ENTRY.ordinal()].getStops()[Route.StopType.ENTRY.ordinal()])
+					|| CurrentDate.get().isAfter(ticket.getRoutes()[Route.StopType.EXIT.ordinal()]
+							.getStops()[Route.StopType.EXIT.ordinal()])) {
+				AccountsCtrl.setTicketAvailability(ticket, false);
+				this.changeCurrentCapacity(this.getCapacity()[Value.CURRENT.value()] - 1);
+			} else if (!ticket.getIsAvailable() && (ticket.getRoutes()[Route.StopType.ENTRY.ordinal()]
+					.getStops()[Route.StopType.ENTRY.ordinal()].isAfter(CurrentDate.get())
+					|| ticket.getRoutes()[Route.StopType.ENTRY.ordinal()].getStops()[Route.StopType.ENTRY.ordinal()]
+							.isAfter(CurrentDate.get()))) {
+				ticket.setAvailable(true);
+				AccountsCtrl.setTicketAvailability(ticket, true);
+				this.changeCurrentCapacity(this.getCapacity()[Value.CURRENT.value()] + 1);
 			}
 		}
 
@@ -162,13 +150,15 @@ public abstract class Vehicle {
 											&& startingTicket == yearlyLastTicketNumber)) {
 								if (this.getTickets()[yearlyLastTicketNumber].getRoutes()[Route.StopType.EXIT
 										.ordinal()]
-										.getStops()[Route.StopType.EXIT.ordinal()].getYear() != CurrentDate.get().getYear()) {
+										.getStops()[Route.StopType.EXIT.ordinal()]
+										.getYear() != CurrentDate.get().getYear()) {
 									revenue[Value.YEARLY.value()][Value.REVENUE.value()] = 0;
 								}
 								revenue[Value.YEARLY.value()][Value.REVENUE.value()] += price;
 								revenue[Value.YEARLY.value()][Value.CURRENT_TICKET.value()] = i;
 							}
-							if (statisticsType != Value.GENERAL) break;
+							if (statisticsType != Value.GENERAL)
+								break;
 						case MONTHLY:
 							int monthlyLastTicketNumber = revenue[Value.MONTHLY.value()][Value.CURRENT_TICKET
 									.value()];
@@ -187,7 +177,8 @@ public abstract class Vehicle {
 								revenue[Value.MONTHLY.value()][Value.REVENUE.value()] += price;
 								revenue[Value.MONTHLY.value()][Value.CURRENT_TICKET.value()] = i;
 							}
-							if (statisticsType != Value.GENERAL) break;
+							if (statisticsType != Value.GENERAL)
+								break;
 						case DAILY:
 							int dailyLastTicketNumber = revenue[Value.DAILY.value()][Value.CURRENT_TICKET
 									.value()];
@@ -236,19 +227,11 @@ public abstract class Vehicle {
 	}
 
 	public Ticket[] getTickets() {
-		return tickets;
+		return tickets.toArray(Ticket[]::new);
 	}
 
-	public void setTickets(Ticket[] tickets) {
-		this.tickets = tickets;
-	}
-
-	public Coupon[] getApplicableCoupons() {
-		return applicableCoupons;
-	}
-
-	public void setApplicableCoupons(Coupon[] applicableCoupons) {
-		this.applicableCoupons = applicableCoupons;
+	public Coupon[] getCoupons() {
+		return coupons.toArray(Coupon[]::new);
 	}
 
 	public int[] getCapacity() {
@@ -291,19 +274,11 @@ public abstract class Vehicle {
 		this.price = price;
 	}
 
-	public boolean getIsAvailable() {
+	public boolean isAvailable() {
 		return isAvailable;
 	}
 
 	public void setAvailable(boolean isAvailable) {
 		this.isAvailable = isAvailable;
-	}
-
-	@Override
-	public String toString() {
-		return "Vehicle [type=" + type + ", revenue=" + Arrays.toString(revenue) + ", tickets="
-				+ Arrays.toString(tickets) + ", applicableCoupons=" + Arrays.toString(applicableCoupons) + ", capacity="
-				+ Arrays.toString(capacity) + ", company=" + company + ", routeSeq=" + routeSeq + ", plate=" + plate
-				+ ", price=" + price + ", isAvailable=" + isAvailable + "]";
 	}
 }

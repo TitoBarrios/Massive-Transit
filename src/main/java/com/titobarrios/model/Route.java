@@ -1,7 +1,7 @@
 package com.titobarrios.model;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.util.ArrayList;
 
 import com.titobarrios.db.CurrentDate;
 
@@ -13,7 +13,7 @@ public class Route {
 
 	private LocalDateTime[] stops;
 	private String[] stopsName;
-	private Coupon[] applicableCoupons;
+	private ArrayList<Coupon> coupons;
 	private String name;
 	private boolean isAvailable;
 
@@ -27,25 +27,20 @@ public class Route {
 		this.name = name;
 		this.stops = stops;
 		this.stopsName = stopsName;
-		applicableCoupons = new Coupon[100];
+		coupons = new ArrayList<Coupon>();
 	}
 
 	public void add(Coupon coupon) {
-		for (int i = 0; i < applicableCoupons.length; i++) {
-			if (applicableCoupons[i] == null) {
-				applicableCoupons[i] = coupon;
-				break;
-			}
-		}
+		coupons.add(coupon);
 	}
 
-	public void checkAvailability(Route route) {
-		if (CurrentDate.get().isAfter(route.getStops()[Route.StopType.ENTRY.ordinal()])
-				|| CurrentDate.get().isEqual(route.getStops()[Route.StopType.ENTRY.ordinal()])) {
-			route.setIsAvailable(false);
+	public void checkAvailability() {
+		if (CurrentDate.get().isAfter(this.getStops()[Route.StopType.ENTRY.ordinal()])
+				|| CurrentDate.get().isEqual(this.getStops()[Route.StopType.ENTRY.ordinal()])) {
+			this.setIsAvailable(false);
 			return;
 		}
-		route.setIsAvailable(true);
+		this.setIsAvailable(true);
 	}
 
 	public LocalDateTime[] getStops() {
@@ -64,12 +59,8 @@ public class Route {
 		this.stopsName = stopsName;
 	}
 
-	public Coupon[] getApplicableCoupons() {
-		return applicableCoupons;
-	}
-
-	public void setApplicableCoupons(Coupon[] applicableCoupons) {
-		this.applicableCoupons = applicableCoupons;
+	public Coupon[] getCoupons() {
+		return coupons.toArray(Coupon[]::new);
 	}
 
 	public String getName() {
@@ -86,12 +77,5 @@ public class Route {
 
 	public void setIsAvailable(boolean isAvailable) {
 		this.isAvailable = isAvailable;
-	}
-
-	@Override
-	public String toString() {
-		return "Route [stops=" + Arrays.toString(stops) + ", stopsName=" + Arrays.toString(stopsName)
-				+ ", applicableCoupons=" + Arrays.toString(applicableCoupons) + ", name=" + name + ", isAvailable="
-				+ isAvailable + "]";
 	}
 }

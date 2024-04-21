@@ -12,8 +12,8 @@ public class Ticket {
 		PAID, REAL;
 	}
 
-	private User buyer;
-	private User owner;
+	private Account buyer;
+	private Account owner;
 	private Vehicle vehicle;
 	private Route[] routes;
 	private Coupon coupon;
@@ -21,7 +21,7 @@ public class Ticket {
 	private int[] price;
 	private boolean isAvailable;
 
-	public Ticket(User owner, User buyer, Coupon coupon, Vehicle vehicle, Route[] routes) {
+	public Ticket(Account owner, Account buyer, Coupon coupon, Vehicle vehicle, Route[] routes) {
 		this.owner = owner;
 		this.buyer = buyer;
 		this.vehicle = vehicle;
@@ -53,19 +53,19 @@ public class Ticket {
 		this.routes = routes;
 	}
 
-	public User getBuyer() {
+	public Account getBuyer() {
 		return buyer;
 	}
 
-	public void setBuyer(User buyer) {
+	public void setBuyer(Account buyer) {
 		this.buyer = buyer;
 	}
 
-	public User getOwner() {
+	public Account getOwner() {
 		return owner;
 	}
 
-	public void setOwner(User owner) {
+	public void setOwner(Account owner) {
 		this.owner = owner;
 	}
 

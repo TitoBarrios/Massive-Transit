@@ -4,7 +4,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Arrays;
+import java.util.ArrayList;
 
 import com.titobarrios.db.CurrentDate;
 import com.titobarrios.db.DB;
@@ -13,7 +13,7 @@ import com.titobarrios.services.LaboralDays;
 public class RouteSequence {
 	private DayOfWeek[] laboralDays;
 	private Route[] routes;
-	private Coupon[] applicableCoupons;
+	private ArrayList<Coupon> coupons;
 	private Company owner;
 	private String name;
 	private boolean isAvailable;
@@ -23,7 +23,7 @@ public class RouteSequence {
 		this.owner = owner;
 		this.laboralDays = laboralDays;
 		this.routes = routes;
-		applicableCoupons = new Coupon[100];
+		coupons = new ArrayList<Coupon>();
 	}
 
 	public RouteSequence(Company owner, String name, String initialTime, DayOfWeek[] laboralDays, int stopsNumber,
@@ -31,7 +31,7 @@ public class RouteSequence {
 		this.name = name;
 		this.owner = owner;
 		this.laboralDays = laboralDays;
-		applicableCoupons = new Coupon[100];
+		coupons = new ArrayList<Coupon>();
 		initialize(initialTime, stopsNumber, timeLapse);
 	}
 
@@ -86,12 +86,7 @@ public class RouteSequence {
 	}
 
 	public void add(Coupon coupon) {
-		for (int i = 0; i < applicableCoupons.length; i++) {
-			if (applicableCoupons[i] == null) {
-				applicableCoupons[i] = coupon;
-				break;
-			}
-		}
+		coupons.add(coupon);
 	}
 
 	public void add(Route newRoute, int routeNumber) {
@@ -115,11 +110,7 @@ public class RouteSequence {
 	}
 
 	public Coupon[] getApplicableCoupons() {
-		return applicableCoupons;
-	}
-
-	public void setApplicableCoupons(Coupon[] applicableCoupons) {
-		this.applicableCoupons = applicableCoupons;
+		return coupons.toArray(Coupon[]::new);
 	}
 
 	public Company getOwner() {
@@ -144,12 +135,5 @@ public class RouteSequence {
 
 	public void setAvailable(boolean isAvailable) {
 		this.isAvailable = isAvailable;
-	}
-
-	@Override
-	public String toString() {
-		return "RouteSequence [laboralDays=" + Arrays.toString(laboralDays) + ", routes=" + Arrays.toString(routes)
-				+ ", applicableCoupons=" + Arrays.toString(applicableCoupons) + ", owner=" + owner + ", name=" + name
-				+ ", isAvailable=" + isAvailable + "]";
 	}
 }

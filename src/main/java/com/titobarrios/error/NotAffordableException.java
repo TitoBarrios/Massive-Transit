@@ -8,10 +8,10 @@ public class NotAffordableException extends Exception {
         super(message);
     }
 
-    public static String defaultMessage(User user, int price) {
+    public static String defaultMessage(User customer, int price) {
         StringBuilder strBuilder = new StringBuilder();
-        strBuilder.append("El usuario ").append(user.getName()).append(" no tiene suficientes fondos para pagar ")
-                .append(price).append("\nUser Wallet: ").append(user.getWallet()).append(".   Price: ").append(price);
+        strBuilder.append("El usuario ").append(customer.getId()).append(" no tiene suficientes fondos para pagar ")
+                .append(price).append("\nUser Wallet: ").append(customer.getWallet()).append(".   Price: ").append(price);
         return strBuilder.toString();
     }
 }

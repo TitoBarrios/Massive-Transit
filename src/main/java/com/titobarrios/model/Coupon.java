@@ -2,7 +2,6 @@ package com.titobarrios.model;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 
 import com.titobarrios.constants.Value;
 import com.titobarrios.db.Archive;
@@ -50,9 +49,9 @@ public class Coupon {
 	private int discount;
 
 	private AppliesTo applicable;
-	private Vehicle[] applicableVehicles;
-	private RouteSequence[] applicableRouteSeqs;
-	private Route[] applicableRoutes;
+	private Vehicle[] vehicles;
+	private RouteSequence[] routeSeqs;
+	private Route[] routes;
 
 	private int[] redeems;
 	private DayOfWeek[] redeemingDays;
@@ -61,19 +60,17 @@ public class Coupon {
 	private boolean isAvailable;
 
 	public Coupon(Type type, int id, Company owner, String name, String description, DiscountType discountType,
-			String redeemWord, int discount,
-			LocalDateTime[] dates, boolean isCumulative, AppliesTo applicable, Vehicle[] applicableVehicles,
-			RouteSequence[] applicableRouteSeqs, Route[] applicableRoutes, DayOfWeek[] redeemingDays,
-			int userMaxRedeems,
-			int maxRedeems) {
+			String redeemWord, int discount, LocalDateTime[] dates, boolean isCumulative, AppliesTo applicable,
+			Vehicle[] vehicles, RouteSequence[] routeSeqs, Route[] routes,
+			DayOfWeek[] redeemingDays, int userMaxRedeems, int maxRedeems) {
 		this.owner = owner;
 		this.name = name;
 		this.description = description;
 		this.isCumulative = isCumulative;
 		this.applicable = applicable;
-		this.applicableVehicles = applicableVehicles;
-		this.applicableRouteSeqs = applicableRouteSeqs;
-		this.applicableRoutes = applicableRoutes;
+		this.vehicles = vehicles;
+		this.routeSeqs = routeSeqs;
+		this.routes = routes;
 		this.redeems = new int[REDEEMS_X];
 		this.redeems[RedeemType.USER_MAXIMUM.ordinal()] = userMaxRedeems;
 		this.redeems[RedeemType.MAXIMUM.ordinal()] = maxRedeems;
@@ -81,7 +78,6 @@ public class Coupon {
 		DB.store(this);
 		owner.add(this);
 		this.checkAvailability();
-		setApplicableCouponObjects(this);
 	}
 
 	public Coupon(Coupon coupon) {
@@ -103,10 +99,6 @@ public class Coupon {
 
 	public void generateID() {
 		this.id = CurrentDate.get().getYear() * 100000 + Archive.getCoupons().length - 1;
-	}
-
-	private void initialize() {
-		
 	}
 
 	public int getId() {
@@ -185,28 +177,28 @@ public class Coupon {
 		this.applicable = applicable;
 	}
 
-	public Vehicle[] getApplicableVehicles() {
-		return applicableVehicles;
+	public Vehicle[] getVehicles() {
+		return vehicles;
 	}
 
-	public void setApplicableVehicles(Vehicle[] applicableVehicles) {
-		this.applicableVehicles = applicableVehicles;
+	public void setVehicles(Vehicle[] vehicles) {
+		this.vehicles = vehicles;
 	}
 
-	public RouteSequence[] getApplicableRouteSeqs() {
-		return applicableRouteSeqs;
+	public RouteSequence[] getRouteSeqs() {
+		return routeSeqs;
 	}
 
-	public void setApplicableRouteSeqs(RouteSequence[] applicableRouteSeqs) {
-		this.applicableRouteSeqs = applicableRouteSeqs;
+	public void setRouteSeqs(RouteSequence[] routeSeqs) {
+		this.routeSeqs = routeSeqs;
 	}
 
-	public Route[] getApplicableRoutes() {
-		return applicableRoutes;
+	public Route[] getRoutes() {
+		return routes;
 	}
 
-	public void setApplicableRoutes(Route[] applicableRoutes) {
-		this.applicableRoutes = applicableRoutes;
+	public void setRoutes(Route[] routes) {
+		this.routes = routes;
 	}
 
 	public int[] getRedeems() {
@@ -240,16 +232,4 @@ public class Coupon {
 	public void setAvailable(boolean isAvailable) {
 		this.isAvailable = isAvailable;
 	}
-
-	@Override
-	public String toString() {
-		return "Coupon [id=" + id + ", owner=" + owner + ", name=" + name + ", description=" + description
-				+ ", isCumulative=" + isCumulative + ", type=" + type + ", redeemWord=" + redeemWord + ", discountType="
-				+ discountType + ", discount=" + discount + ", applicable=" + applicable + ", applicableVehicles="
-				+ Arrays.toString(applicableVehicles) + ", applicableRouteSeqs=" + Arrays.toString(applicableRouteSeqs)
-				+ ", applicableRoutes=" + Arrays.toString(applicableRoutes) + ", redeems=" + Arrays.toString(redeems)
-				+ ", redeemingDays=" + Arrays.toString(redeemingDays) + ", dates=" + Arrays.toString(dates)
-				+ ", isAvailable=" + isAvailable + "]";
-	}
-
 }
