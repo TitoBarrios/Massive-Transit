@@ -33,6 +33,10 @@ public abstract class Account {
 		return id;
 	}
 
+	public void setId(String id) {
+		this.id = id;
+	}
+
 	public String getPassword() {
 		return password;
 	}

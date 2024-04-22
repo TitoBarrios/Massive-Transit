@@ -1,5 +1,5 @@
 package com.titobarrios.view.home;
 
-public class User {
+public class Routes {
     
 }

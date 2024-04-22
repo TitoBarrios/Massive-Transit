@@ -15,12 +15,15 @@ public class ArraysUtil {
 		return combined.toArray(Arrays.copyOf(arrays[0], combined.size()));
 	}
 
+	public static <T> T searchElement(T[] list, T element) throws ElementNotFoundException {
+		for(T current : list)
+			if(element.equals(current)) return element;
+			throw new ElementNotFoundException("The element: " + element + " doesn't exists on the list " + list);
+	}
+
 	public static <T> int searchElementSlot(T[] list, T element) throws ElementNotFoundException {
-		for(int i = 0; i < list.length; i++) {
-			if(list[i].equals(element)) {
-				return i;
-			}
-		}
+		for(int i = 0; i < list.length; i++)
+			if(list[i].equals(element)) return i;
 		throw new ElementNotFoundException("The element: " + element + " doesn't exists on the list " + list);
 	}
 

@@ -22,7 +22,7 @@ public class DB {
 
     private static List<Coupon> coupons;
 
-    private static List<RouteSequence> routeSequences;
+    private static List<RouteSequence> routeSeqs;
 
     public DB() {
     }
@@ -30,6 +30,8 @@ public class DB {
     public static void initialize() {
         accounts = new HashMap<>();
         vehicles = new ArrayList<Vehicle>();
+        coupons = new ArrayList<Coupon>();
+        routeSeqs = new ArrayList<RouteSequence>(); 
         Archive.initialize();
     }
 
@@ -48,8 +50,8 @@ public class DB {
         Archive.store(coupon);
     }
 
-    public static void store(RouteSequence routeSequence) {
-        routeSequences.add(routeSequence);
+    public static void store(RouteSequence routeSeq) {
+        routeSeqs.add(routeSeq);
     }
 
     public static Vehicle[] getVehicles() {
@@ -76,5 +78,9 @@ public class DB {
 
     public static Coupon[] getCoupons() {
         return coupons.toArray(Coupon[]::new);
+    }
+    
+    public static RouteSequence[] getRouteSeqs() {
+        return routeSeqs.toArray(RouteSequence[]::new);
     }
 }

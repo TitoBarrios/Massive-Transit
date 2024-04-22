@@ -12,6 +12,13 @@ public class AccountsCtrl {
         return true;
     }
 
+    public static Account searchAccount(String id) {
+        for (Account account : DB.getAccounts())
+            if (account.getId().equals(id))
+                return account;
+        return null;
+    }
+
     public static void setTicketAvailability(Ticket ticket, boolean availability) {
         for (Account account : DB.getAccounts())
             for (Ticket currentTicket : account.getTickets())

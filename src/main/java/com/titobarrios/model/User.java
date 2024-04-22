@@ -6,18 +6,18 @@ import com.titobarrios.db.DB;
 
 public class User extends Account {
 
-	private ArrayList<Account> relationships;
+	private ArrayList<User> relationships;
 	private ArrayList<Subscription> subscriptions;
 	private int wallet;
 
 	public User(String id, String password) {
 		super(id, password);
-		relationships = new ArrayList<Account>();
+		relationships = new ArrayList<User>();
 		subscriptions = new ArrayList<Subscription>();
 		DB.store(this);
 	}
 
-	public void add(Account relationship) {
+	public void add(User relationship) {
 		relationships.add(relationship);
 	}
 
@@ -33,19 +33,19 @@ public class User extends Account {
 		subscriptions.remove(arrayNumber);
 	}
 
-	public Account[] getRelationships() {
-		return relationships.toArray(Account[]::new);
+	public User[] getRelationships() {
+		return relationships.toArray(User[]::new);
 	}
 
 	public Subscription[] getSubscriptions() {
 		return subscriptions.toArray(Subscription[]::new);
 	}
 
-	public void setWallet(int wallet) {
-		this.wallet = wallet;
-	}
-
 	public int getWallet() {
 		return wallet;
+	}
+
+	public void setWallet(int wallet) {
+		this.wallet = wallet;
 	}
 }

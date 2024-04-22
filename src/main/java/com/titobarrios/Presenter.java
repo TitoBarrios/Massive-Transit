@@ -9,16 +9,17 @@ import com.titobarrios.model.*;
 import com.titobarrios.model.Coupon.RedeemType;
 
 public class Presenter {
-	private ConsoleController view;
+	private Console view;
 	private Calculator calculate;
 	// Option se usa en todos los menús y está enlazado entre ellos
 	int option;
 
 	public Presenter() {
-		view = new ConsoleController();
+		view = new Console();
 		calculate = new Calculator();
 	}
 
+	// Ordenado (Incompleto)
 	public void defaultValues() {
 		calculate.createUser(Account.Type.USER, "administrador", "0000");
 		calculate.createUser(Account.Type.COMPANY, "default", "0000");
@@ -30,6 +31,7 @@ public class Presenter {
 				calculate.getDataCenter().getRouteSeqs()[0], 3500, 30);
 	}
 
+	// Ordenado
 	public int readOption(boolean showErrorMessage, int limit) {
 		int option;
 		try {
@@ -44,7 +46,8 @@ public class Presenter {
 		}
 	}
 
-	public void showBill(Account user, Ticket ticket) {
+	// Ordenado
+	public void showBill(Ticket ticket) {
 		view.showCurrentLineMessage("Número de Ticket: " + ticket.getName() + "\n"
 				+ ticket.getVehicle().getType().getUpperCaseName() + ": " + ticket.getVehicle().getPlate()
 				+ "\nEmpresa: " + ticket.getVehicle().getCompany().getName() + "\nPrecio pagado: "

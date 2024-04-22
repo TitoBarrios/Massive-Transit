@@ -8,7 +8,7 @@ import com.titobarrios.db.CurrentDate;
 
 public class Ticket {
 
-	public static enum PriceType{
+	public static enum PriceType {
 		PAID, REAL;
 	}
 
@@ -31,18 +31,20 @@ public class Ticket {
 	}
 
 	private void initialize() {
-            LocalDateTime entry = this.getRoutes()[Route.StopType.ENTRY.ordinal()].getStops()[Route.StopType.ENTRY.ordinal()];
-			String name = CurrentDate.get().getYear() + "_" + "_" + vehicle.getType().ordinal()
-					+ entry.getDayOfMonth()
-					+ entry.getMonth()
-					+ entry.toLocalTime()
-					+ this.getRoutes()[Route.StopType.EXIT.ordinal()].getStops()[Route.StopType.EXIT.ordinal()]
-							.toLocalTime();
-			this.setName(name);
-			this.setPrice(new int[] {CouponCtrl.discountedPrice(coupon, vehicle.getPrice()), vehicle.getPrice()});
-			vehicle.add(this);
-			buyer.add(this);
-			if(!buyer.equals(owner)) owner.add(this);
+		LocalDateTime entry = this.getRoutes()[Route.StopType.ENTRY.ordinal()].getStops()[Route.StopType.ENTRY
+				.ordinal()];
+		String name = CurrentDate.get().getYear() + "_" + "_" + vehicle.getType().ordinal()
+				+ entry.getDayOfMonth()
+				+ entry.getMonth()
+				+ entry.toLocalTime()
+				+ this.getRoutes()[Route.StopType.EXIT.ordinal()].getStops()[Route.StopType.EXIT.ordinal()]
+						.toLocalTime();
+		this.setName(name);
+		this.setPrice(new int[] { CouponCtrl.discountedPrice(coupon, vehicle.getPrice()), vehicle.getPrice() });
+		vehicle.add(this);
+		buyer.add(this);
+		if (!buyer.equals(owner))
+			owner.add(this);
 	}
 
 	public Route[] getRoutes() {
@@ -76,11 +78,11 @@ public class Ticket {
 	public void setVehicle(Vehicle vehicle) {
 		this.vehicle = vehicle;
 	}
-	
+
 	public Coupon getCoupon() {
 		return coupon;
 	}
-	
+
 	public void setCoupon(Coupon coupon) {
 		this.coupon = coupon;
 	}
@@ -107,6 +109,29 @@ public class Ticket {
 
 	public void setAvailable(boolean isAvailable) {
 		this.isAvailable = isAvailable;
+	}
+
+	public String bill() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Número de Ticket: ").append(name).append("\n").append(vehicle.getType().getUpperCaseName())
+				.append(": ").append(vehicle.getPlate()).append("\nEmpresa: ").append(vehicle.getCompany().getId())
+				.append("\nPrecio pagado: ").append(price[Ticket.PriceType.PAID.ordinal()]).append("\nEntrada: Ruta")
+				.append(routes[Route.StopType.ENTRY.ordinal()].getStopsName()[Route.StopType.ENTRY.ordinal()])
+				.append(' ').append(routes[Route.StopType.ENTRY.ordinal()].getStops()[Route.StopType.ENTRY.ordinal()])
+				.append("\nSalida: Ruta ")
+				.append(routes[Route.StopType.EXIT.ordinal()].getStopsName()[Route.StopType.EXIT.ordinal()]).append(' ')
+				.append(routes[Route.StopType.EXIT.ordinal()].getStops()[Route.StopType.EXIT.ordinal()]).append(
+						"\nEstado Actual: ")
+				.append(isAvailable ? "Activo"
+						: CurrentDate.get()
+								.isBefore(routes[Route.StopType.ENTRY.ordinal()]
+										.getStops()[Route.StopType.ENTRY.ordinal()])
+								|| CurrentDate.get().isEqual(routes[Route.StopType.ENTRY.ordinal()]
+										.getStops()[Route.StopType.ENTRY.ordinal()]) ? "Confirmado" : "Inactivo");
+		if (!owner.getId().equals(buyer.getId()))
+			builder.append("Comprador: ").append(buyer.getId());
+		builder.append("\n");
+		return builder.toString();
 	}
 
 	@Override
