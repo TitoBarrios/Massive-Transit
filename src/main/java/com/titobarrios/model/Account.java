@@ -2,6 +2,8 @@ package com.titobarrios.model;
 
 import java.util.ArrayList;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import com.titobarrios.db.DB;
 
 public abstract class Account {
@@ -12,7 +14,7 @@ public abstract class Account {
 
 	public Account(String id, String password) {
 		this.id = id;
-		this.password = password;
+		this.password = new BCryptPasswordEncoder().encode(password);
 		tickets = new ArrayList<Ticket>();
 		DB.store(this);
 	}
@@ -42,6 +44,6 @@ public abstract class Account {
 	}
 
 	public void setPassword(String password) {
-		this.password = password;
+		this.password = new BCryptPasswordEncoder().encode(password);
 	}
 }

@@ -2,9 +2,7 @@ package com.titobarrios.db;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.titobarrios.model.Coupon;
@@ -16,7 +14,7 @@ import com.titobarrios.model.Vehicle;
 
 public class DB {
 
-    private static Map<String, Account> accounts;
+    private static List<Account> accounts;
 
     private static List<Vehicle> vehicles;
 
@@ -28,7 +26,7 @@ public class DB {
     }
 
     public static void initialize() {
-        accounts = new HashMap<>();
+        accounts = new ArrayList<Account>();
         vehicles = new ArrayList<Vehicle>();
         coupons = new ArrayList<Coupon>();
         routeSeqs = new ArrayList<RouteSequence>(); 
@@ -36,7 +34,7 @@ public class DB {
     }
 
     public static void store(Account account) {
-        accounts.put(account.getPassword(), account);
+        accounts.add(account);
         Archive.store(account);
     }
 
@@ -59,7 +57,7 @@ public class DB {
     }
 
     public static Account[] getAccounts() {
-        return accounts.values().toArray(Account[]::new);
+        return accounts.toArray(Account[]::new);
     }
 
     public static Company[] getCompanies() {

@@ -1,7 +1,7 @@
 package com.titobarrios.view.home;
 
 import com.titobarrios.view.Console;
-import com.titobarrios.view.user.LogIn;
+import com.titobarrios.view.user.LogInMenu;
 import com.titobarrios.view.user.Register;
 
 public class Home {
@@ -22,7 +22,7 @@ public class Home {
 
         switch (option) {
             case 1:
-                new LogIn();
+                new LogInMenu();
                 break;
             case 2:
                 new Routes();

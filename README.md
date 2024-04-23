@@ -11,7 +11,7 @@ Features:
   - Subscription.  
   - Redeem coupons.  
 - **Companies:** 
-  - Routes creator, selecting the amount of stop, first stop time and the time between each stop.  
+  - Routes creator, selecting the amount of stops, first stop time and the time between each stop.  
   - Vehicles creator, selecting between airplanes, buses, ships and travel buses.  
   - Coupons creator.
   - Statistics.  

@@ -1,5 +1,7 @@
 package com.titobarrios.view.user;
 
+import org.springframework.security.crypto.bcrypt.BCrypt;
+
 import com.titobarrios.controller.AccountsCtrl;
 import com.titobarrios.model.User;
 import com.titobarrios.view.Console;
@@ -49,8 +51,7 @@ public class Profile {
         String password = Console.readData();
         if(password.equals("0")) new MainMenu(user);
 
-        // Verificación de contraseña
-        if(false) {
+        if(BCrypt.checkpw(password, user.getPassword())) {
             Console.log("Contraseña incorrecta, inténtelo de nuevo");
             newPassword();
         }
@@ -62,6 +63,7 @@ public class Profile {
             Console.log("Las contraseñas no coinciden, inténtelo de nuevo");
             newPassword();
         }
+        user.setPassword(newPassword);
         Console.log("La contraseña se ha cambiado correctamente");
         menu();
     }
