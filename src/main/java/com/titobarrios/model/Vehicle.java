@@ -80,7 +80,7 @@ public abstract class Vehicle {
 			isCapacityAvailable = true;
 		}
 
-		if (isCapacityAvailable && this.getRouteSeq().getIsAvailable()) {
+		if (isCapacityAvailable && this.getRouteSeq().isAvailable()) {
 			this.setAvailable(true);
 			return;
 		}

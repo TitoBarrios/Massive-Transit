@@ -3,8 +3,8 @@ package com.titobarrios.utils;
 import com.titobarrios.constants.VType;
 
 public class Conversions {
-	public static VType convertIntToVehicleType(int vehicleTypeInt) {
-		switch (vehicleTypeInt) {
+	public static VType convertIntToVehicleType(int typeInt) {
+		switch (typeInt) {
 			case 0:
 				return VType.AIRPLANE;
 			case 1:

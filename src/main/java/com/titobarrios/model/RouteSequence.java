@@ -144,11 +144,28 @@ public class RouteSequence {
 		this.name = name;
 	}
 
-	public boolean getIsAvailable() {
+	public boolean isAvailable() {
 		return isAvailable;
 	}
 
 	public void setAvailable(boolean isAvailable) {
 		this.isAvailable = isAvailable;
+	}
+
+	public String info() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(name).append("	").append(owner.getId()).append("\nDías activo: ");
+		for (DayOfWeek laboralDay : laboralDays)
+			builder.append(laboralDay).append(", ");
+		builder.append("\n").append(isAvailable ? "Disponible" : "No disponible");
+		builder.append("\n\nRutas:\n");
+		for (Route route : routes)
+			builder.append(route.info()).append("\n");
+		builder.append("\n\nVehículos:");
+		for (Vehicle vehicle : vehicles)
+			builder.append("	").append(vehicle.getPlate()).append(" ").append(vehicle.getCompany().getId())
+					.append("\n	").append("Precio: ").append(vehicle.getPrice()).append("	. ")
+					.append(builder.append(vehicle.isAvailable() ? "Disponible" : "No disponible"));
+		return builder.toString();
 	}
 }
