@@ -1,5 +1,6 @@
 package com.titobarrios.view.user;
 
+import com.titobarrios.controller.AccountsCtrl;
 import com.titobarrios.model.User;
 import com.titobarrios.view.Console;
 import com.titobarrios.view.home.Home;
@@ -9,21 +10,32 @@ public class Register {
         menu();
     }
 
-    public void menu() {
+    private void menu() {
         Console.log("Ingrese su nuevo usuario\n0. En cualquier momento para cancelar");
         String id = Console.readData();
-        if(id.equals("0")) new Home();
-        Console.log("Ingrese su contraseña");
-        String password = Console.readData();
-        if(password.equals("0")) new Home();
-        Console.log("Repita su contraseña");
-        String passwordConfirmation = Console.readData();
-        if(!password.equals(passwordConfirmation)) {
-            Console.log("Las contraseñas no coinciden");   
-        } else {
-            new User(id, password);
-            Console.log("Su nueva cuenta se ha creado correctamente");
+        if (id.equals("0"))
+            new Home();
+        if (!AccountsCtrl.isIdAvailable(id)) {
+            Console.log("El id escrito ya está en uso, por favor, elija otro distinto");
+            menu();
         }
+        String password = null;
+        boolean sContinue = true;
+        do {
+            Console.log("Ingrese su contraseña");
+            password = Console.readData();
+            if (password.equals("0"))
+                new Home();
+            Console.log("Repita su contraseña");
+            String passwordConfirmation = Console.readData();
+            if (!password.equals(passwordConfirmation)) {
+                Console.log("Las contraseñas no coinciden, por favor, inténtelo de nuevo");
+                sContinue = false;
+            }
+        } while (!sContinue);
+        new User(id, password);
+        Console.log("Su nueva cuenta se ha creado correctamente");
+
         new Home();
     }
 }

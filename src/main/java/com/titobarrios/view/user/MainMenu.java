@@ -13,7 +13,7 @@ public class MainMenu {
         menu();
     }
 
-    public void menu() {
+    private void menu() {
         Console.log(
                 "¿Qué desea hacer?\n1. Comprar ticket\n2. Suscripciones\n3. Mi billetera\n4. Ver historial y estado de mis tickets\n5. Familia y Amigos\n6. Perfil\n0. Cerrar sesión");
         int option = Console.readNumber();

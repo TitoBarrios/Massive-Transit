@@ -1,4 +1,4 @@
-package com.titobarrios.view.user;
+package com.titobarrios.view.company;
 
 import com.titobarrios.controller.AccountsCtrl;
 import com.titobarrios.error.ElementNotFoundException;
@@ -8,6 +8,7 @@ import com.titobarrios.model.Company;
 import com.titobarrios.model.User;
 import com.titobarrios.services.LogIn;
 import com.titobarrios.view.Console;
+import com.titobarrios.view.home.CompanyMenu;
 import com.titobarrios.view.home.Home;
 
 public class LogInMenu {
@@ -16,10 +17,10 @@ public class LogInMenu {
     }
 
     private void menu() {
-        Console.log("Ingrese su usuario\n0. Volver");
+        Console.log("Ingrese su id\n0. Volver");
         String id = Console.readData();
         if (id.equals("0"))
-            new Home();
+            new CompanyMenu();
         Console.log("Ingrese su contraseña");
         String password = Console.readData();
 
@@ -27,7 +28,7 @@ public class LogInMenu {
         try {
             logIn = LogIn.logIn(id, password);
         } catch (ElementNotFoundException e) {
-            Console.log("El usuario no existe");
+            Console.log("El id no existe");
             menu();
         } catch (InvalidCredentialsException e) {
             Console.log("Contraseña incorrecta");
@@ -36,12 +37,12 @@ public class LogInMenu {
 
         if (logIn) {
             Account account = AccountsCtrl.searchAccount(id);
-            if (account instanceof Company) {
-                Console.log("Opción no disponible para empresas");
+            if (account instanceof User) {
+                Console.log("Opción no disponible para clientes");
                 new Home();
             }
-            new MainMenu((User) account);
+            new MainMenu((Company) account);
         }
-        new Home();
+        new CompanyMenu();
     }
 }

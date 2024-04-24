@@ -22,7 +22,7 @@ public class Subscriptions {
         menu();
     }
 
-    public void menu() {
+    private void menu() {
         Console.log("1. Gestionar mis suscripciones     2. Crear nueva suscripción\n0. Volver");
         int option = Console.readNumber();
         switch (option) {
@@ -37,7 +37,7 @@ public class Subscriptions {
         }
     }
 
-    public void manage() {
+    private void manage() {
         if (user.getSubscriptions().length == 0) {
             Console.log("No tiene suscripciones activas");
             menu();
@@ -65,7 +65,7 @@ public class Subscriptions {
         menu();
     }
 
-    public void create() {
+    private void create() {
         Console.log(
                 "¿Para qué tipo de vehículo desea crear tu suscripción?\nSuscríbete y así compramos automáticamente tus tickets\n1. "
                         + VType.AIRPLANE.getUpperCaseName() + "\n2. " + VType.BUS.getUpperCaseName()
@@ -88,7 +88,7 @@ public class Subscriptions {
         routeSelection(type, paymentDay);
     }
 
-    public void routeSelection(VType type, DayOfWeek paymentDay) {
+    private void routeSelection(VType type, DayOfWeek paymentDay) {
         Console.log("Selecciona una de las siguientes secuencias para ver más opciones");
         RouteSequence[] applicableRouteSeqs = RouteSeqCtrl.filterByType(type,
                 RouteSeqCtrl.filterByLaboralDay(paymentDay, DB.getRouteSeqs()));

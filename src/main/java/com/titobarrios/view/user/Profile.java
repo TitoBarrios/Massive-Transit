@@ -14,7 +14,7 @@ public class Profile {
         menu();
     }
 
-    public void menu() {
+    private void menu() {
         if (user.getId().equals("admin")) {
             Console.log("El administrador no puede cambiar sus credenciales");
             new MainMenu(user);
@@ -34,7 +34,7 @@ public class Profile {
         }
     }
 
-    public void newId() {
+    private void newId() {
         Console.log("Esta opción aún no está disponible");
         menu();
 
@@ -51,7 +51,7 @@ public class Profile {
         menu();
     }
 
-    public void newPassword() {
+    private void newPassword() {
         Console.log("Digite su contraseña antigua\n0. Volver");
         String password = Console.readData();
         if (password.equals("0"))

@@ -10,7 +10,7 @@ public class Ticket {
         menu();
     }
 
-    public void menu() {
+    private void menu() {
 
     }
 }

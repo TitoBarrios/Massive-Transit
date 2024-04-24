@@ -12,7 +12,7 @@ public class Routes {
         menu();
     }
 
-    public void menu() {
+    private void menu() {
         Console.log(
                 "¿Para qué tipo de vehículo desea crear tu suscripción?\nSuscríbete y así compramos automáticamente tus tickets\n1. "
                         + VType.AIRPLANE.getUpperCaseName() + "\n2. " + VType.BUS.getUpperCaseName()
@@ -31,7 +31,7 @@ public class Routes {
         showRoutes(type);
     }
 
-    public void showRoutes(VType type) {
+    private void showRoutes(VType type) {
         RouteSequence[] routeSeqs = RouteSeqCtrl.filterByType(type, DB.getRouteSeqs());
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < routeSeqs.length; i++)

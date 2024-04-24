@@ -16,7 +16,7 @@ public class Relationships {
         menu();
     }
 
-    public void menu() {
+    private void menu() {
         Console.log("Familiares y Amigos\n1. Ver usuarios\n2. Agregar nuevo usuario\n0. Salir");
         int option = Console.readNumber();
         switch (option) {
@@ -31,7 +31,7 @@ public class Relationships {
         }
     }
 
-    public void showUsers() {
+    private void showUsers() {
         Console.log("Seleccione un usuario para ver más opciones");
         for (int i = 0; i < user.getRelationships().length; i++) {
             Console.log((i + 1) + ". Nombre: " + user.getRelationships()[i].getId());
@@ -56,7 +56,7 @@ public class Relationships {
         }
     }
 
-    public void buyTicket(User relationship) {
+    private void buyTicket(User relationship) {
         menu();
     }
 
@@ -75,7 +75,7 @@ public class Relationships {
         menu();
     }   
 
-    public void add() {
+    private void add() {
         Console.log("Escriba el id del usuario a agregar");
         String id = Console.readData();
         Account relationship = AccountsCtrl.searchAccount(id);

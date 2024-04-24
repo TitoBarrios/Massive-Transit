@@ -12,7 +12,7 @@ public class WalletMenu {
         menu();
     }
 
-    public void menu() {
+    private void menu() {
         Console.log("Su saldo actual es: " + user.getWallet()
                 + " pesos\nDigite 1 para agregar fondos, 0 para volver");
         int option = Console.readNumber();
@@ -23,7 +23,7 @@ public class WalletMenu {
         addFunds();
     }
 
-    public void addFunds() {
+    private void addFunds() {
         Console.log("Cuánto dinero desea agregar a su billetera?\n0. Cancelar");
         int money = Console.readNumber();
         if (money < 0) {

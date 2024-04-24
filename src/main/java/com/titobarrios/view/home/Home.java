@@ -10,7 +10,7 @@ public class Home {
         mainMenu();
     }
 
-    public void mainMenu() {
+    private void mainMenu() {
         Console.log(
                 "Bienvenido a mi sistema de transporte masivo\n\nSeleccione la opción que más le convenga: \n1. Iniciar sesión\n2. Ver rutas\n3. Registrarse\n4. Soy una empresa\n0. Salir");
         int option = Console.readNumber();
@@ -23,7 +23,7 @@ public class Home {
             case 3:
                 new Register();
             case 4:
-                new Company();
+                new CompanyMenu();
             case 5:
                 new Admin();
             case 0:
