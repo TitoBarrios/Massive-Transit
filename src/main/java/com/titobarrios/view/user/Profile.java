@@ -15,29 +15,34 @@ public class Profile {
     }
 
     public void menu() {
-        if(user.getId().equals("admin")){
+        if (user.getId().equals("admin")) {
             Console.log("El administrador no puede cambiar sus credenciales");
             new MainMenu(user);
         }
-        Console.log("Id: " + user.getId() +"\n1. Editar ID\n2. Cambiar contraseña\n0. Volver");
-        int option = Console.readOption(false, 2);
-        if(option == 0) new MainMenu(user);
+        Console.log("Id: " + user.getId() + "\n1. Editar ID\n2. Cambiar contraseña\n0. Volver");
+        int option = Console.readNumber();
+        if (option == 0)
+            new MainMenu(user);
 
-        switch(option) {
+        switch (option) {
             case 1:
                 newId();
-                break;
             case 2:
-                break;
+                newPassword();
+            default:
+                menu();
         }
     }
 
     public void newId() {
+        Console.log("Esta opción aún no está disponible");
+        menu();
+
         Console.log("Escriba su nuevo id\n0. Volver");
         String id = Console.readData();
-        if(id.equals("0")) new MainMenu(user);
-
-        if(!AccountsCtrl.isIdAvailable(id)){
+        if (id.equals("0"))
+            new MainMenu(user);
+        if (!AccountsCtrl.isIdAvailable(id)) {
             Console.log("El id escrito no está disponible, inténtelo de nuevo");
             newId();
         }
@@ -49,17 +54,20 @@ public class Profile {
     public void newPassword() {
         Console.log("Digite su contraseña antigua\n0. Volver");
         String password = Console.readData();
-        if(password.equals("0")) new MainMenu(user);
+        if (password.equals("0"))
+            new MainMenu(user);
 
-        if(BCrypt.checkpw(password, user.getPassword())) {
+        if (BCrypt.checkpw(password, user.getPassword())) {
             Console.log("Contraseña incorrecta, inténtelo de nuevo");
             newPassword();
         }
         Console.log("Escriba su nueva contraseña");
         String newPassword = Console.readData();
+        if (newPassword.equals("0"))
+            menu();
         Console.log("Escriba una vez más su nueva contraseña");
         String passwordConfirmation = Console.readData();
-        if(!newPassword.equals(passwordConfirmation)) {
+        if (!newPassword.equals(passwordConfirmation)) {
             Console.log("Las contraseñas no coinciden, inténtelo de nuevo");
             newPassword();
         }

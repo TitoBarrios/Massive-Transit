@@ -21,12 +21,26 @@ public class Ticket {
 	private int[] price;
 	private boolean isAvailable;
 
+	private Subscription subscription;
+
 	public Ticket(Account owner, Account buyer, Coupon coupon, Vehicle vehicle, Route[] routes) {
 		this.owner = owner;
 		this.buyer = buyer;
 		this.vehicle = vehicle;
 		this.routes = Arrays.copyOf(routes, routes.length);
 		this.coupon = new Coupon(coupon);
+		initialize();
+	}
+
+	public Ticket(Account owner, Account buyer, Coupon coupon, Vehicle vehicle, Route[] routes,
+			Subscription subscription) {
+		this.owner = owner;
+		this.buyer = buyer;
+		this.vehicle = vehicle;
+		this.routes = Arrays.copyOf(routes, routes.length);
+		this.coupon = new Coupon(coupon);
+		this.subscription = subscription;
+		subscription.add(this);
 		initialize();
 	}
 
@@ -111,6 +125,14 @@ public class Ticket {
 		this.isAvailable = isAvailable;
 	}
 
+	public Subscription getSubscription() {
+		return subscription;
+	}
+
+	public void setSubscription(Subscription subscription) {
+		this.subscription = subscription;
+	}
+
 	public String bill() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Número de Ticket: ").append(name).append("\n").append(vehicle.getType().getUpperCaseName())
@@ -140,4 +162,5 @@ public class Ticket {
 				+ vehicle + ", coupon=" + coupon + ", name=" + name + ", price=" + price + ", isAvailable="
 				+ isAvailable + "]";
 	}
+
 }

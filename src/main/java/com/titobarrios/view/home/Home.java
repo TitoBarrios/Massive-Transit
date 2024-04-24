@@ -13,29 +13,23 @@ public class Home {
     public void mainMenu() {
         Console.log(
                 "Bienvenido a mi sistema de transporte masivo\n\nSeleccione la opción que más le convenga: \n1. Iniciar sesión\n2. Ver rutas\n3. Registrarse\n4. Soy una empresa\n0. Salir");
-        int option = Console.readOption(false, 5);
-        if (option <= 0 || option > 5) {
-            if (option == 0)
-                new Exit();
-            mainMenu();
-        }
+        int option = Console.readNumber();
 
         switch (option) {
             case 1:
                 new LogInMenu();
-                break;
             case 2:
                 new Routes();
-                break;
             case 3:
                 new Register();
-                break;
             case 4:
                 new Company();
-                break;
             case 5:
                 new Admin();
-                break;
+            case 0:
+                new Exit();
+            default:
+                mainMenu();
         }
     }
 }

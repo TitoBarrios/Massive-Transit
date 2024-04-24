@@ -8,13 +8,15 @@ import com.titobarrios.model.User;
 
 public class SubscriptionCtrl {
     public void check() {
-        for(User user : DB.getUsers())
+        for (User user : DB.getUsers())
             checkUser(user);
     }
 
     public void checkUser(User user) {
-		for (Subscription subscription : user.getSubscriptions())
-				if (subscription.getDayOfWeek().equals(CurrentDate.get().getDayOfWeek()))
-					new Ticket(user, user, null, subscription.getVehicle(), subscription.getRoutes());
-	}
+        for (Subscription subscription : user.getSubscriptions())
+            if (subscription.getDayOfWeek().equals(CurrentDate.get().getDayOfWeek()))
+                new Ticket(user, user, null, VehicleCtrl.findBestVehicle(subscription.getRouteSeq().getVehicles()),
+                        subscription.getRoutes(), subscription);
+    }
+
 }

@@ -78,4 +78,14 @@ public class Route {
 	public void setIsAvailable(boolean isAvailable) {
 		this.isAvailable = isAvailable;
 	}
+
+	public String info() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Nombre: ").append(name).append("\nEntrada: ").append(stopsName[StopType.ENTRY.ordinal()])
+				.append(" ")
+				.append(stops[StopType.ENTRY.ordinal()].toLocalTime()).append("\nSalida: ")
+				.append(stopsName[StopType.EXIT.ordinal()]).append(" ")
+				.append(stops[StopType.EXIT.ordinal()].toLocalTime()).append("\n");
+		return builder.toString();
+	}
 }

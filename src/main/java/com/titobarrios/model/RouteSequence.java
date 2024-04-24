@@ -6,30 +6,27 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
+import com.titobarrios.constants.VType;
 import com.titobarrios.db.CurrentDate;
 import com.titobarrios.db.DB;
 import com.titobarrios.services.LaboralDays;
 
 public class RouteSequence {
+	private VType type;
 	private DayOfWeek[] laboralDays;
 	private Route[] routes;
 	private ArrayList<Coupon> coupons;
 	private Company owner;
+	private ArrayList<Vehicle> vehicles;
 	private String name;
 	private boolean isAvailable;
 
-	public RouteSequence(String name, Company owner, DayOfWeek[] laboralDays, Route[] routes) {
-		this.name = name;
+	public RouteSequence(Company owner, VType type, String name, String initialTime, DayOfWeek[] laboralDays,
+			int stopsNumber,
+			int[] timeLapse) {
 		this.owner = owner;
-		this.laboralDays = laboralDays;
-		this.routes = routes;
-		coupons = new ArrayList<Coupon>();
-	}
-
-	public RouteSequence(Company owner, String name, String initialTime, DayOfWeek[] laboralDays, int stopsNumber,
-	int[] timeLapse) {
+		this.type = type;
 		this.name = name;
-		this.owner = owner;
 		this.laboralDays = laboralDays;
 		coupons = new ArrayList<Coupon>();
 		initialize(initialTime, stopsNumber, timeLapse);
@@ -60,28 +57,30 @@ public class RouteSequence {
 		if (this.getRoutes()[0].getStops()[Route.StopType.ENTRY.ordinal()].getDayOfMonth() != currentDate
 				.getDayOfMonth()) {
 			for (Route route : this.getRoutes()) {
-				route.setStops(new LocalDateTime[] {LocalDateTime.of(currentDate,
-					route.getStops()[Route.StopType.ENTRY.ordinal()].toLocalTime()), LocalDateTime.of(currentDate,
-					route.getStops()[Route.StopType.EXIT.ordinal()].toLocalTime())});
+				route.setStops(new LocalDateTime[] { LocalDateTime.of(currentDate,
+						route.getStops()[Route.StopType.ENTRY.ordinal()].toLocalTime()),
+						LocalDateTime.of(currentDate,
+								route.getStops()[Route.StopType.EXIT.ordinal()].toLocalTime()) });
 			}
 		}
 		checkAvailability();
 	}
 
-    public void checkAvailability() {
+	public void checkAvailability() {
 		this.setAvailable(isLaboralDay() && isAnyRouteAvailable() ? true : false);
-    }
+	}
 
-	private boolean isLaboralDay(){
-		for (DayOfWeek laboralDay : this.getLaboralDays()) 
-			if (laboralDay.equals(CurrentDate.get().getDayOfWeek())) 
+	private boolean isLaboralDay() {
+		for (DayOfWeek laboralDay : this.getLaboralDays())
+			if (laboralDay.equals(CurrentDate.get().getDayOfWeek()))
 				return true;
 		return false;
 	}
 
 	private boolean isAnyRouteAvailable() {
-		for(Route route : this.getRoutes())
-			if(route.getIsAvailable()) return true;
+		for (Route route : this.getRoutes())
+			if (route.getIsAvailable())
+				return true;
 		return false;
 	}
 
@@ -89,8 +88,20 @@ public class RouteSequence {
 		coupons.add(coupon);
 	}
 
-	public void add(Route newRoute, int routeNumber) {
-		routes[routeNumber] = newRoute;
+	public void add(Vehicle vehicle) {
+		vehicles.add(vehicle);
+	}
+
+	public void removeVehicle(int position) {
+		vehicles.remove(position);
+	}
+
+	public VType getType() {
+		return type;
+	}
+
+	public void setType(VType type) {
+		this.type = type;
 	}
 
 	public DayOfWeek[] getLaboralDays() {
@@ -119,6 +130,10 @@ public class RouteSequence {
 
 	public void setOwner(Company owner) {
 		this.owner = owner;
+	}
+
+	public Vehicle[] getVehicles() {
+		return vehicles.toArray(Vehicle[]::new);
 	}
 
 	public String getName() {

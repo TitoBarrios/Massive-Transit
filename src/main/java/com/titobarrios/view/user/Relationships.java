@@ -18,7 +18,7 @@ public class Relationships {
 
     public void menu() {
         Console.log("Familiares y Amigos\n1. Ver usuarios\n2. Agregar nuevo usuario\n0. Salir");
-        int option = Console.readOption(false, 2);
+        int option = Console.readNumber();
         switch (option) {
             case 1:
                 showUsers();
@@ -38,7 +38,7 @@ public class Relationships {
         }
         Console.log("0. Salir");
 
-        int option = Console.readOption(false, user.getRelationships().length);
+        int option = Console.readNumber();
         if (option <= 0 || option > user.getRelationships().length)
             menu();
         User relationship = user.getRelationships()[option];
@@ -63,7 +63,7 @@ public class Relationships {
     public void delete(User relationship) {
         Console.log("Está seguro que desea eliminar el usuario " + relationship.getId()
                 + " de su lista de familiares y amigos?\n1. Sí   2. No");
-        int option = Console.readOption(false, 2);
+        int option = Console.readNumber();
         if(option != 1) menu();
 
         try{
@@ -89,7 +89,7 @@ public class Relationships {
         }
         Console.log(
                 "Está seguro que desea agregar el usuario " + id + " a su lista de amigos y familiares?\n1. Sí  2.No");
-        int option = Console.readOption(false, 2);
+        int option = Console.readNumber();
         if (option != 2) {
             Console.log("Se canceló la operación");
             menu();

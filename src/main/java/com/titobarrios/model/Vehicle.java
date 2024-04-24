@@ -2,6 +2,7 @@ package com.titobarrios.model;
 
 import java.util.ArrayList;
 
+import com.titobarrios.constants.VType;
 import com.titobarrios.constants.Value;
 import com.titobarrios.controller.AccountsCtrl;
 import com.titobarrios.db.CurrentDate;
@@ -9,38 +10,11 @@ import com.titobarrios.db.DB;
 
 public abstract class Vehicle {
 
-	public static enum Type {
-		AIRPLANE("avión", "aviones", "Avión"), BUS("bus", "buses", "Bus"), SHIP("barco", "barcos", "Barco"),
-		TRAVEL_BUS("bus de viaje", "buses de viaje", "Bus de Viaje");
-
-		private Type(String name, String pluralName, String upperCaseName) {
-			this.name = name;
-			this.pluralName = pluralName;
-			this.upperCaseName = upperCaseName;
-		}
-
-		private String name;
-		private String pluralName;
-		private String upperCaseName;
-
-		public String getName() {
-			return name;
-		}
-
-		public String getPluralName() {
-			return pluralName;
-		}
-
-		public String getUpperCaseName() {
-			return upperCaseName;
-		}
-	}
-
 	private final static int REVENUE_Y = 2;
 	private final static int STATISTICS_TYPES = 4;
 	private final static int MAX_CAPACITY_X = 2;
 
-	private Type type;
+	private VType type;
 	private int[][] revenue;
 	private ArrayList<Ticket> tickets;
 	private ArrayList<Coupon> coupons;
@@ -51,7 +25,7 @@ public abstract class Vehicle {
 	private int price;
 	private boolean isAvailable;
 
-	public Vehicle(Type type, Company company, String plate, RouteSequence routeSeq, int price, int capacity) {
+	public Vehicle(VType type, Company company, String plate, RouteSequence routeSeq, int price, int capacity) {
 		this.type = type;
 		revenue = new int[STATISTICS_TYPES][REVENUE_Y];
 		tickets = new ArrayList<Ticket>();
@@ -63,6 +37,7 @@ public abstract class Vehicle {
 		this.plate = plate;
 		this.price = price;
 		company.add(this);
+		routeSeq.add(this);
 		DB.store(this);
 	}
 
@@ -214,7 +189,7 @@ public abstract class Vehicle {
 		this.capacity[Value.CURRENT.value()] = currentCapacity;
 	}
 
-	public Type getType() {
+	public VType getType() {
 		return type;
 	}
 

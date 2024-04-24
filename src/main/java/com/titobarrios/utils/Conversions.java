@@ -1,18 +1,18 @@
 package com.titobarrios.utils;
 
-import com.titobarrios.model.Vehicle;
+import com.titobarrios.constants.VType;
 
 public class Conversions {
-    public static Vehicle.Type convertIntToVehicleType(int vehicleTypeInt) {
+	public static VType convertIntToVehicleType(int vehicleTypeInt) {
 		switch (vehicleTypeInt) {
 			case 0:
-				return Vehicle.Type.AIRPLANE;
+				return VType.AIRPLANE;
 			case 1:
-				return Vehicle.Type.BUS;
+				return VType.BUS;
 			case 2:
-				return Vehicle.Type.SHIP;
+				return VType.SHIP;
 			case 3:
-				return Vehicle.Type.TRAVEL_BUS;
+				return VType.TRAVEL_BUS;
 			default:
 				return null;
 		}
