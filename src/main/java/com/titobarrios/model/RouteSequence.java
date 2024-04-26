@@ -120,7 +120,7 @@ public class RouteSequence {
 		this.routes = routes;
 	}
 
-	public Coupon[] getApplicableCoupons() {
+	public Coupon[] getCoupons() {
 		return coupons.toArray(Coupon[]::new);
 	}
 

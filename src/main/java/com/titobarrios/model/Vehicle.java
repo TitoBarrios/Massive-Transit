@@ -45,7 +45,7 @@ public abstract class Vehicle {
 	public void add(Ticket ticket) {
 		changeCurrentCapacity(1);
 		refreshRevenue();
-		for (int i = 0; i < revenue.length; i++){
+		for (int i = 0; i < revenue.length; i++) {
 			revenue[i] += ticket.getPrice()[Ticket.PriceType.PAID.ordinal()];
 			company.getRevenue()[i] += ticket.getPrice()[Ticket.PriceType.PAID.ordinal()];
 		}

@@ -51,7 +51,7 @@ public class CouponCtrl {
                 break;
             case ROUTE_SEQS:
                 for (RouteSequence routeSeq : coupon.getRouteSeqs())
-                    ArraysUtil.deleteSlot(routeSeq.getApplicableCoupons(), coupon);
+                    ArraysUtil.deleteSlot(routeSeq.getCoupons(), coupon);
                 break;
             case ROUTES:
                 for (Route route : coupon.getRoutes())
@@ -64,7 +64,7 @@ public class CouponCtrl {
 
     public static Coupon[] filterAvailable(Vehicle vehicle, RouteSequence routeSeq, Route[] routes) {
         Coupon[] coupons = ArraysUtil.combineArrays(filterAvailable(vehicle.getCoupons()),
-                filterAvailable(routeSeq.getApplicableCoupons()));
+                filterAvailable(routeSeq.getCoupons()));
         for (Route route : routes)
             ArraysUtil.combineArrays(coupons, route.getCoupons());
         return coupons;
@@ -109,8 +109,8 @@ public class CouponCtrl {
         return true;
     }
 
-    public static Coupon searchCouponByWord(String redeemWord) {
-		for (Coupon coupon : DB.getCoupons())
+    public static Coupon searchCouponByWord(Coupon[] coupons, String redeemWord) {
+		for (Coupon coupon : coupons)
 				if (coupon.getRedeemWord().equals(redeemWord))
 					return coupon;
 		return null;

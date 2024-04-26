@@ -76,6 +76,7 @@ public class Presenter {
 		view.showMessage("");
 	}
 
+	// Ordenado sin detalles
 	public void showCoupons(Coupon[] coupons, int price, boolean detailed) {
 		for (int i = 0; i < coupons.length; i++) {
 			Coupon coupon = coupons[i];
@@ -149,6 +150,7 @@ public class Presenter {
 		}
 	}
 
+	// Ordenado
 	public void showCreateTicketMenu(Account user, Account userWallet) {
 		int vehicleNumber = 0, vehicleTypeInt = 0, routeNumberEntry = 0, routeNumberExit = 0;
 
@@ -351,6 +353,7 @@ public class Presenter {
 		option = 1;
 	}
 
+	// Ordenado
 	public void showCreateSubscriptionMenu(Account user) {
 		view.showMessage("1. "
 				+ Vehicle.Type.AIRPLANE.getUpperCaseName() + "\n2. "

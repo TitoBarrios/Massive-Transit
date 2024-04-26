@@ -57,7 +57,7 @@ public class Relationships {
     }
 
     private void buyTicket(User relationship) {
-        menu();
+        new TicketMenu(relationship, user);
     }
 
     public void delete(User relationship) {

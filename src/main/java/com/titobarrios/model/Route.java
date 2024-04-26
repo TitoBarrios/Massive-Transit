@@ -81,9 +81,9 @@ public class Route {
 
 	public String info() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("Nombre: ").append(name).append("\nEntrada: ").append(stopsName[StopType.ENTRY.ordinal()])
+		builder.append(name).append("\n Entrada: ").append(stopsName[StopType.ENTRY.ordinal()])
 				.append(" ")
-				.append(stops[StopType.ENTRY.ordinal()].toLocalTime()).append("\nSalida: ")
+				.append(stops[StopType.ENTRY.ordinal()].toLocalTime()).append("\n Salida: ")
 				.append(stopsName[StopType.EXIT.ordinal()]).append(" ")
 				.append(stops[StopType.EXIT.ordinal()].toLocalTime()).append("\n");
 		return builder.toString();
