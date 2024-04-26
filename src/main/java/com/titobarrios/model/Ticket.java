@@ -47,18 +47,24 @@ public class Ticket {
 	private void initialize() {
 		LocalDateTime entry = this.getRoutes()[Route.StopType.ENTRY.ordinal()].getStops()[Route.StopType.ENTRY
 				.ordinal()];
-		String name = CurrentDate.get().getYear() + "_" + "_" + vehicle.getType().ordinal()
-				+ entry.getDayOfMonth()
-				+ entry.getMonth()
-				+ entry.toLocalTime()
-				+ this.getRoutes()[Route.StopType.EXIT.ordinal()].getStops()[Route.StopType.EXIT.ordinal()]
-						.toLocalTime();
+		String name = new StringBuilder().append(CurrentDate.get().getYear()).append("_")
+				.append(vehicle.getType().ordinal()).append(entry.getDayOfMonth()).append(entry.getMonth())
+				.append(entry.toLocalTime())
+				.append(this.getRoutes()[Route.StopType.EXIT.ordinal()].getStops()[Route.StopType.EXIT.ordinal()]
+						.toLocalTime())
+				.toString();
 		this.setName(name);
 		this.setPrice(new int[] { CouponCtrl.discountedPrice(coupon, vehicle.getPrice()), vehicle.getPrice() });
 		vehicle.add(this);
 		buyer.add(this);
 		if (!buyer.equals(owner))
 			owner.add(this);
+	}
+
+	public void refresh() {
+		int entry = Route.StopType.ENTRY.ordinal(), exit = Route.StopType.EXIT.ordinal();
+		isAvailable = routes[entry].getStops()[entry].isBefore(CurrentDate.get())
+				&& routes[exit].getStops()[exit].isAfter(CurrentDate.get());
 	}
 
 	public Route[] getRoutes() {
@@ -117,7 +123,7 @@ public class Ticket {
 		this.price = price;
 	}
 
-	public boolean getIsAvailable() {
+	public boolean isAvailable() {
 		return isAvailable;
 	}
 
@@ -154,13 +160,6 @@ public class Ticket {
 			builder.append("Comprador: ").append(buyer.getId());
 		builder.append("\n");
 		return builder.toString();
-	}
-
-	@Override
-	public String toString() {
-		return "Ticket [routes=" + Arrays.toString(routes) + ", buyer=" + buyer + ", owner=" + owner + ", vehicle="
-				+ vehicle + ", coupon=" + coupon + ", name=" + name + ", price=" + price + ", isAvailable="
-				+ isAvailable + "]";
 	}
 
 }

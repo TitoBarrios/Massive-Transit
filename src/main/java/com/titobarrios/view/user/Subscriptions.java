@@ -10,8 +10,8 @@ import com.titobarrios.model.RouteSequence;
 import com.titobarrios.model.Subscription;
 import com.titobarrios.model.User;
 import com.titobarrios.model.Route.StopType;
-import com.titobarrios.services.Converter;
 import com.titobarrios.services.LaboralDays;
+import com.titobarrios.utils.Converter;
 import com.titobarrios.view.Console;
 
 public class Subscriptions {

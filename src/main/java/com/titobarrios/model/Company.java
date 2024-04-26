@@ -1,8 +1,10 @@
 package com.titobarrios.model;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import com.titobarrios.constants.Value;
+import com.titobarrios.db.CurrentDate;
 
 public class Company extends Account {
 	private ArrayList<Vehicle> vehicles;
@@ -10,6 +12,8 @@ public class Company extends Account {
 	private ArrayList<Coupon> coupons;
 	private int[] revenue;
 	private String description;
+
+	private LocalDateTime lastCheck;
 
 	public Company(String id, String password) {
 		super(id, password);
@@ -19,18 +23,14 @@ public class Company extends Account {
 		revenue = new int[4];
 	}
 
-	public void checkRevenue(Company company) {
-		for (Vehicle vehicle : vehicles) {
-			vehicle.checkRevenue(Value.GENERAL);
-			company.getRevenue()[Value.GENERAL
-					.value()] += vehicle.getRevenue()[Value.GENERAL.value()][Value.REVENUE.value()];
-			company.getRevenue()[Value.YEARLY
-					.value()] += vehicle.getRevenue()[Value.YEARLY.value()][Value.REVENUE.value()];
-			company.getRevenue()[Value.MONTHLY
-					.value()] += vehicle.getRevenue()[Value.MONTHLY.value()][Value.REVENUE.value()];
-			company.getRevenue()[Value.DAILY
-					.value()] += vehicle.getRevenue()[Value.DAILY.value()][Value.REVENUE.value()];
-		}
+	protected void refreshRevenue() {
+		if (CurrentDate.get().getYear() != lastCheck.getYear())
+			revenue[Value.YEARLY.value()] = 0;
+		if (CurrentDate.get().getMonth() != lastCheck.getMonth())
+			revenue[Value.MONTHLY.value()] = 0;
+		if (CurrentDate.get().getDayOfMonth() != lastCheck.getDayOfMonth())
+			revenue[Value.DAILY.value()] = 0;
+		lastCheck = CurrentDate.get();
 	}
 
 	public void add(Vehicle vehicle) {

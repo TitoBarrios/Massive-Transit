@@ -1,21 +1,20 @@
 package com.titobarrios.model;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import com.titobarrios.constants.VType;
 import com.titobarrios.constants.Value;
-import com.titobarrios.controller.AccountsCtrl;
 import com.titobarrios.db.CurrentDate;
 import com.titobarrios.db.DB;
 
 public abstract class Vehicle {
 
-	private final static int REVENUE_Y = 2;
 	private final static int STATISTICS_TYPES = 4;
 	private final static int MAX_CAPACITY_X = 2;
 
 	private VType type;
-	private int[][] revenue;
+	private int[] revenue;
 	private ArrayList<Ticket> tickets;
 	private ArrayList<Coupon> coupons;
 	private int[] capacity;
@@ -25,9 +24,11 @@ public abstract class Vehicle {
 	private int price;
 	private boolean isAvailable;
 
+	private LocalDateTime lastCheck;
+
 	public Vehicle(VType type, Company company, String plate, RouteSequence routeSeq, int price, int capacity) {
 		this.type = type;
-		revenue = new int[STATISTICS_TYPES][REVENUE_Y];
+		revenue = new int[STATISTICS_TYPES];
 		tickets = new ArrayList<Ticket>();
 		coupons = new ArrayList<Coupon>();
 		this.capacity = new int[MAX_CAPACITY_X];
@@ -42,6 +43,12 @@ public abstract class Vehicle {
 	}
 
 	public void add(Ticket ticket) {
+		changeCurrentCapacity(1);
+		refreshRevenue();
+		for (int i = 0; i < revenue.length; i++){
+			revenue[i] += ticket.getPrice()[Ticket.PriceType.PAID.ordinal()];
+			company.getRevenue()[i] += ticket.getPrice()[Ticket.PriceType.PAID.ordinal()];
+		}
 		tickets.add(ticket);
 	}
 
@@ -53,152 +60,39 @@ public abstract class Vehicle {
 		tickets.remove(position);
 	}
 
-	public void checkAvailability() {
-		boolean isCapacityAvailable = false;
+	public void refresh() {
 		routeSeq.refresh();
-
-		for (Ticket ticket : this.getTickets()) {
-			if (CurrentDate.get().isAfter(
-					ticket.getRoutes()[Route.StopType.ENTRY.ordinal()].getStops()[Route.StopType.ENTRY.ordinal()])
-					|| CurrentDate.get().isAfter(ticket.getRoutes()[Route.StopType.EXIT.ordinal()]
-							.getStops()[Route.StopType.EXIT.ordinal()])) {
-				AccountsCtrl.setTicketAvailability(ticket, false);
-				this.changeCurrentCapacity(this.getCapacity()[Value.CURRENT.value()] - 1);
-			} else if (!ticket.getIsAvailable() && (ticket.getRoutes()[Route.StopType.ENTRY.ordinal()]
-					.getStops()[Route.StopType.ENTRY.ordinal()].isAfter(CurrentDate.get())
-					|| ticket.getRoutes()[Route.StopType.ENTRY.ordinal()].getStops()[Route.StopType.ENTRY.ordinal()]
-							.isAfter(CurrentDate.get()))) {
-				ticket.setAvailable(true);
-				AccountsCtrl.setTicketAvailability(ticket, true);
-				this.changeCurrentCapacity(this.getCapacity()[Value.CURRENT.value()] + 1);
+		for (Ticket ticket : tickets)
+			if (ticket.getRoutes()[Route.StopType.EXIT.ordinal()].getStops()[Route.StopType.EXIT.ordinal()]
+					.isAfter(CurrentDate.get())) {
+				changeCurrentCapacity(-1);
+				tickets.remove(ticket);
 			}
-		}
-
-		if (this.getCapacity()[Value.MAXIMUM.value()] <= this.getCapacity()[Value.CURRENT.value()]) {
-			isCapacityAvailable = false;
-		} else {
-			isCapacityAvailable = true;
-		}
-
-		if (isCapacityAvailable && this.getRouteSeq().isAvailable()) {
-			this.setAvailable(true);
-			return;
-		}
-		this.setAvailable(false);
-
+		refreshRevenue();
+		this.setAvailable(capacity[Value.MAXIMUM.value()] > capacity[Value.CURRENT.value()] && routeSeq.isAvailable());
 	}
 
-	public void checkRevenue(Value statisticsType) {
-		int[][] revenue = this.getRevenue();
-		int startingTicket = revenue[Value.GENERAL.value()][Value.CURRENT_TICKET.value()] + 1;
-		boolean[] firstTime = new boolean[revenue.length];
-
-		for (int i = 0; i < revenue.length; i++) {
-			int currentTicketNumber = revenue[i][Value.CURRENT_TICKET.value()] + 1;
-			if (currentTicketNumber < startingTicket) {
-				startingTicket = currentTicketNumber;
-			}
-			if (revenue[i][Value.REVENUE.value()] == 0) {
-				firstTime[i] = true;
-				startingTicket = 0;
-			}
-		}
-
-		if (this.getTickets()[startingTicket] != null) {
-			for (int i = startingTicket; i < this.getTickets().length; i++) {
-				if (this.getTickets()[i] != null) {
-					int price = this.getTickets()[i].getPrice()[Ticket.PriceType.PAID.ordinal()];
-					switch (statisticsType) {
-						case GENERAL:
-							int generalLastTicketNumber = revenue[Value.GENERAL.value()][Value.CURRENT_TICKET
-									.value()];
-							if (i > generalLastTicketNumber
-									|| (firstTime[Value.GENERAL.value()] && generalLastTicketNumber == i)) {
-								revenue[Value.GENERAL.value()][Value.REVENUE.value()] += price;
-								revenue[Value.GENERAL.value()][Value.CURRENT_TICKET.value()] = i;
-							}
-						case YEARLY:
-							int yearlyLastTicketNumber = revenue[Value.YEARLY.value()][Value.CURRENT_TICKET
-									.value()];
-							if (i > yearlyLastTicketNumber
-									|| (firstTime[Value.YEARLY.value()]
-											&& startingTicket == yearlyLastTicketNumber)) {
-								if (this.getTickets()[yearlyLastTicketNumber].getRoutes()[Route.StopType.EXIT
-										.ordinal()]
-										.getStops()[Route.StopType.EXIT.ordinal()]
-										.getYear() != CurrentDate.get().getYear()) {
-									revenue[Value.YEARLY.value()][Value.REVENUE.value()] = 0;
-								}
-								revenue[Value.YEARLY.value()][Value.REVENUE.value()] += price;
-								revenue[Value.YEARLY.value()][Value.CURRENT_TICKET.value()] = i;
-							}
-							if (statisticsType != Value.GENERAL)
-								break;
-						case MONTHLY:
-							int monthlyLastTicketNumber = revenue[Value.MONTHLY.value()][Value.CURRENT_TICKET
-									.value()];
-							if (i > monthlyLastTicketNumber
-									|| (firstTime[Value.MONTHLY.value()] && monthlyLastTicketNumber == i)) {
-								if (this.getTickets()[monthlyLastTicketNumber].getRoutes()[Route.StopType.EXIT
-										.ordinal()]
-										.getStops()[Route.StopType.EXIT.ordinal()]
-										.getMonthValue() != CurrentDate.get().getMonthValue()
-										|| this.getTickets()[monthlyLastTicketNumber].getRoutes()[Route.StopType.EXIT
-												.ordinal()].getStops()[Route.StopType.EXIT.ordinal()]
-												.getYear() != CurrentDate.get().getYear()) {
-
-									revenue[Value.MONTHLY.value()][Value.REVENUE.value()] = 0;
-								}
-								revenue[Value.MONTHLY.value()][Value.REVENUE.value()] += price;
-								revenue[Value.MONTHLY.value()][Value.CURRENT_TICKET.value()] = i;
-							}
-							if (statisticsType != Value.GENERAL)
-								break;
-						case DAILY:
-							int dailyLastTicketNumber = revenue[Value.DAILY.value()][Value.CURRENT_TICKET
-									.value()];
-							if (i > dailyLastTicketNumber
-									|| (firstTime[Value.DAILY.value()] && dailyLastTicketNumber == i)) {
-								if (this.getTickets()[dailyLastTicketNumber].getRoutes()[Route.StopType.EXIT
-										.ordinal()]
-										.getStops()[Route.StopType.EXIT.ordinal()]
-										.getDayOfMonth() != CurrentDate.get().getDayOfMonth()
-										|| this.getTickets()[dailyLastTicketNumber].getRoutes()[Route.StopType.EXIT
-												.ordinal()].getStops()[Route.StopType.EXIT.ordinal()]
-												.getMonthValue() != CurrentDate.get().getMonthValue()
-										|| this.getTickets()[dailyLastTicketNumber].getRoutes()[Route.StopType.EXIT
-												.ordinal()].getStops()[Route.StopType.EXIT.ordinal()]
-												.getYear() != CurrentDate.get().getYear()) {
-									revenue[Value.DAILY.value()][Value.REVENUE.value()] = 0;
-								}
-								revenue[Value.DAILY.value()][Value.REVENUE.value()] += price;
-								revenue[Value.DAILY.value()][Value.CURRENT_TICKET.value()] = i;
-							}
-							break;
-						default:
-							break;
-					}
-				} else {
-					break;
-				}
-			}
-		}
+	private void refreshRevenue() {
+		if (CurrentDate.get().getYear() != lastCheck.getYear())
+			revenue[Value.YEARLY.value()] = 0;
+		if (CurrentDate.get().getMonth() != lastCheck.getMonth())
+			revenue[Value.MONTHLY.value()] = 0;
+		if (CurrentDate.get().getDayOfMonth() != lastCheck.getDayOfMonth())
+			revenue[Value.DAILY.value()] = 0;
+		company.refreshRevenue();
+		lastCheck = CurrentDate.get();
 	}
 
-	public void changeCurrentCapacity(int currentCapacity) {
-		this.capacity[Value.CURRENT.value()] = currentCapacity;
+	private void changeCurrentCapacity(int variation) {
+		this.capacity[Value.CURRENT.value()] += variation;
 	}
 
 	public VType getType() {
 		return type;
 	}
 
-	public int[][] getRevenue() {
+	public int[] getRevenue() {
 		return revenue;
-	}
-
-	public void setRevenue(int[][] revenue) {
-		this.revenue = revenue;
 	}
 
 	public Ticket[] getTickets() {

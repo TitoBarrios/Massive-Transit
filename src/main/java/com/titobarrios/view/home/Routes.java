@@ -4,7 +4,7 @@ import com.titobarrios.constants.VType;
 import com.titobarrios.controller.RouteSeqCtrl;
 import com.titobarrios.db.DB;
 import com.titobarrios.model.RouteSequence;
-import com.titobarrios.utils.Conversions;
+import com.titobarrios.utils.Converter;
 import com.titobarrios.view.Console;
 
 public class Routes {
@@ -27,7 +27,7 @@ public class Routes {
             if (option < 0 || option > 4)
                 Console.log("Opción inválida, inténtalo de nuevo");
         } while(option > 0 || option <= 4);
-        VType type = Conversions.convertIntToVehicleType(option - 1);
+        VType type = Converter.fromInt(option - 1);
         showRoutes(type);
     }
 
