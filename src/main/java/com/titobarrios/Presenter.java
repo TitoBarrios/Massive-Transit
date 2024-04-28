@@ -578,6 +578,7 @@ public class Presenter {
 		return null;
 	}
 
+	// Ordenado
 	public void showStatistics(Company company, Value value) {
 		calculate.checkCompanyRevenue(company);
 

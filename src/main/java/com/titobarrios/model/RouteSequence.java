@@ -21,9 +21,8 @@ public class RouteSequence {
 	private String name;
 	private boolean isAvailable;
 
-	public RouteSequence(Company owner, VType type, String name, String initialTime, DayOfWeek[] laboralDays,
-			int stopsNumber,
-			int[] timeLapse) {
+	public RouteSequence(Company owner, VType type, String name, LocalTime initialTime, DayOfWeek[] laboralDays,
+			int stopsNumber, int[] timeLapse) {
 		this.owner = owner;
 		this.type = type;
 		this.name = name;
@@ -32,11 +31,11 @@ public class RouteSequence {
 		initialize(initialTime, stopsNumber, timeLapse);
 	}
 
-	private void initialize(String initialTime, int stopsNumber, int[] timeLapse) {
+	private void initialize(LocalTime initialTime, int stopsNumber, int[] timeLapse) {
 		routes = new Route[stopsNumber - 1];
 		LocalDateTime[][] stops = new LocalDateTime[stopsNumber][2];
 		stops[0][Route.StopType.ENTRY.ordinal()] = LaboralDays.adjustTime(laboralDays,
-				LocalDateTime.of(CurrentDate.get().toLocalDate(), LocalTime.parse(initialTime)));
+				LocalDateTime.of(CurrentDate.get().toLocalDate(), initialTime));
 		stops[0][Route.StopType.EXIT.ordinal()] = LaboralDays.adjustTime(laboralDays,
 				stops[0][Route.StopType.ENTRY.ordinal()].plusMinutes(timeLapse[0]));
 		routes[0] = new Route("0 a 1", new LocalDateTime[] { stops[0][Route.StopType.ENTRY.ordinal()],
@@ -150,6 +149,11 @@ public class RouteSequence {
 
 	public void setAvailable(boolean isAvailable) {
 		this.isAvailable = isAvailable;
+	}
+
+	public void delete() {
+		DB.remove(this);
+		owner.remove(this);
 	}
 
 	public String info() {

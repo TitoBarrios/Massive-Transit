@@ -56,6 +56,10 @@ public class DB {
         vehicles.remove(vehicle);
     }
 
+    public static void remove(RouteSequence routeSeq) {
+        routeSeqs.remove(routeSeq);
+    }
+
     public static Vehicle[] getVehicles() {
         return vehicles.toArray(Vehicle[]::new);
     }
