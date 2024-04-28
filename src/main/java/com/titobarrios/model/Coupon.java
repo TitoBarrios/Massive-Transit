@@ -7,8 +7,10 @@ import com.titobarrios.constants.Value;
 import com.titobarrios.db.Archive;
 import com.titobarrios.db.CurrentDate;
 import com.titobarrios.db.DB;
+import com.titobarrios.model.interfaces.Id;
+import com.titobarrios.utils.ArraysUtil;
 
-public class Coupon {
+public class Coupon implements Id {
 	public static enum AppliesTo {
 		VEHICLES, ROUTE_SEQS, ROUTES;
 	}
@@ -37,7 +39,7 @@ public class Coupon {
 
 	public static final int REDEEMS_X = 4;
 
-	private int id;
+	private String id;
 	private Company owner;
 	private String name;
 	private String description;
@@ -59,14 +61,17 @@ public class Coupon {
 
 	private boolean isAvailable;
 
-	public Coupon(Type type, int id, Company owner, String name, String description, DiscountType discountType,
-			String redeemWord, int discount, LocalDateTime[] dates, boolean isCumulative, AppliesTo applicable,
-			Vehicle[] vehicles, RouteSequence[] routeSeqs, Route[] routes,
-			DayOfWeek[] redeemingDays, int userMaxRedeems, int maxRedeems) {
-		this.owner = owner;
+	public Coupon(Type type, Company owner, String name, String description, String redeemWord,
+			DiscountType discountType, int discount, LocalDateTime[] dates, boolean isCumulative, AppliesTo applicable,
+			Vehicle[] vehicles, RouteSequence[] routeSeqs, Route[] routes, DayOfWeek[] redeemingDays,
+			int userMaxRedeems, int maxRedeems) {
 		this.name = name;
 		this.description = description;
 		this.isCumulative = isCumulative;
+		this.type = type;
+		this.redeemWord = redeemWord;
+		this.discountType = discountType;
+		this.discount = discount;
 		this.applicable = applicable;
 		this.vehicles = vehicles;
 		this.routeSeqs = routeSeqs;
@@ -75,9 +80,7 @@ public class Coupon {
 		this.redeems[RedeemType.USER_MAXIMUM.ordinal()] = userMaxRedeems;
 		this.redeems[RedeemType.MAXIMUM.ordinal()] = maxRedeems;
 		this.redeemingDays = redeemingDays;
-		DB.store(this);
-		owner.add(this);
-		this.checkAvailability();
+		initialize();
 	}
 
 	public Coupon(Coupon coupon) {
@@ -86,6 +89,14 @@ public class Coupon {
 		this.name = coupon.getName();
 		this.discountType = coupon.getDiscountType();
 		this.discount = coupon.getDiscount();
+	}
+
+	private void initialize() {
+		generateID();
+		checkAvailability();
+		DB.store(this);
+		owner.add(this);
+		addToObjects();
 	}
 
 	public void checkAvailability() {
@@ -97,11 +108,68 @@ public class Coupon {
 		this.setAvailable(false);
 	}
 
-	public void generateID() {
-		this.id = CurrentDate.get().getYear() * 100000 + Archive.getCoupons().length - 1;
+	private void generateID() {
+		this.id = "" + (CurrentDate.get().getYear() * 100000 + Archive.getCoupons().length - 1);
 	}
 
-	public int getId() {
+	public void remove(Vehicle vehicle) {
+		ArraysUtil.deleteSlot(vehicles, vehicle);
+	}
+
+	public void remove(RouteSequence routeSeq) {
+		ArraysUtil.deleteSlot(routeSeqs, routeSeq);
+	}
+
+	private void addToObjects() {
+		switch (applicable) {
+			case VEHICLES:
+				for (Vehicle vehicle : vehicles)
+					vehicle.add(this);
+				break;
+			case ROUTE_SEQS:
+				for (RouteSequence routeSeq : routeSeqs)
+					routeSeq.add(this);
+				break;
+			case ROUTES:
+				for (Route route : routes)
+					route.add(this);
+				break;
+		}
+	}
+
+	private void removeObjects() {
+		switch (applicable) {
+			case VEHICLES:
+				vehicles = null;
+				break;
+			case ROUTE_SEQS:
+				routeSeqs = null;
+				break;
+			case ROUTES:
+				routes = null;
+				break;
+		}
+	}
+
+	private void removeFromObjects() {
+		switch (applicable) {
+			case VEHICLES:
+				for (Vehicle vehicle : vehicles)
+					vehicle.remove(this);
+				break;
+			case ROUTE_SEQS:
+				for (RouteSequence routeSeq : routeSeqs)
+					routeSeq.remove(this);
+				break;
+			case ROUTES:
+				for (Route route : routes)
+					route.remove(this);
+				break;
+		}
+	}
+
+	@Override
+	public String getId() {
 		return id;
 	}
 
@@ -143,6 +211,8 @@ public class Coupon {
 
 	public void setType(Type type) {
 		this.type = type;
+		if (type.equals(Type.PUBLIC))
+			redeemWord = null;
 	}
 
 	public String getRedeemWord() {
@@ -174,6 +244,8 @@ public class Coupon {
 	}
 
 	public void setApplicable(AppliesTo applicable) {
+		removeFromObjects();
+		removeObjects();
 		this.applicable = applicable;
 	}
 
@@ -183,6 +255,7 @@ public class Coupon {
 
 	public void setVehicles(Vehicle[] vehicles) {
 		this.vehicles = vehicles;
+		addToObjects();
 	}
 
 	public RouteSequence[] getRouteSeqs() {
@@ -191,6 +264,7 @@ public class Coupon {
 
 	public void setRouteSeqs(RouteSequence[] routeSeqs) {
 		this.routeSeqs = routeSeqs;
+		addToObjects();
 	}
 
 	public Route[] getRoutes() {
@@ -199,6 +273,7 @@ public class Coupon {
 
 	public void setRoutes(Route[] routes) {
 		this.routes = routes;
+		addToObjects();
 	}
 
 	public int[] getRedeems() {
@@ -231,5 +306,40 @@ public class Coupon {
 
 	public void setAvailable(boolean isAvailable) {
 		this.isAvailable = isAvailable;
+	}
+
+	public void delete() {
+		DB.remove(this);
+		owner.remove(this);
+		removeFromObjects();
+	}
+
+	public String info() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("[").append(id).append("] ").append(name).append("\n ").append(description).append("\n")
+				.append(type.getName()).append(" ").append(type == Type.RESERVED ? redeemWord + "   " : "")
+				.append(discountType).append("   ").append(discount)
+				.append(discountType == DiscountType.PERCENTAGE ? "%" : "").append("\n");
+		switch (applicable) {
+			case VEHICLES:
+				builder.append("Vehículos:");
+				for (Vehicle vehicle : vehicles)
+					builder.append("\n").append(vehicle.getId());
+				break;
+			case ROUTE_SEQS:
+				builder.append("Secuencias de rutas:");
+				for (RouteSequence routeSeq : routeSeqs)
+					builder.append("\n").append(routeSeq.getId());
+				break;
+			case ROUTES:
+				builder.append("Rutas:");
+				for (Route route : routes)
+					builder.append("\n").append(route.getName());
+				break;
+		}
+		builder.append("\nRedenciones: ").append(redeems[RedeemType.CURRENT.ordinal()]).append("/")
+				.append(redeems[RedeemType.MAXIMUM.ordinal()]).append("\nExpira: ")
+				.append(dates[Value.EXPIRATION.value()]).append("\n");
+		return builder.toString();
 	}
 }

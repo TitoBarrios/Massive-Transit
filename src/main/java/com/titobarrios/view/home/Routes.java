@@ -32,7 +32,7 @@ public class Routes {
         RouteSequence[] routeSeqs = RouteSeqServ.filterByType(type, DB.getRouteSeqs());
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < routeSeqs.length; i++)
-            builder.append(i + 1).append(". ").append(routeSeqs[i].getName()).append("    ")
+            builder.append(i + 1).append(". ").append(routeSeqs[i].getId()).append("    ")
                     .append(routeSeqs[i].getOwner().getId())
                     .append("\nDisponibilidad: ").append(routeSeqs[i].isAvailable() ? "Disponible" : "No disponible")
                     .append("\n\n");

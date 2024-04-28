@@ -52,6 +52,10 @@ public class DB {
         routeSeqs.add(routeSeq);
     }
 
+    public static void remove(Coupon coupon) {
+        coupons.remove(coupon);
+    }
+
     public static void remove(Vehicle vehicle) {
         vehicles.remove(vehicle);
     }

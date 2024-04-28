@@ -53,6 +53,10 @@ public class Company extends Account {
 		routeSeqs.remove(routeSeq);
 	}
 
+	public void remove(Coupon coupon) {
+		coupons.remove(coupon);
+	}
+
 	public Vehicle[] getVehicles() {
 		return vehicles.toArray(Vehicle[]::new);
 	}

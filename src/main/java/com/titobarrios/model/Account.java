@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.titobarrios.db.DB;
+import com.titobarrios.model.interfaces.Id;
 
-public abstract class Account {
+public abstract class Account implements Id {
 
 	private String id;
 	private String password;
@@ -31,6 +32,7 @@ public abstract class Account {
 		return tickets.toArray(Ticket[]::new);
 	}
 
+	@Override
 	public String getId() {
 		return id;
 	}

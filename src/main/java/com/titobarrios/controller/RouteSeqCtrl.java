@@ -25,15 +25,17 @@ public class RouteSeqCtrl {
         RouteSequence selected = null;
         Console.log("Seleccione una secuencia de rutas");
         for (int i = 0; i < routeSeqs.length; i++)
-            Console.log((i + 1) + ". " + routeSeqs[i].getName());
+            Console.log((i + 1) + ". " + routeSeqs[i].getId());
         int option = 0;
         do {
             option = Console.readNumber();
             if (option == 0)
                 new RSMainMenu(company);
+            if (option < 0 || option > routeSeqs.length)
+                Console.log("Opción inválida, por favor, inténtelo de nuevo");
         } while (option < 0 || option > routeSeqs.length);
         selected = routeSeqs[option - 1];
-        Console.log("Secuencia: " + selected.getName());
+        Console.log("Secuencia: " + selected.getId());
         for (int i = 0; i < selected.getRoutes().length; i++)
             Console.log((i + 1) + ". " + selected.getRoutes()[i].info());
         Console.log("1. Seleccionar     0. Volver");
@@ -57,12 +59,12 @@ public class RouteSeqCtrl {
         return Converter.fromInt(option);
     }
 
-    public String selectName() {
+    public String selectId() {
         Console.log("Escriba el nombre de la secuencia de rutas");
-        String name = Console.readData();
-        if (name.equals("0"))
+        String id = Console.readData();
+        if (id.equals("0"))
             new RSMainMenu(company);
-        return name;
+        return id;
     }
 
     public DayOfWeek[] selectLaboralDays() {

@@ -23,7 +23,7 @@ public class EditRouteSeq {
     private void edit(RouteSequence routeSeq) {
         Console.log(
                 "¿Qué desea característica desea editar?\n1. Edición completa   2. Tipo de vehículo objetivo   3. Nombre\n4. Días Laborales   5. Hora de inicio   6. Número de paradas e intervalos\nSecuencia seleccionada: "
-                        + routeSeq.getName());
+                        + routeSeq.getId());
         int option = Console.readNumber();
         switch (option) {
             case 1:
@@ -34,8 +34,8 @@ public class EditRouteSeq {
                 if (option != 1)
                     break;
             case 3:
-                routeSeq.setName(ctrl.selectName());
-                Console.log("se ha editado exitosamente el nombre, nuevo nombre: " + routeSeq.getName());
+                routeSeq.setId(ctrl.selectId());
+                Console.log("se ha editado exitosamente el nombre, nuevo nombre: " + routeSeq.getId());
                 if (option != 1)
                     break;
             case 4:
@@ -50,7 +50,7 @@ public class EditRouteSeq {
             case 6:
                 Console.log("Edición de esta característica en desarrollo");
                 if (option == 1)
-                    Console.log("Se ha editado completamente la ruta " + routeSeq.getName());
+                    Console.log("Se ha editado completamente la ruta " + routeSeq.getId());
                 break;
             case 0:
                 new RSMainMenu(company);

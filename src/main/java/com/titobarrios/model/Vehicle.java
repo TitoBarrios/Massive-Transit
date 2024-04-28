@@ -7,8 +7,9 @@ import com.titobarrios.constants.VType;
 import com.titobarrios.constants.Value;
 import com.titobarrios.db.CurrentDate;
 import com.titobarrios.db.DB;
+import com.titobarrios.model.interfaces.Id;
 
-public abstract class Vehicle {
+public abstract class Vehicle implements Id {
 
 	private final static int STATISTICS_TYPES = 4;
 	private final static int MAX_CAPACITY_X = 2;
@@ -56,8 +57,12 @@ public abstract class Vehicle {
 		coupons.add(coupon);
 	}
 
-	public void deleteTicket(int position) {
-		tickets.remove(position);
+	public void remove(Coupon coupon) {
+		coupons.remove(coupon);
+	}
+
+	public void remove(Ticket ticket) {
+		tickets.remove(ticket);
 	}
 
 	public void refresh() {
@@ -135,6 +140,10 @@ public abstract class Vehicle {
 		this.plate = plate;
 	}
 
+	public String getId() {
+		return plate;
+	}
+
 	public int getPrice() {
 		return price;
 	}
@@ -155,13 +164,15 @@ public abstract class Vehicle {
 		DB.remove(this);
 		company.remove(this);
 		routeSeq.remove(this);
+		for (Coupon coupon : coupons)
+			coupon.remove(this);
 	}
 
 	public String info() {
 		StringBuilder builder = new StringBuilder();
 		builder.append(plate).append("		").append(company.getId()).append("\n Precio: ").append(price)
 				.append("		").append(isAvailable ? "Disponible" : "No Disponible").append("\n Secuencia: ")
-				.append(routeSeq.getName()).append("		Máxima capacidad: ")
+				.append(routeSeq.getId()).append("		Máxima capacidad: ")
 				.append(capacity[Value.MAXIMUM.value()]);
 		return builder.toString();
 	}

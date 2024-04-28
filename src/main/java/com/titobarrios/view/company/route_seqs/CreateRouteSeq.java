@@ -22,7 +22,7 @@ public class CreateRouteSeq {
     private void menu() {
         Console.log("Menú de creación");
         VType type = ctrl.selectType();
-        String name = ctrl.selectName();
+        String name = ctrl.selectId();
         DayOfWeek[] laboralDays = ctrl.selectLaboralDays();
         LocalTime startingTime = ctrl.selectStartingTime();
         int stops = ctrl.selectStopsQuantity();

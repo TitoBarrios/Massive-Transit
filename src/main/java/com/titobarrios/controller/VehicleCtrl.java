@@ -7,8 +7,6 @@ import com.titobarrios.model.Vehicle;
 import com.titobarrios.utils.Converter;
 import com.titobarrios.view.Console;
 import com.titobarrios.view.company.vehicles.VMainMenu;
-import com.titobarrios.view.company.vehicles.CreateVehicle;
-import com.titobarrios.view.company.vehicles.EditVehicle;
 
 public class VehicleCtrl {
     public Company company;
@@ -75,7 +73,7 @@ public class VehicleCtrl {
         RouteSequence selected = null;
         Console.log("Seleccione una secuencia de rutas");
         for (int i = 0; i < routeSeqs.length; i++)
-            Console.log((i + 1) + ". " + routeSeqs[i].getName());
+            Console.log((i + 1) + ". " + routeSeqs[i].getId());
         int option = 0;
         do {
             option = Console.readNumber();
@@ -83,7 +81,7 @@ public class VehicleCtrl {
                 new VMainMenu(company);
         } while (option < 0 || option > routeSeqs.length);
         selected = routeSeqs[option - 1];
-        Console.log("Secuencia: " + selected.getName());
+        Console.log("Secuencia: " + selected.getId());
         for (int i = 0; i < selected.getRoutes().length; i++)
             Console.log((i + 1) + ". " + selected.getRoutes()[i].info());
         Console.log("1. Seleccionar     0. Volver");

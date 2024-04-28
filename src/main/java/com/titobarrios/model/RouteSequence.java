@@ -9,23 +9,24 @@ import java.util.ArrayList;
 import com.titobarrios.constants.VType;
 import com.titobarrios.db.CurrentDate;
 import com.titobarrios.db.DB;
+import com.titobarrios.model.interfaces.Id;
 import com.titobarrios.utils.LaboralDays;
 
-public class RouteSequence {
+public class RouteSequence implements Id {
 	private VType type;
 	private DayOfWeek[] laboralDays;
 	private Route[] routes;
 	private ArrayList<Coupon> coupons;
 	private Company owner;
 	private ArrayList<Vehicle> vehicles;
-	private String name;
+	private String id;
 	private boolean isAvailable;
 
-	public RouteSequence(Company owner, VType type, String name, LocalTime initialTime, DayOfWeek[] laboralDays,
+	public RouteSequence(Company owner, VType type, String id, LocalTime initialTime, DayOfWeek[] laboralDays,
 			int stopsNumber, int[] timeLapse) {
 		this.owner = owner;
 		this.type = type;
-		this.name = name;
+		this.id = id;
 		this.laboralDays = laboralDays;
 		coupons = new ArrayList<Coupon>();
 		initialize(initialTime, stopsNumber, timeLapse);
@@ -91,6 +92,10 @@ public class RouteSequence {
 		vehicles.add(vehicle);
 	}
 
+	public void remove(Coupon coupon) {
+		coupons.remove(coupon);
+	}
+
 	public void remove(Vehicle vehicle) {
 		vehicles.remove(vehicle);
 	}
@@ -135,12 +140,13 @@ public class RouteSequence {
 		return vehicles.toArray(Vehicle[]::new);
 	}
 
-	public String getName() {
-		return name;
+	@Override
+	public String getId() {
+		return id;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public boolean isAvailable() {
@@ -154,11 +160,13 @@ public class RouteSequence {
 	public void delete() {
 		DB.remove(this);
 		owner.remove(this);
+		for (Coupon coupon : coupons)
+			coupon.remove(this);
 	}
 
 	public String info() {
 		StringBuilder builder = new StringBuilder();
-		builder.append(name).append("	").append(owner.getId()).append("\nDías activo: ");
+		builder.append(id).append("	").append(owner.getId()).append("\nDías activo: ");
 		for (DayOfWeek laboralDay : laboralDays)
 			builder.append(laboralDay).append(", ");
 		builder.append("\n").append(isAvailable ? "Disponible" : "No disponible");

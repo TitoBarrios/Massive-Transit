@@ -57,13 +57,13 @@ public class Finances {
 
     private void completeReport(Vehicle[] vehicles, boolean withTickets) {
         Console.log(companyReport() + "\n");
-        Console.log("Aviones:");
+        Console.log("\nAviones:");
         vehiclesReport(VehicleServ.filterByType(VType.AIRPLANE, vehicles));
-        Console.log("Buses:");
+        Console.log("\nBuses:");
         vehiclesReport(VehicleServ.filterByType(VType.BUS, vehicles));
-        Console.log("Barcos:");
+        Console.log("\nBarcos:");
         vehiclesReport(VehicleServ.filterByType(VType.SHIP, vehicles));
-        Console.log("Buses de Viaje:");
+        Console.log("\nBuses de Viaje:");
         vehiclesReport(VehicleServ.filterByType(VType.TRAVEL_BUS, vehicles));
     }
 

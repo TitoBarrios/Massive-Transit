@@ -21,7 +21,8 @@ public class Relationships {
         int option = Console.readNumber();
         switch (option) {
             case 1:
-                showUsers();
+                User relationship = selectUser();
+                userOpts(relationship);
             case 2:
                 add();
             case 0:
@@ -31,26 +32,26 @@ public class Relationships {
         }
     }
 
-    private void showUsers() {
+    private User selectUser() {
         Console.log("Seleccione un usuario para ver más opciones");
-        for (int i = 0; i < user.getRelationships().length; i++) {
+        for (int i = 0; i < user.getRelationships().length; i++)
             Console.log((i + 1) + ". Nombre: " + user.getRelationships()[i].getId());
-        }
-        Console.log("0. Salir");
-
         int option = Console.readNumber();
         if (option <= 0 || option > user.getRelationships().length)
             menu();
-        User relationship = user.getRelationships()[option];
+        return user.getRelationships()[option - 1];
+    }
 
+    private void userOpts(User relationship) {
         Console.log(relationship.getId() + "\n1. Comprar ticket    2. Eliminar de mi lista\n0. Reelegir");
+        int option = Console.readNumber();
         switch (option) {
             case 1:
                 buyTicket(relationship);
             case 2:
                 delete(relationship);
             case 0:
-                showUsers();
+                menu();
             default:
                 menu();
         }

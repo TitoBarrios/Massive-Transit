@@ -43,6 +43,10 @@ public class Route {
 		this.setIsAvailable(true);
 	}
 
+	public void remove(Coupon coupon) {
+		coupons.remove(coupon);
+	}
+
 	public LocalDateTime[] getStops() {
 		return stops;
 	}

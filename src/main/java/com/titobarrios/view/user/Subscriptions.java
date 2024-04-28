@@ -92,7 +92,7 @@ public class Subscriptions {
                 RouteSeqServ.filterByLaboralDay(paymentDay, DB.getRouteSeqs()));
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < applicableRouteSeqs.length; i++)
-            builder.append("\n").append(i + 1).append(" Nombre: ").append(applicableRouteSeqs[i].getName());
+            builder.append("\n").append(i + 1).append(" Nombre: ").append(applicableRouteSeqs[i].getId());
         Console.log(builder.toString());
         int option = Console.readNumber();
         if (option == 0)
@@ -101,7 +101,7 @@ public class Subscriptions {
             create();
         RouteSequence routeSeq = applicableRouteSeqs[option - 1];
         builder.delete(0, builder.length() - 1);
-        Console.log(routeSeq.getName());
+        Console.log(routeSeq.getId());
         for (int i = 0; i < routeSeq.getRoutes().length; i++)
             builder.append(i + 1).append(". ");
         Console.log("\nDigite la ruta por la cual va a entrar. -1. Reelegir secuencia.\n0. Volver");
@@ -123,7 +123,7 @@ public class Subscriptions {
         Route exit = routeSeq.getRoutes()[option - 1];
 
         Console.log("Su suscripción es la siguiente: " + "\nSe cobrará los: " + paymentDay + "\nSecuencia: "
-                + routeSeq.getName() + ".\nEntrada: " + entry.getStops()[StopType.ENTRY.ordinal()].toLocalTime()
+                + routeSeq.getId() + ".\nEntrada: " + entry.getStops()[StopType.ENTRY.ordinal()].toLocalTime()
                 + ".    Salida: " + exit.getStops()[StopType.EXIT.ordinal()].toLocalTime()
                 + ".\n\n1. Confirmar.  0. Cancelar.");
         option = Console.readNumber();

@@ -15,13 +15,13 @@ public class DeleteRouteSeq {
     private void menu() {
         RouteSequence[] routeSeqs = company.getRouteSeqs();
         for(int i = 0; i < routeSeqs.length; i++)
-            Console.log((i + 1) + ". " + routeSeqs[i].getName());
+            Console.log((i + 1) + ". " + routeSeqs[i].getId());
         Console.log("Seleccione una secuencia de rutas para eliminar");
         int option = Console.readNumber();
         if(option == 0) new RSMainMenu(company);
         if(option < 0 || option > routeSeqs.length) menu();
         RouteSequence selected = routeSeqs[option - 1];
-        Console.log("Está seguro que desea eliminar la secuencia " + selected.getName() + "?\n1. Sí   2. No");
+        Console.log("Está seguro que desea eliminar la secuencia " + selected.getId() + "?\n1. Sí   2. No");
         option = Console.readNumber();
         if(option == 1) {
             selected.delete();
