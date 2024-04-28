@@ -1,10 +1,10 @@
 package com.titobarrios.view.user;
 
-import com.titobarrios.controller.AccountsCtrl;
-import com.titobarrios.error.ElementNotFoundException;
+import com.titobarrios.exception.ElementNotFoundException;
 import com.titobarrios.model.Account;
 import com.titobarrios.model.Company;
 import com.titobarrios.model.User;
+import com.titobarrios.services.AccountsServ;
 import com.titobarrios.utils.ArraysUtil;
 import com.titobarrios.view.Console;
 
@@ -78,7 +78,7 @@ public class Relationships {
     private void add() {
         Console.log("Escriba el id del usuario a agregar");
         String id = Console.readData();
-        Account relationship = AccountsCtrl.searchAccount(id);
+        Account relationship = AccountsServ.searchAccount(id);
         if (relationship == null) {
             Console.log("Usuario no encontrado");
             menu();

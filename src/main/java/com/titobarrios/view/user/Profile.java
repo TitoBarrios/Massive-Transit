@@ -2,8 +2,8 @@ package com.titobarrios.view.user;
 
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
-import com.titobarrios.controller.AccountsCtrl;
 import com.titobarrios.model.User;
+import com.titobarrios.services.AccountsServ;
 import com.titobarrios.view.Console;
 
 public class Profile {
@@ -42,7 +42,7 @@ public class Profile {
         String id = Console.readData();
         if (id.equals("0"))
             new MainMenu(user);
-        if (!AccountsCtrl.isIdAvailable(id)) {
+        if (!AccountsServ.isIdAvailable(id)) {
             Console.log("El id escrito no está disponible, inténtelo de nuevo");
             newId();
         }

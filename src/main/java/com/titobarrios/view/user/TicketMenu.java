@@ -1,8 +1,6 @@
 package com.titobarrios.view.user;
 
 import com.titobarrios.constants.VType;
-import com.titobarrios.controller.CouponCtrl;
-import com.titobarrios.controller.RouteSeqCtrl;
 import com.titobarrios.db.DB;
 import com.titobarrios.model.Coupon;
 import com.titobarrios.model.Route;
@@ -10,9 +8,11 @@ import com.titobarrios.model.RouteSequence;
 import com.titobarrios.model.Ticket;
 import com.titobarrios.model.User;
 import com.titobarrios.model.Vehicle;
-import com.titobarrios.services.Wallet;
+import com.titobarrios.services.CouponServ;
+import com.titobarrios.services.RouteSeqServ;
 import com.titobarrios.utils.ArraysUtil;
 import com.titobarrios.utils.Converter;
+import com.titobarrios.utils.Wallet;
 import com.titobarrios.view.Console;
 
 public class TicketMenu {
@@ -33,17 +33,17 @@ public class TicketMenu {
 
     private void menu() {
         VType type = selectType();
-        RouteSequence routeSeq = selectRouteSeq(RouteSeqCtrl.filterByType(type, DB.getRouteSeqs()));
+        RouteSequence routeSeq = selectRouteSeq(RouteSeqServ.filterByType(type, DB.getRouteSeqs()));
         Route entry = selectRoute(routeSeq.getRoutes(), "Seleccione la ruta por la cual entrará");
         Route exit = selectRoute(routeSeq.getRoutes(), "Seleccione la ruta por la cual saldrá");
         Coupon[] applicable = ArraysUtil.combineArrays(routeSeq.getCoupons(), entry.getCoupons(), exit.getCoupons());
-        Vehicle vehicle = selectVehicle(routeSeq.getVehicles(), CouponCtrl.filterPublic(applicable));
+        Vehicle vehicle = selectVehicle(routeSeq.getVehicles(), CouponServ.filterPublic(applicable));
         applicable = ArraysUtil.combineArrays(vehicle.getCoupons(), applicable);
-        Coupon coupon = CouponCtrl.findBestCoupon(CouponCtrl.filterPublic(applicable), vehicle.getPrice());
+        Coupon coupon = CouponServ.findBestCoupon(CouponServ.filterPublic(applicable), vehicle.getPrice());
         do {
             Console.log("1. Comprar     2. Agregar/Cambiar Cupón    3. Reiniciar    Cupón Actual: " + coupon != null
                     ? coupon.getName()
-                    : "Ninguno" + "\nPrecio actual: " + CouponCtrl.discountedPrice(coupon, vehicle.getPrice())
+                    : "Ninguno" + "\nPrecio actual: " + CouponServ.discountedPrice(coupon, vehicle.getPrice())
                             + "    Su saldo: " + user.getWallet() + "\n0. Cancelar y volver");
             int option = 0;
             do {
@@ -54,14 +54,14 @@ public class TicketMenu {
 
             switch (option) {
                 case 1:
-                if(!Wallet.isAffordable(user, vehicle.getPrice())) {
-                    Console.log("Su saldo no es suficiente para realizar esta transacción");
-                    continue;
-                }
+                    if (!Wallet.isAffordable(user, vehicle.getPrice())) {
+                        Console.log("Su saldo no es suficiente para realizar esta transacción");
+                        continue;
+                    }
                     Console.log("Su ticket será el siguiente:\n Secuencia: " + routeSeq + "\n Entrada: "
                             + entry.getStops()[Route.StopType.ENTRY.ordinal()] + "\n Salida: "
                             + exit.getStops()[Route.StopType.EXIT.ordinal()] + "\n Vehículo: " + vehicle.getPlate()
-                            + "\n Precio Final: " + CouponCtrl.discountedPrice(coupon, vehicle.getPrice())
+                            + "\n Precio Final: " + CouponServ.discountedPrice(coupon, vehicle.getPrice())
                             + (owner == null ? "" : ("\nSerá enviado a: " + owner.getId()))
                             + "\n\n1. Confirmar  0. Volver");
                     option = Console.readNumber();
@@ -69,15 +69,13 @@ public class TicketMenu {
                         Console.log("Se ha cancelado la operación");
                         continue;
                     }
-                    Ticket ticket = null;
                     if (owner == null) {
-                        ticket = new Ticket(user, user, coupon, vehicle, new Route[]{entry, exit});
                         Console.log("Se ha generado correctamente su ticket, gracias por su compra!");
+                        new Ticket(user, user, coupon, vehicle, new Route[] { entry, exit }).bill();
                     } else {
                         Console.log("Se ha enviado el ticket a " + user.getId() + ", gracias por su compra!");
-                        ticket = new Ticket(owner, user, coupon, vehicle, new Route[]{entry, exit});
+                        new Ticket(owner, user, coupon, vehicle, new Route[] { entry, exit }).bill();
                     }
-                    Console.log(ticket.bill()); 
                     new MainMenu(user);
                 case 2:
                     coupon = selectCoupon(applicable, option);
@@ -89,9 +87,7 @@ public class TicketMenu {
     }
 
     private VType selectType() {
-        Console.log("Seleccione el tipo de vehículo\n1. " + VType.AIRPLANE.getUpperCaseName() + "\n2. "
-                + VType.BUS.getUpperCaseName() + "\n3. "
-                + VType.SHIP.getUpperCaseName() + "\n4. " + VType.TRAVEL_BUS.getUpperCaseName() + "\n0. Volver");
+        Console.log("Seleccione el tipo de vehículo" + VType.menu() + "\n0. Volver");
         int option = Console.readNumber();
         if (option == 0)
             new MainMenu(user);
@@ -131,11 +127,11 @@ public class TicketMenu {
     private Vehicle selectVehicle(Vehicle[] vehicles, Coupon[] applicable) {
         Coupon coupon = null;
         for (int i = 0; i < vehicles.length; i++) {
-            coupon = CouponCtrl.findBestCoupon(applicable, vehicles[i].getPrice());
+            coupon = CouponServ.findBestCoupon(applicable, vehicles[i].getPrice());
             StringBuilder builder = new StringBuilder();
             builder.append(i + 1).append(". ").append(vehicles[i].getPlate()).append("\n Ticket: ");
             if (coupon != null)
-                builder.append(CouponCtrl.discountedPrice(coupon, vehicles[i].getPrice())).append("    Antes: ")
+                builder.append(CouponServ.discountedPrice(coupon, vehicles[i].getPrice())).append("    Antes: ")
                         .append(vehicles[i].getPrice());
             builder.append("\n");
             Console.log(builder.toString());
@@ -151,18 +147,18 @@ public class TicketMenu {
     }
 
     private Coupon selectCoupon(Coupon[] coupons, int price) {
-        Coupon coupon = CouponCtrl.findBestCoupon(CouponCtrl.filterPublic(coupons), price);
+        Coupon coupon = CouponServ.findBestCoupon(CouponServ.filterPublic(coupons), price);
 
         if (coupons.length == 0) {
             Console.log("No tenemos cupones disponibles en este momento");
             return coupon;
         }
-        Coupon[] pCoupons = CouponCtrl.filterPublic(CouponCtrl.filterAvailable(coupons));
+        Coupon[] pCoupons = CouponServ.filterPublic(CouponServ.filterAvailable(coupons));
         for (int i = 0; i < pCoupons.length; i++)
             Console.log((i + 1) + ". " + coupons[i].getName() + "\n " + coupon.getDescription() + "\n Descuento: "
                     + coupon.getDiscount()
                     + (coupon.getDiscountType().equals(Coupon.DiscountType.PERCENTAGE) ? "%" : "")
-                    + "    Precio Final: " + CouponCtrl.discountedPrice(coupons[i], price));
+                    + "    Precio Final: " + CouponServ.discountedPrice(coupons[i], price));
 
         String redeemCode = "0";
         int option = 0;
@@ -174,7 +170,7 @@ public class TicketMenu {
                 if (option != 0)
                     coupon = pCoupons[option - 1];
             } catch (NumberFormatException e) {
-                Coupon temp = CouponCtrl.searchCouponByWord(coupons, redeemCode);
+                Coupon temp = CouponServ.searchCouponByWord(coupons, redeemCode);
                 if (temp == null) {
                     Console.log("No se ha encontrado el cupón");
                     continue;

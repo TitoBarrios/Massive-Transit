@@ -3,7 +3,7 @@ package com.titobarrios.utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import com.titobarrios.error.ElementNotFoundException;
+import com.titobarrios.exception.ElementNotFoundException;
 
 public class ArraysUtil {
     @SuppressWarnings("unchecked")

@@ -421,6 +421,7 @@ public class Presenter {
 		view.showMessage("La suscripción se ha creado correctamente");
 	}
 
+	// Ordenado
 	public void showCreateVehicleMenu(Vehicle.Type type, Company company) {
 		view.showMessage("Digite la placa del " + type.getName() + "\n0. Salir");
 		String plate = view.readData();

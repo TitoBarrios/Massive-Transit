@@ -1,9 +1,9 @@
 package com.titobarrios.view.home;
 
 import com.titobarrios.constants.VType;
-import com.titobarrios.controller.RouteSeqCtrl;
 import com.titobarrios.db.DB;
 import com.titobarrios.model.RouteSequence;
+import com.titobarrios.services.RouteSeqServ;
 import com.titobarrios.utils.Converter;
 import com.titobarrios.view.Console;
 
@@ -14,25 +14,22 @@ public class Routes {
 
     private void menu() {
         Console.log(
-                "¿Para qué tipo de vehículo desea crear tu suscripción?\nSuscríbete y así compramos automáticamente tus tickets\n1. "
-                        + VType.AIRPLANE.getUpperCaseName() + "\n2. " + VType.BUS.getUpperCaseName()
-                        + "\n3. " + VType.SHIP.getUpperCaseName() + "\n4. "
-                        + VType.TRAVEL_BUS.getUpperCaseName() + "\n0. Volver");
-        
+                "¿Para qué tipo de vehículo desea crear tu suscripción?\nSuscríbete y así compramos automáticamente tus tickets"
+                        + VType.menu() + "\n0. Volver");
         int option = 0;
-        do{
+        do {
             option = Console.readNumber();
             if (option == 0)
                 new Home();
             if (option < 0 || option > 4)
                 Console.log("Opción inválida, inténtalo de nuevo");
-        } while(option > 0 || option <= 4);
+        } while (option > 0 || option <= 4);
         VType type = Converter.fromInt(option - 1);
         showRoutes(type);
     }
 
     private void showRoutes(VType type) {
-        RouteSequence[] routeSeqs = RouteSeqCtrl.filterByType(type, DB.getRouteSeqs());
+        RouteSequence[] routeSeqs = RouteSeqServ.filterByType(type, DB.getRouteSeqs());
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < routeSeqs.length; i++)
             builder.append(i + 1).append(". ").append(routeSeqs[i].getName()).append("    ")

@@ -150,4 +150,19 @@ public abstract class Vehicle {
 	public void setAvailable(boolean isAvailable) {
 		this.isAvailable = isAvailable;
 	}
+
+	public void delete() {
+		DB.remove(this);
+		company.remove(this);
+		routeSeq.remove(this);
+	}
+
+	public String info() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(plate).append("		").append(company.getId()).append("\n Precio: ").append(price)
+				.append("		").append(isAvailable ? "Disponible" : "No Disponible").append("\n Secuencia: ")
+				.append(routeSeq.getName()).append("		Máxima capacidad: ")
+				.append(capacity[Value.MAXIMUM.value()]);
+		return builder.toString();
+	}
 }

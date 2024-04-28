@@ -3,15 +3,15 @@ package com.titobarrios.view.user;
 import java.time.DayOfWeek;
 
 import com.titobarrios.constants.VType;
-import com.titobarrios.controller.RouteSeqCtrl;
 import com.titobarrios.db.DB;
 import com.titobarrios.model.Route;
 import com.titobarrios.model.RouteSequence;
 import com.titobarrios.model.Subscription;
 import com.titobarrios.model.User;
 import com.titobarrios.model.Route.StopType;
-import com.titobarrios.services.LaboralDays;
+import com.titobarrios.services.RouteSeqServ;
 import com.titobarrios.utils.Converter;
+import com.titobarrios.utils.LaboralDays;
 import com.titobarrios.view.Console;
 
 public class Subscriptions {
@@ -67,10 +67,8 @@ public class Subscriptions {
 
     private void create() {
         Console.log(
-                "¿Para qué tipo de vehículo desea crear tu suscripción?\nSuscríbete y así compramos automáticamente tus tickets\n1. "
-                        + VType.AIRPLANE.getUpperCaseName() + "\n2. " + VType.BUS.getUpperCaseName()
-                        + "\n3. " + VType.SHIP.getUpperCaseName() + "\n4. "
-                        + VType.TRAVEL_BUS.getUpperCaseName() + "\n0. Volver");
+                "¿Para qué tipo de vehículo desea crear tu suscripción?\nSuscríbete y así compramos automáticamente tus tickets"
+                        + VType.menu() + "\n0. Volver");
         int option = Console.readNumber();
         if (option == 0)
             menu();
@@ -90,8 +88,8 @@ public class Subscriptions {
 
     private void routeSelection(VType type, DayOfWeek paymentDay) {
         Console.log("Selecciona una de las siguientes secuencias para ver más opciones");
-        RouteSequence[] applicableRouteSeqs = RouteSeqCtrl.filterByType(type,
-                RouteSeqCtrl.filterByLaboralDay(paymentDay, DB.getRouteSeqs()));
+        RouteSequence[] applicableRouteSeqs = RouteSeqServ.filterByType(type,
+                RouteSeqServ.filterByLaboralDay(paymentDay, DB.getRouteSeqs()));
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < applicableRouteSeqs.length; i++)
             builder.append("\n").append(i + 1).append(" Nombre: ").append(applicableRouteSeqs[i].getName());

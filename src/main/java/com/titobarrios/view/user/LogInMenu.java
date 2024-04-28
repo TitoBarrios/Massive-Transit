@@ -1,12 +1,12 @@
 package com.titobarrios.view.user;
 
-import com.titobarrios.controller.AccountsCtrl;
-import com.titobarrios.error.ElementNotFoundException;
-import com.titobarrios.error.InvalidCredentialsException;
+import com.titobarrios.exception.ElementNotFoundException;
+import com.titobarrios.exception.InvalidCredentialsException;
 import com.titobarrios.model.Account;
 import com.titobarrios.model.Company;
 import com.titobarrios.model.User;
-import com.titobarrios.services.LogIn;
+import com.titobarrios.services.AccountsServ;
+import com.titobarrios.utils.LogIn;
 import com.titobarrios.view.Console;
 import com.titobarrios.view.home.Home;
 
@@ -35,7 +35,7 @@ public class LogInMenu {
         }
 
         if (logIn) {
-            Account account = AccountsCtrl.searchAccount(id);
+            Account account = AccountsServ.searchAccount(id);
             if (account instanceof Company) {
                 Console.log("Opción no disponible para empresas");
                 new Home();

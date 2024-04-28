@@ -1,7 +1,7 @@
 package com.titobarrios.view.user;
 
 import com.titobarrios.model.User;
-import com.titobarrios.services.Wallet;
+import com.titobarrios.utils.Wallet;
 import com.titobarrios.view.Console;
 
 public class WalletMenu {

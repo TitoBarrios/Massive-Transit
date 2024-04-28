@@ -3,8 +3,8 @@ package com.titobarrios.model;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
-import com.titobarrios.controller.CouponCtrl;
 import com.titobarrios.db.CurrentDate;
+import com.titobarrios.services.CouponServ;
 
 public class Ticket {
 
@@ -54,7 +54,7 @@ public class Ticket {
 						.toLocalTime())
 				.toString();
 		this.setName(name);
-		this.setPrice(new int[] { CouponCtrl.discountedPrice(coupon, vehicle.getPrice()), vehicle.getPrice() });
+		this.setPrice(new int[] { CouponServ.discountedPrice(coupon, vehicle.getPrice()), vehicle.getPrice() });
 		vehicle.add(this);
 		buyer.add(this);
 		if (!buyer.equals(owner))
@@ -157,7 +157,7 @@ public class Ticket {
 								|| CurrentDate.get().isEqual(routes[Route.StopType.ENTRY.ordinal()]
 										.getStops()[Route.StopType.ENTRY.ordinal()]) ? "Confirmado" : "Inactivo");
 		if (!owner.getId().equals(buyer.getId()))
-			builder.append("Comprador: ").append(buyer.getId());
+			builder.append("\nComprador: ").append(buyer.getId());
 		builder.append("\n");
 		return builder.toString();
 	}

@@ -25,4 +25,11 @@ public enum VType {
     public String getUpperCaseName() {
         return upperCaseName;
     }
+
+    public static String menu() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("\n1. ").append(AIRPLANE.getUpperCaseName()).append("\n2. ").append(BUS.getUpperCaseName())
+                .append("\n3. ").append(SHIP.getUpperCaseName()).append("\n4. ").append(TRAVEL_BUS.getUpperCaseName());
+        return builder.toString();
+    }
 }

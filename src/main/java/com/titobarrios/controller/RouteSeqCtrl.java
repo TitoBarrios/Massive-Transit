@@ -7,24 +7,9 @@ import com.titobarrios.constants.VType;
 import com.titobarrios.model.RouteSequence;
 
 public class RouteSeqCtrl {
-    public static RouteSequence[] filterByLaboralDay(DayOfWeek laboralDay, RouteSequence[] routeSeqs) {
-        ArrayList<RouteSequence> filtered = new ArrayList<RouteSequence>();
-        for (RouteSequence routeSeq : routeSeqs)
-            for (DayOfWeek routeDay : routeSeq.getLaboralDays())
-                if (laboralDay.equals(routeDay)) {
-                    filtered.add(routeSeq);
-                    break;
-                }
-        return filtered.toArray(RouteSequence[]::new);
-    }
+    private RouteSequence routeSeq;
 
-    public static RouteSequence[] filterByType(VType filter, RouteSequence[] routeSeqs) {
-        ArrayList<RouteSequence> filtered = new ArrayList<RouteSequence>();
-        for (RouteSequence routeSeq : routeSeqs)
-            if (filter.equals(routeSeq.getType())) {
-                filtered.add(routeSeq);
-                break;
-            }
-        return filtered.toArray(RouteSequence[]::new);
+    public RouteSeqCtrl(RouteSequence routeSeq) {
+        this.routeSeq = routeSeq;
     }
 }

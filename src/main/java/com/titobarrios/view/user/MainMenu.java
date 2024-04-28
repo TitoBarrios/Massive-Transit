@@ -3,8 +3,6 @@ package com.titobarrios.view.user;
 import com.titobarrios.model.User;
 import com.titobarrios.view.Console;
 import com.titobarrios.view.home.Home;
-import com.titobarrios.view.user.ticket.History;
-import com.titobarrios.view.user.ticket.Buy;
 
 public class MainMenu {
     private User user;
@@ -19,7 +17,7 @@ public class MainMenu {
         int option = Console.readNumber();
         switch (option) {
             case 1:
-                new Buy(user);
+                new TicketMenu(user);
             case 2:
                 new Subscriptions(user);
             case 3:
@@ -27,7 +25,6 @@ public class MainMenu {
             case 4:
                 new History(user);
             case 5:
-                // Pendiente compra de ticket
                 new Relationships(user);
             case 6:
                 new Profile(user);

@@ -1,7 +1,7 @@
 package com.titobarrios.view.company;
 
-import com.titobarrios.controller.AccountsCtrl;
 import com.titobarrios.model.Company;
+import com.titobarrios.services.AccountsServ;
 import com.titobarrios.view.Console;
 import com.titobarrios.view.home.CompanyMenu;
 
@@ -16,7 +16,7 @@ public class Register {
         String id = Console.readData();
         if (id.equals("0"))
             new CompanyMenu();
-        if (!AccountsCtrl.isIdAvailable(id)) {
+        if (!AccountsServ.isIdAvailable(id)) {
             Console.log("El id escrito ya está en uso, por favor, elija otro distinto");
             menu();
         }

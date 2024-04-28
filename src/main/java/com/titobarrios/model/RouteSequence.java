@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import com.titobarrios.constants.VType;
 import com.titobarrios.db.CurrentDate;
 import com.titobarrios.db.DB;
-import com.titobarrios.services.LaboralDays;
+import com.titobarrios.utils.LaboralDays;
 
 public class RouteSequence {
 	private VType type;
@@ -92,8 +92,8 @@ public class RouteSequence {
 		vehicles.add(vehicle);
 	}
 
-	public void removeVehicle(int position) {
-		vehicles.remove(position);
+	public void remove(Vehicle vehicle) {
+		vehicles.remove(vehicle);
 	}
 
 	public VType getType() {

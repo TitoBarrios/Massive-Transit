@@ -45,6 +45,10 @@ public class Company extends Account {
 		coupons.add(coupon);
 	}
 
+	public void remove(Vehicle vehicle) {
+		vehicles.remove(vehicle);
+	}
+
 	public Vehicle[] getVehicles() {
 		return vehicles.toArray(Vehicle[]::new);
 	}
