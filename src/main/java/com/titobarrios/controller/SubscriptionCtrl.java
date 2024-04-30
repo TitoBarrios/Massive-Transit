@@ -1,16 +1,90 @@
 package com.titobarrios.controller;
 
-import com.titobarrios.db.CurrentDate;
+import java.time.DayOfWeek;
+
+import com.titobarrios.constants.VType;
 import com.titobarrios.db.DB;
+import com.titobarrios.model.Route;
+import com.titobarrios.model.RouteSequence;
 import com.titobarrios.model.Subscription;
-import com.titobarrios.model.Ticket;
 import com.titobarrios.model.User;
+import com.titobarrios.services.RouteSeqServ;
+import com.titobarrios.utils.Converter;
+import com.titobarrios.utils.LaboralDays;
+import com.titobarrios.view.Console;
+import com.titobarrios.view.user.MainMenu;
+import com.titobarrios.view.user.subscription.SMainMenu;
 
 public class SubscriptionCtrl {
-    private Subscription subscription;
+    private User user;
 
-    public SubscriptionCtrl(Subscription subscription) {
-        this.subscription = subscription;
+    public SubscriptionCtrl(User user) {
+        this.user = user;
     }
 
+    public Subscription selectSubscription() {
+        Subscription[] subscriptions = user.getSubscriptions();
+        if (subscriptions.length == 0) {
+            Console.log("No tiene suscripciones activas");
+            new SMainMenu(user);
+        }
+        Console.log("Estas son tus suscripciones activas");
+        for (int i = 0; i < subscriptions.length; i++) {
+            Console.log((i + 1) + subscriptions[i].info());
+        }
+        Console.log("Digita el número de una suscripción\n0. Volver");
+        int option = Console.readNumber();
+        if (option == 0) {
+            Console.log("Se ha cancelado la operación");
+            new SMainMenu(user);
+        }
+        if (option < 0 || option > subscriptions.length)
+            selectSubscription();
+        return subscriptions[option - 1];
+    }
+
+    public VType selectType() {
+        int option = Console.readNumber();
+        if (option == 0)
+            new MainMenu(user);
+        if (option < 0 || option > 4)
+            selectType();
+        return Converter.fromInt(option - 1);
+    }
+
+    public DayOfWeek selectPaymentDay() {
+        int option = Console.readNumber();
+        if (option == 0)
+            new SMainMenu(user);
+        if (option < 0 || option > 7)
+            selectPaymentDay();
+        return LaboralDays.fromInt(option);
+    }
+
+    public RouteSequence selectRouteSeq(VType type, DayOfWeek paymentDay) {
+        RouteSequence[] applicableRouteSeqs = RouteSeqServ.filterByType(type,
+                RouteSeqServ.filterByLaboralDay(paymentDay, DB.getRouteSeqs()));
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < applicableRouteSeqs.length; i++)
+            builder.append("\n").append(i + 1).append(" Nombre: ").append(applicableRouteSeqs[i].getId());
+        Console.log(builder.toString());
+        int option = Console.readNumber();
+        if (option == 0)
+            new SMainMenu(user);
+        if (option < 0 || option > applicableRouteSeqs.length)
+            selectRouteSeq(type, paymentDay);
+        return applicableRouteSeqs[option - 1];
+    }
+
+    public Route selectRoute(RouteSequence routeSeq) {
+        Console.log(routeSeq.getId());
+        for (int i = 0; i < routeSeq.getRoutes().length; i++)
+            Console.log((i + 1) + ". " + routeSeq.getRoutes()[i].info());
+        int option = Console.readNumber();
+        if (option == 0)
+            new SMainMenu(user);
+        if (option < 0 || option > routeSeq.getRoutes().length)
+            selectRoute(routeSeq);
+        return routeSeq.getRoutes()[option - 1];
+    }
 }

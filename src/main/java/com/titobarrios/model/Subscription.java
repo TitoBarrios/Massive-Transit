@@ -4,21 +4,27 @@ import java.time.DayOfWeek;
 import java.util.ArrayList;
 
 public class Subscription {
+	private User subscriber;
 	private Route[] routes;
 	private DayOfWeek dayOfWeek;
 	private RouteSequence routeSeq;
 	private ArrayList<Ticket> bought;
 
-	public Subscription(User user, DayOfWeek dayOfWeek, RouteSequence routeSeq, Route[] routes) {
+	public Subscription(User subscriber, DayOfWeek dayOfWeek, RouteSequence routeSeq, Route[] routes) {
 		bought = new ArrayList<Ticket>();
+		this.subscriber = subscriber;
 		this.dayOfWeek = dayOfWeek;
 		this.routeSeq = routeSeq;
 		this.routes = routes;
-		user.add(this);
+		subscriber.add(this);
 	}
 
 	public void add(Ticket ticket) {
 		bought.add(ticket);
+	}
+
+	public User getSubscriber() {
+		return subscriber;
 	}
 
 	public DayOfWeek getDayOfWeek() {
@@ -47,6 +53,10 @@ public class Subscription {
 
 	public Ticket[] getTickets() {
 		return bought.toArray(Ticket[]::new);
+	}
+
+	public void delete() {
+		subscriber.remove(this);
 	}
 
 	public String info() {

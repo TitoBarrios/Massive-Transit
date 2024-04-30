@@ -25,12 +25,12 @@ public class User extends Account {
 		subscriptions.add(subscription);
 	}
 
-	public void deleteRelationship(int arrayNumber) {
-		relationships.remove(arrayNumber);
+	public void remove(User relationship) {
+		relationships.remove(relationship);
 	}
 
-	public void deleteSubscription(int arrayNumber) {
-		subscriptions.remove(arrayNumber);
+	public void remove(Subscription subscription) {
+		subscriptions.remove(subscription);
 	}
 
 	public User[] getRelationships() {

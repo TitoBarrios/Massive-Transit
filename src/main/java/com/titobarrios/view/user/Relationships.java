@@ -1,11 +1,9 @@
 package com.titobarrios.view.user;
 
-import com.titobarrios.exception.ElementNotFoundException;
 import com.titobarrios.model.Account;
 import com.titobarrios.model.Company;
 import com.titobarrios.model.User;
 import com.titobarrios.services.AccountsServ;
-import com.titobarrios.utils.ArraysUtil;
 import com.titobarrios.view.Console;
 
 public class Relationships {
@@ -65,16 +63,12 @@ public class Relationships {
         Console.log("Está seguro que desea eliminar el usuario " + relationship.getId()
                 + " de su lista de familiares y amigos?\n1. Sí   2. No");
         int option = Console.readNumber();
-        if(option != 1) menu();
-
-        try{
-            user.deleteRelationship(ArraysUtil.searchElementSlot(user.getRelationships(), relationship));
-            Console.log("Se ha eliminado el usuario de su lista correctamente");
-        } catch(ElementNotFoundException e) {
-            Console.log(e.getMessage());
-        }
+        if (option != 1)
+            menu();
+        user.remove(relationship);
+        Console.log("Se ha eliminado el usuario de su lista correctamente");
         menu();
-    }   
+    }
 
     private void add() {
         Console.log("Escriba el id del usuario a agregar");

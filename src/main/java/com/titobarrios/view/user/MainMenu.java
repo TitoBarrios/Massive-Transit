@@ -3,6 +3,7 @@ package com.titobarrios.view.user;
 import com.titobarrios.model.User;
 import com.titobarrios.view.Console;
 import com.titobarrios.view.home.Home;
+import com.titobarrios.view.user.subscription.SMainMenu;
 
 public class MainMenu {
     private User user;
@@ -19,7 +20,7 @@ public class MainMenu {
             case 1:
                 new TicketMenu(user);
             case 2:
-                new Subscriptions(user);
+                new SMainMenu(user);
             case 3:
                 new WalletMenu(user);
             case 4:
