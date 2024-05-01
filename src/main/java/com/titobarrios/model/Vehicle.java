@@ -8,6 +8,7 @@ import com.titobarrios.constants.Value;
 import com.titobarrios.db.CurrentDate;
 import com.titobarrios.db.DB;
 import com.titobarrios.model.interfaces.Id;
+import com.titobarrios.utils.RevenueUtil;
 
 public abstract class Vehicle implements Id {
 
@@ -15,7 +16,6 @@ public abstract class Vehicle implements Id {
 	private final static int MAX_CAPACITY_X = 2;
 
 	private VType type;
-	private int[] revenue;
 	private ArrayList<Ticket> tickets;
 	private ArrayList<Coupon> coupons;
 	private int[] capacity;
@@ -25,6 +25,7 @@ public abstract class Vehicle implements Id {
 	private int price;
 	private boolean isAvailable;
 
+	private int[] revenue;
 	private LocalDateTime lastCheck;
 
 	public Vehicle(VType type, Company company, String plate, RouteSequence routeSeq, int price, int capacity) {
@@ -45,10 +46,17 @@ public abstract class Vehicle implements Id {
 
 	public void add(Ticket ticket) {
 		changeCurrentCapacity(1);
-		refreshRevenue();
+		RevenueUtil.refreshRevenue(revenue, lastCheck);
+		RevenueUtil.refreshRevenue(company.getRevenue(), company.getLastCheck());
+		RevenueUtil.refreshRevenue(routeSeq.getRevenue(), routeSeq.getLastCheck());
+		if (ticket.getCoupon() != null)
+			RevenueUtil.refreshRevenue(ticket.getCoupon().getRevenue(), ticket.getCoupon().getLastCheck());
 		for (int i = 0; i < revenue.length; i++) {
 			revenue[i] += ticket.getPrice()[Ticket.PriceType.PAID.ordinal()];
 			company.getRevenue()[i] += ticket.getPrice()[Ticket.PriceType.PAID.ordinal()];
+			routeSeq.getRevenue()[i] += ticket.getPrice()[Ticket.PriceType.PAID.ordinal()];
+			if (ticket.getCoupon() != null)
+				ticket.getCoupon().getRevenue()[i] += ticket.getPrice()[Ticket.PriceType.PAID.ordinal()];
 		}
 		tickets.add(ticket);
 	}
@@ -73,19 +81,7 @@ public abstract class Vehicle implements Id {
 				changeCurrentCapacity(-1);
 				tickets.remove(ticket);
 			}
-		refreshRevenue();
 		this.setAvailable(capacity[Value.MAXIMUM.value()] > capacity[Value.CURRENT.value()] && routeSeq.isAvailable());
-	}
-
-	private void refreshRevenue() {
-		if (CurrentDate.get().getYear() != lastCheck.getYear())
-			revenue[Value.YEARLY.value()] = 0;
-		if (CurrentDate.get().getMonth() != lastCheck.getMonth())
-			revenue[Value.MONTHLY.value()] = 0;
-		if (CurrentDate.get().getDayOfMonth() != lastCheck.getDayOfMonth())
-			revenue[Value.DAILY.value()] = 0;
-		company.refreshRevenue();
-		lastCheck = CurrentDate.get();
 	}
 
 	private void changeCurrentCapacity(int variation) {
@@ -94,10 +90,6 @@ public abstract class Vehicle implements Id {
 
 	public VType getType() {
 		return type;
-	}
-
-	public int[] getRevenue() {
-		return revenue;
 	}
 
 	public Ticket[] getTickets() {
@@ -166,6 +158,14 @@ public abstract class Vehicle implements Id {
 		routeSeq.remove(this);
 		for (Coupon coupon : coupons)
 			coupon.remove(this);
+	}
+
+	public int[] getRevenue() {
+		return revenue;
+	}
+
+	public LocalDateTime getLastCheck() {
+		return lastCheck;
 	}
 
 	public String info() {

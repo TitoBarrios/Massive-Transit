@@ -32,6 +32,10 @@ public class TicketCtrl {
 
     public RouteSequence selectRouteSeq(VType type) {
         RouteSequence[] routeSeqs = RouteSeqServ.filterByType(type, DB.getRouteSeqs());
+        if(routeSeqs.length == 0) {
+            Console.log("No tenemos secuencias de rutas disponibles en este momento, por favor, inténtelo de nuevo más tarde");
+            new MainMenu(user);
+        }
         for (int i = 0; i < routeSeqs.length; i++)
             if (routeSeqs[i].isAvailable())
                 Console.log("\n" + (i + 1) + ". " + routeSeqs[i].getId() + "    " + routeSeqs[i].getOwner().getId());
@@ -46,6 +50,10 @@ public class TicketCtrl {
     }
 
     public Route selectRoute(Route[] routes, String message) {
+        if(routes.length == 0) {
+            Console.log("No tenemos rutas disponibles en este momento, por favor, inténtelo de nuevo más tarde");
+            new MainMenu(user);
+        }
         for (int i = 0; i < routes.length; i++)
             if (routes[i].getIsAvailable())
                 Console.log((i + 1) + ". " + routes[i].info());
@@ -61,6 +69,10 @@ public class TicketCtrl {
 
     public Vehicle selectVehicle(Vehicle[] vehicles, Coupon[] applicable) {
         Coupon coupon = null;
+        if(vehicles.length == 0) {
+            Console.log("No tenemos secuencias de rutas disponibles en este momento, por favor, inténtelo de nuevo más tarde");
+            new MainMenu(user);
+        }
         for (int i = 0; i < vehicles.length; i++) {
             coupon = CouponServ.findBestCoupon(applicable, vehicles[i].getPrice());
             StringBuilder builder = new StringBuilder();

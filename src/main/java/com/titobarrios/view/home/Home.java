@@ -25,7 +25,7 @@ public class Home {
             case 4:
                 new CompanyMenu();
             case 5:
-                new Admin();
+                new AdminLogIn();
             case 0:
                 new Exit();
             default:

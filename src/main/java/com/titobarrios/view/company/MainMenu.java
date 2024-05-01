@@ -18,7 +18,7 @@ public class MainMenu {
 
     private void menu() {
         Console.log(
-                "¿Qué desea hacer?\n1. Datos financieros    2. Cupones\n3. Vehículos    4. Crear Ruta\n0. Cerrar sesión");
+                "¿Qué desea hacer?\n1. Datos financieros    2. Cupones\n3. Vehículos    4. Secuencias de Rutas\n0. Cerrar sesión");
         int option = Console.readNumber();
         switch (option) {
             case 1:

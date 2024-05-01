@@ -57,7 +57,7 @@ public class Profile {
         if (password.equals("0"))
             new MainMenu(user);
 
-        if (BCrypt.checkpw(password, user.getPassword())) {
+        if (!BCrypt.checkpw(password, user.getPassword())) {
             Console.log("Contraseña incorrecta, inténtelo de nuevo");
             newPassword();
         }

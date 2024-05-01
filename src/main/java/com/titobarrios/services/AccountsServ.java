@@ -3,6 +3,7 @@ package com.titobarrios.services;
 import com.titobarrios.db.DB;
 import com.titobarrios.model.Account;
 import com.titobarrios.model.Ticket;
+import com.titobarrios.model.User;
 
 public class AccountsServ {
         public static boolean isIdAvailable(String id) {
@@ -20,8 +21,8 @@ public class AccountsServ {
     }
 
     public static void setTicketAvailability(Ticket ticket, boolean availability) {
-        for (Account account : DB.getAccounts())
-            for (Ticket currentTicket : account.getTickets())
+        for (User user : DB.getUsers())
+            for (Ticket currentTicket : user.getTickets())
                 if (currentTicket.equals(ticket))
                     currentTicket.setAvailable(availability);
     }

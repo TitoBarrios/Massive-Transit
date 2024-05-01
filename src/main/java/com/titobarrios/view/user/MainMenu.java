@@ -9,6 +9,7 @@ public class MainMenu {
     private User user;
 
     public MainMenu(User user) {
+        this.user = user;
         menu();
     }
 

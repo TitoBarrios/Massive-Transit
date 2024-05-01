@@ -9,6 +9,7 @@ import com.titobarrios.db.CurrentDate;
 import com.titobarrios.db.DB;
 import com.titobarrios.model.interfaces.Id;
 import com.titobarrios.utils.ArraysUtil;
+import com.titobarrios.utils.RevenueUtil;
 
 public class Coupon implements Id {
 	public static enum AppliesTo {
@@ -61,6 +62,9 @@ public class Coupon implements Id {
 
 	private boolean isAvailable;
 
+	private int[] revenue;
+	private LocalDateTime lastCheck;
+
 	public Coupon(Type type, Company owner, String name, String description, String redeemWord,
 			DiscountType discountType, int discount, LocalDateTime[] dates, boolean isCumulative, AppliesTo applicable,
 			Vehicle[] vehicles, RouteSequence[] routeSeqs, Route[] routes, DayOfWeek[] redeemingDays,
@@ -84,6 +88,7 @@ public class Coupon implements Id {
 	}
 
 	public Coupon(Coupon coupon) {
+		RevenueUtil.refreshRevenue(revenue, lastCheck);
 		this.id = coupon.getId();
 		this.type = coupon.getType();
 		this.name = coupon.getName();
@@ -306,6 +311,14 @@ public class Coupon implements Id {
 
 	public void setAvailable(boolean isAvailable) {
 		this.isAvailable = isAvailable;
+	}
+
+	public int[] getRevenue() {
+		return revenue;
+	}
+
+	public LocalDateTime getLastCheck() {
+		return lastCheck;
 	}
 
 	public void delete() {

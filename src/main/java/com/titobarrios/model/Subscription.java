@@ -62,7 +62,7 @@ public class Subscription {
 	public String info() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Secuencia de Ruta: ").append(routeSeq.getId())
-				.append("\nEmpresa: ").append(routeSeq.getOwner().getId()).append("\nEntrada: ")
+				.append(".	Empresa: ").append(routeSeq.getOwner().getId()).append("\nEntrada: ")
 				.append(routes[Route.StopType.ENTRY.ordinal()].getStopsName()[Route.StopType.ENTRY.ordinal()])
 				.append(' ').append(routes[Route.StopType.ENTRY.ordinal()].getStops()[Route.StopType.ENTRY.ordinal()])
 				.append("\nSalida: ")

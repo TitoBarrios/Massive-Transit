@@ -13,7 +13,7 @@ public class SMainMenu {
     }
 
     private void menu() {
-        Console.log("1. Mis suscripciones   |   2. Crear nueva suscripción   |   3. Eliminar suscripción\n0. Volver");
+        Console.log("1. Mis suscripciones   |   2. Crear nueva suscripción   |   3. Eliminar suscripción");
         int option = Console.readNumber();
         switch (option) {
             case 1:

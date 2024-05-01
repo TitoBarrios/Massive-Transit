@@ -22,6 +22,9 @@ public class RouteSequence implements Id {
 	private String id;
 	private boolean isAvailable;
 
+	private int[] revenue;
+	private LocalDateTime lastCheck;
+
 	public RouteSequence(Company owner, VType type, String id, LocalTime initialTime, DayOfWeek[] laboralDays,
 			int stopsNumber, int[] timeLapse) {
 		this.owner = owner;
@@ -155,6 +158,14 @@ public class RouteSequence implements Id {
 
 	public void setAvailable(boolean isAvailable) {
 		this.isAvailable = isAvailable;
+	}
+
+	public int[] getRevenue() {
+		return revenue;
+	}
+
+	public LocalDateTime getLastCheck() {
+		return lastCheck;
 	}
 
 	public void delete() {

@@ -1,7 +1,7 @@
 package com.titobarrios.view.company.financial_data;
 
+import com.titobarrios.constants.Revenue;
 import com.titobarrios.constants.VType;
-import com.titobarrios.constants.Value;
 import com.titobarrios.model.Company;
 import com.titobarrios.model.Route;
 import com.titobarrios.model.Ticket;
@@ -69,11 +69,11 @@ public class Finances {
 
     private String companyReport() {
         StringBuilder builder = new StringBuilder();
-        builder.append(company.getId()).append("\nIngresos: ").append(company.getRevenue()[Value.GENERAL.value()])
+        builder.append(company.getId()).append("\nIngresos: ").append(company.getRevenue()[Revenue.GENERAL.ordinal()])
                 .append("\n Anuales: ")
-                .append(company.getRevenue()[Value.YEARLY.value()]).append("\n Mensuales: ")
-                .append(company.getRevenue()[Value.MONTHLY.value()]).append("\n Diarios: ")
-                .append(company.getRevenue()[Value.DAILY.value()]);
+                .append(company.getRevenue()[Revenue.YEARLY.ordinal()]).append("\n Mensuales: ")
+                .append(company.getRevenue()[Revenue.MONTHLY.ordinal()]).append("\n Diarios: ")
+                .append(company.getRevenue()[Revenue.DAILY.ordinal()]);
         return builder.toString();
     }
 
@@ -84,10 +84,10 @@ public class Finances {
     private String vehiclesReport(Vehicle[] vehicles, boolean withTickets) {
         int[] revenue = FinancesServ.vehiclesRevenue(vehicles);
         StringBuilder builder = new StringBuilder();
-        builder.append("Total: ").append(revenue[Value.GENERAL.value()]).append("    Total Anual: ")
-                .append(revenue[Value.YEARLY.value()]).append("\nTotal Mensual: ")
-                .append(revenue[Value.MONTHLY.value()]).append("    Total Diario: ")
-                .append(revenue[Value.DAILY.value()]).append("\nVehículos: ").append(vehicles.length).append("\n");
+        builder.append("Total: ").append(revenue[Revenue.GENERAL.ordinal()]).append("    Total Anual: ")
+                .append(revenue[Revenue.YEARLY.ordinal()]).append("\nTotal Mensual: ")
+                .append(revenue[Revenue.MONTHLY.ordinal()]).append("    Total Diario: ")
+                .append(revenue[Revenue.DAILY.ordinal()]).append("\nVehículos: ").append(vehicles.length).append("\n");
         for (int i = 0; i < vehicles.length; i++)
             builder.append("\n").append(i + 1).append(". ")
                     .append(withTickets ? vehicleReportWithTickets(null) : vehicleReportWithoutTickets(vehicles[i]));
@@ -97,10 +97,10 @@ public class Finances {
     private String vehicleReportWithoutTickets(Vehicle vehicle) {
         StringBuilder builder = new StringBuilder();
         builder.append(vehicle.getPlate()).append("\nGanancias Totales: ")
-                .append(vehicle.getRevenue()[Value.GENERAL.value()]).append("\nGanancias Anuales: ")
-                .append(vehicle.getRevenue()[Value.YEARLY.value()]).append("\nGanancias Mensuales: ")
-                .append(vehicle.getRevenue()[Value.MONTHLY.value()]).append("\nGanancias Diarias: ")
-                .append(vehicle.getRevenue()[Value.DAILY.value()]);
+                .append(vehicle.getRevenue()[Revenue.GENERAL.ordinal()]).append("\nGanancias Anuales: ")
+                .append(vehicle.getRevenue()[Revenue.YEARLY.ordinal()]).append("\nGanancias Mensuales: ")
+                .append(vehicle.getRevenue()[Revenue.MONTHLY.ordinal()]).append("\nGanancias Diarias: ")
+                .append(vehicle.getRevenue()[Revenue.DAILY.ordinal()]);
         return builder.toString();
     }
 

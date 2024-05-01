@@ -3,7 +3,7 @@ package com.titobarrios.model;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-import com.titobarrios.constants.Value;
+import com.titobarrios.constants.Revenue;
 import com.titobarrios.db.CurrentDate;
 
 public class Company extends Account {
@@ -25,11 +25,11 @@ public class Company extends Account {
 
 	protected void refreshRevenue() {
 		if (CurrentDate.get().getYear() != lastCheck.getYear())
-			revenue[Value.YEARLY.value()] = 0;
+			revenue[Revenue.YEARLY.ordinal()] = 0;
 		if (CurrentDate.get().getMonth() != lastCheck.getMonth())
-			revenue[Value.MONTHLY.value()] = 0;
+			revenue[Revenue.MONTHLY.ordinal()] = 0;
 		if (CurrentDate.get().getDayOfMonth() != lastCheck.getDayOfMonth())
-			revenue[Value.DAILY.value()] = 0;
+			revenue[Revenue.DAILY.ordinal()] = 0;
 		lastCheck = CurrentDate.get();
 	}
 
@@ -85,4 +85,21 @@ public class Company extends Account {
 		this.description = description;
 	}
 
+	public LocalDateTime getLastCheck() {
+		return lastCheck;
+	}
+
+	public String info() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(this.getId()).append("\n").append(description).append("\nVehículos:");
+		for (Vehicle vehicle : vehicles)
+			builder.append(vehicle.info()).append("\n");
+		builder.append("\nSecuencias de Rutas:");
+		for (RouteSequence routeSeq : routeSeqs)
+			builder.append(routeSeq.info()).append("\n");
+		builder.append("\nCupones:");
+		for (Coupon coupon : coupons)
+			builder.append(coupon.info()).append("\n");
+		return builder.toString();
+	}
 }

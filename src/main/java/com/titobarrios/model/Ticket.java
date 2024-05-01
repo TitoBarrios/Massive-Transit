@@ -12,8 +12,8 @@ public class Ticket {
 		PAID, REAL;
 	}
 
-	private Account buyer;
-	private Account owner;
+	private User buyer;
+	private User owner;
 	private Vehicle vehicle;
 	private Route[] routes;
 	private Coupon coupon;
@@ -23,7 +23,7 @@ public class Ticket {
 
 	private Subscription subscription;
 
-	public Ticket(Account owner, Account buyer, Coupon coupon, Vehicle vehicle, Route[] routes) {
+	public Ticket(User owner, User buyer, Coupon coupon, Vehicle vehicle, Route[] routes) {
 		this.owner = owner;
 		this.buyer = buyer;
 		this.vehicle = vehicle;
@@ -32,7 +32,7 @@ public class Ticket {
 		initialize();
 	}
 
-	public Ticket(Account owner, Account buyer, Coupon coupon, Vehicle vehicle, Route[] routes,
+	public Ticket(User owner, User buyer, Coupon coupon, Vehicle vehicle, Route[] routes,
 			Subscription subscription) {
 		this.owner = owner;
 		this.buyer = buyer;
@@ -79,7 +79,7 @@ public class Ticket {
 		return buyer;
 	}
 
-	public void setBuyer(Account buyer) {
+	public void setBuyer(User buyer) {
 		this.buyer = buyer;
 	}
 
@@ -87,7 +87,7 @@ public class Ticket {
 		return owner;
 	}
 
-	public void setOwner(Account owner) {
+	public void setOwner(User owner) {
 		this.owner = owner;
 	}
 

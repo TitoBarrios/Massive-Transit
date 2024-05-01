@@ -31,6 +31,8 @@ public class Register {
             if (!password.equals(passwordConfirmation)) {
                 Console.log("Las contraseñas no coinciden, por favor, inténtelo de nuevo");
                 sContinue = false;
+            } else {
+                sContinue = true;
             }
         } while (!sContinue);
         new User(id, password);
