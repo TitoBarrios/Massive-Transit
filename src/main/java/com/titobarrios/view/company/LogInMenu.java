@@ -17,7 +17,7 @@ public class LogInMenu {
     }
 
     private void menu() {
-        Console.log("Ingrese su id\n0. Volver");
+        Console.log("Ingrese su id");
         String id = Console.readData();
         if (id.equals("0"))
             new CompanyMenu();

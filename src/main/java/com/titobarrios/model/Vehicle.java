@@ -31,6 +31,7 @@ public abstract class Vehicle implements Id {
 	public Vehicle(VType type, Company company, String plate, RouteSequence routeSeq, int price, int capacity) {
 		this.type = type;
 		revenue = new int[STATISTICS_TYPES];
+		lastCheck = CurrentDate.get();
 		tickets = new ArrayList<Ticket>();
 		coupons = new ArrayList<Coupon>();
 		this.capacity = new int[MAX_CAPACITY_X];

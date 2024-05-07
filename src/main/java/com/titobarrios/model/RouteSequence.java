@@ -32,7 +32,11 @@ public class RouteSequence implements Id {
 		this.id = id;
 		this.laboralDays = laboralDays;
 		coupons = new ArrayList<Coupon>();
+		vehicles = new ArrayList<Vehicle>();
+		revenue = new int[4];
+		lastCheck = CurrentDate.get();
 		initialize(initialTime, stopsNumber, timeLapse);
+		refresh();
 	}
 
 	private void initialize(LocalTime initialTime, int stopsNumber, int[] timeLapse) {
@@ -178,17 +182,17 @@ public class RouteSequence implements Id {
 	public String info() {
 		StringBuilder builder = new StringBuilder();
 		builder.append(id).append("	").append(owner.getId()).append("\nDías activo: ");
-		for (DayOfWeek laboralDay : laboralDays)
-			builder.append(laboralDay).append(", ");
+		for (int i = 0; i < laboralDays.length; i++)
+			builder.append(laboralDays[i]).append(i == laboralDays.length - 1 ? "." : ", ");
 		builder.append("\n").append(isAvailable ? "Disponible" : "No disponible");
 		builder.append("\n\nRutas:\n");
 		for (Route route : routes)
 			builder.append(route.info()).append("\n");
-		builder.append("\n\nVehículos:");
+		builder.append("\nVehículos:");
 		for (Vehicle vehicle : vehicles)
 			builder.append("	").append(vehicle.getPlate()).append(" ").append(vehicle.getCompany().getId())
 					.append("\n	").append("Precio: ").append(vehicle.getPrice()).append("	. ")
-					.append(builder.append(vehicle.isAvailable() ? "Disponible" : "No disponible"));
+					.append(vehicle.isAvailable() ? "Disponible" : "No disponible").append("\n");
 		return builder.toString();
 	}
 }

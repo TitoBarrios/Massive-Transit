@@ -76,6 +76,7 @@ public class Coupon implements Id {
 		this.redeemWord = redeemWord;
 		this.discountType = discountType;
 		this.discount = discount;
+		this.dates = dates;
 		this.applicable = applicable;
 		this.vehicles = vehicles;
 		this.routeSeqs = routeSeqs;
@@ -83,6 +84,7 @@ public class Coupon implements Id {
 		this.redeems = new int[REDEEMS_X];
 		this.redeems[RedeemType.USER_MAXIMUM.ordinal()] = userMaxRedeems;
 		this.redeems[RedeemType.MAXIMUM.ordinal()] = maxRedeems;
+		lastCheck = CurrentDate.get();
 		this.redeemingDays = redeemingDays;
 		initialize();
 	}

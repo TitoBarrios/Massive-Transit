@@ -1,5 +1,5 @@
 # Basic-Bus-Transportation-Program
-V 1.33  
+V 1.4
 I am creating this program to improve my knowledge in java.
   
 Features:  
@@ -17,10 +17,9 @@ Features:
   - Statistics.  
 - **Admin:**  
   - General statistics.  
-  - Delete companies and users.  
+  - Manage companies and users. 
 
 Future Features (Sorted by priority, highest-lowest):
-- Code refactoring.
 - Java UI 
 - My SQL Data Base.
 - SOLID code.

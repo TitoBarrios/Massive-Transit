@@ -28,8 +28,10 @@ public class Ticket {
 		this.buyer = buyer;
 		this.vehicle = vehicle;
 		this.routes = Arrays.copyOf(routes, routes.length);
+		if(coupon != null)
 		this.coupon = new Coupon(coupon);
 		initialize();
+		refresh();
 	}
 
 	public Ticket(User owner, User buyer, Coupon coupon, Vehicle vehicle, Route[] routes,
@@ -38,10 +40,12 @@ public class Ticket {
 		this.buyer = buyer;
 		this.vehicle = vehicle;
 		this.routes = Arrays.copyOf(routes, routes.length);
+		if(coupon != null)
 		this.coupon = new Coupon(coupon);
 		this.subscription = subscription;
 		subscription.add(this);
 		initialize();
+		refresh();
 	}
 
 	private void initialize() {

@@ -56,7 +56,7 @@ public class RouteSeqCtrl {
             new RSMainMenu(company);
         if (option < 0 || option > 4)
             selectType();
-        return Converter.fromInt(option);
+        return Converter.fromInt(option - 1);
     }
 
     public String selectId() {

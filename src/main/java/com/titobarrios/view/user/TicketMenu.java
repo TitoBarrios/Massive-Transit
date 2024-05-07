@@ -42,16 +42,15 @@ public class TicketMenu {
         applicable = ArraysUtil.combineArrays(vehicle.getCoupons(), applicable);
         Coupon coupon = CouponServ.findBestCoupon(CouponServ.filterPublic(applicable), vehicle.getPrice());
         do {
-            Console.log("1. Comprar     2. Agregar/Cambiar Cupón    3. Reiniciar    Cupón Actual: " + coupon != null
-                    ? coupon.getName()
-                    : "Ninguno" + "\nPrecio actual: " + CouponServ.discountedPrice(coupon, vehicle.getPrice())
+            Console.log("1. Comprar     2. Agregar/Cambiar Cupón    3. Reiniciar    Cupón Actual: " + (coupon == null
+                    ? "Ninguno" : coupon.getName()) + "\nPrecio actual: " + CouponServ.discountedPrice(coupon, vehicle.getPrice())
                             + "    Su saldo: " + user.getWallet() + "\n0. Cancelar y volver");
             int option = 0;
             do {
                 option = Console.readNumber();
                 if (option == 0)
                     new MainMenu(user);
-            } while (option > 0 && option <= 3);
+            } while (option > 0 && option > 3);
 
             switch (option) {
                 case 1:
@@ -79,7 +78,7 @@ public class TicketMenu {
                     }
                     new MainMenu(user);
                 case 2:
-                    coupon = ctrl.selectCoupon(applicable, option);
+                    coupon = ctrl.selectCoupon(applicable, vehicle.getPrice());
                     continue;
                 case 3:
                     menu();

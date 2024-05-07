@@ -18,7 +18,7 @@ public class LaboralDays {
             if (numbers[i] == 8) {
                 laboralDays = new DayOfWeek[7];
                 for(int j = 1; j <= 7; j++)
-                    laboralDays[j] = fromInt(j);
+                    laboralDays[j - 1] = fromInt(j);
                 return laboralDays;
             }
         }

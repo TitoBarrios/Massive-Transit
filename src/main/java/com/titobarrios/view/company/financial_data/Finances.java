@@ -22,7 +22,7 @@ public class Finances {
     private void menu() {
         Console.log("1. Informe completo   |   2. Mis ingresos   |   3. "
                 + VType.AIRPLANE.getUpperCaseName() + "\n4. " + VType.BUS.getUpperCaseName() + "   |   5. "
-                + VType.SHIP.getUpperCaseName() + "6. " + VType.TRAVEL_BUS.getUpperCaseName());
+                + VType.SHIP.getUpperCaseName() + "   |   6. " + VType.TRAVEL_BUS.getUpperCaseName());
         int option = Console.readNumber();
         Vehicle[] vehicles = company.getVehicles();
         switch (option) {
@@ -90,7 +90,7 @@ public class Finances {
                 .append(revenue[Revenue.DAILY.ordinal()]).append("\nVehículos: ").append(vehicles.length).append("\n");
         for (int i = 0; i < vehicles.length; i++)
             builder.append("\n").append(i + 1).append(". ")
-                    .append(withTickets ? vehicleReportWithTickets(null) : vehicleReportWithoutTickets(vehicles[i]));
+                    .append(withTickets ? vehicleReportWithTickets(vehicles[i]) : vehicleReportWithoutTickets(vehicles[i]));
         return builder.toString();
     }
 

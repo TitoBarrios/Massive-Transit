@@ -16,7 +16,7 @@ public class MyRouteSeqs {
         RouteSequence[] routeSeqs = company.getRouteSeqs();
         Console.log("Tiene " + routeSeqs.length + " secuencias de rutas registradas");
         for(RouteSequence routeSeq : routeSeqs)
-            Console.log("\n\n" + routeSeq.info());
+            Console.log("\n\n" + routeSeq.getType() + " " + routeSeq.info());
         Console.log("Escriba cualquier tecla para volver");
         Console.readData();
         new RSMainMenu(company);

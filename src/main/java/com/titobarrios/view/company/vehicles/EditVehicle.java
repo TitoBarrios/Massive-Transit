@@ -22,7 +22,7 @@ public class EditVehicle {
         Vehicle[] vehicles = company.getVehicles();
         for (int i = 0; i < vehicles.length; i++)
             Console.log((i + 1) + ". " + vehicles[i].info());
-        int option = 0;
+        int option = Console.readNumber();
         if (option == 0)
             new VMainMenu(company);
         if (option < 0 || option > vehicles.length)

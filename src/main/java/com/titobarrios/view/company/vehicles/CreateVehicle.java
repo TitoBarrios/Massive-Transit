@@ -27,5 +27,6 @@ public class CreateVehicle {
         RouteSequence routeSeq = ctrl.selectRouteSeq(RouteSeqServ.filterByType(type, company.getRouteSeqs()));
         VehicleServ.createVehicle(type, company, plate, routeSeq, price, capacity);
         Console.log("Se ha creado el " + type.getName() + " correctamente");
+        new VMainMenu(company);
     }
 }

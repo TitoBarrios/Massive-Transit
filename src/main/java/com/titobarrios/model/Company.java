@@ -21,6 +21,7 @@ public class Company extends Account {
 		routeSeqs = new ArrayList<RouteSequence>();
 		coupons = new ArrayList<Coupon>();
 		revenue = new int[4];
+		lastCheck = CurrentDate.get();
 	}
 
 	protected void refreshRevenue() {

@@ -31,26 +31,27 @@ public class TicketCtrl {
     }
 
     public RouteSequence selectRouteSeq(VType type) {
-        RouteSequence[] routeSeqs = RouteSeqServ.filterByType(type, DB.getRouteSeqs());
-        if(routeSeqs.length == 0) {
-            Console.log("No tenemos secuencias de rutas disponibles en este momento, por favor, inténtelo de nuevo más tarde");
+        RouteSequence[] routeSeqs = RouteSeqServ.filterByType(type,
+                RouteSeqServ.filterByAvailability(true, DB.getRouteSeqs()));
+        if (routeSeqs.length == 0) {
+            Console.log(
+                    "No tenemos secuencias de rutas disponibles en este momento, por favor, inténtelo de nuevo más tarde");
             new MainMenu(user);
         }
         for (int i = 0; i < routeSeqs.length; i++)
-            if (routeSeqs[i].isAvailable())
-                Console.log("\n" + (i + 1) + ". " + routeSeqs[i].getId() + "    " + routeSeqs[i].getOwner().getId());
+            Console.log("\n" + (i + 1) + ". " + routeSeqs[i].getId() + "    " + routeSeqs[i].getOwner().getId());
         int option = 0;
         do {
             Console.log("Seleccione la secuencia de rutas que más le convenga");
             option = Console.readNumber();
             if (option == 0)
                 new MainMenu(user);
-        } while (option > 0 && option <= routeSeqs.length);
+        } while (option > 0 && option > routeSeqs.length);
         return routeSeqs[option - 1];
     }
 
     public Route selectRoute(Route[] routes, String message) {
-        if(routes.length == 0) {
+        if (routes.length == 0) {
             Console.log("No tenemos rutas disponibles en este momento, por favor, inténtelo de nuevo más tarde");
             new MainMenu(user);
         }
@@ -63,23 +64,29 @@ public class TicketCtrl {
             option = Console.readNumber();
             if (option == 0)
                 new MainMenu(user);
-        } while (option > 0 && option <= routes.length);
-        return routes[option - 1];
+        } while (option > 0 && option > routes.length);
+        Route selected = routes[option - 1];
+        if(selected.getIsAvailable() == false) {
+            Console.log("la ruta seleccionado no está disponible, por favor inténtelo de nuevo");
+            selectRoute(routes, message);
+        }
+        return selected;
     }
 
     public Vehicle selectVehicle(Vehicle[] vehicles, Coupon[] applicable) {
         Coupon coupon = null;
-        if(vehicles.length == 0) {
-            Console.log("No tenemos secuencias de rutas disponibles en este momento, por favor, inténtelo de nuevo más tarde");
+        if (vehicles.length == 0) {
+            Console.log(
+                    "No tenemos vehículos disponibles en este momento, por favor, inténtelo de nuevo más tarde");
             new MainMenu(user);
         }
         for (int i = 0; i < vehicles.length; i++) {
             coupon = CouponServ.findBestCoupon(applicable, vehicles[i].getPrice());
             StringBuilder builder = new StringBuilder();
-            builder.append(i + 1).append(". ").append(vehicles[i].getPlate()).append("\n Ticket: ");
-            if (coupon != null)
-                builder.append(CouponServ.discountedPrice(coupon, vehicles[i].getPrice())).append("    Antes: ")
-                        .append(vehicles[i].getPrice());
+            builder.append(i + 1).append(". ").append(vehicles[i].getPlate()).append("\n Ticket: ")
+                    .append(coupon == null ? vehicles[i].getPrice()
+                            : new StringBuilder().append(CouponServ.discountedPrice(coupon, vehicles[i].getPrice()))
+                                    .append("    Antes: ").append(vehicles[i].getPrice()).toString());
             builder.append("\n");
             Console.log(builder.toString());
         }
@@ -89,7 +96,7 @@ public class TicketCtrl {
             option = Console.readNumber();
             if (option == 0)
                 new MainMenu(user);
-        } while (option > 0 && option <= vehicles.length);
+        } while (option > 0 && option > vehicles.length);
         return vehicles[option - 1];
     }
 
@@ -128,7 +135,7 @@ public class TicketCtrl {
                 }
                 coupon = temp;
             }
-        } while (option > 0 && option <= coupons.length);
+        } while (option > 0 && option > coupons.length);
         if (option != 0)
             Console.log("Se ha agregado el cupón " + coupon.getName() + " correctamente");
         return coupon;

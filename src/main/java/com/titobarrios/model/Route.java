@@ -28,6 +28,7 @@ public class Route {
 		this.stops = stops;
 		this.stopsName = stopsName;
 		coupons = new ArrayList<Coupon>();
+		checkAvailability();
 	}
 
 	public void add(Coupon coupon) {

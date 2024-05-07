@@ -28,6 +28,7 @@ public class CreateRouteSeq {
         int stops = ctrl.selectStopsQuantity();
         int[] intervals = ctrl.selectIntervals(stops);
         new RouteSequence(company, type, name, startingTime, laboralDays, stops, intervals);
+        Console.log("Su secuencia de rutas " + name + " se ha creado correctamente\n");
         new RSMainMenu(company);
     }
 }

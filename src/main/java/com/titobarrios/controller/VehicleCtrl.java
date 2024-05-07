@@ -33,7 +33,7 @@ public class VehicleCtrl {
             new VMainMenu(company);
         if (option < 0 || option > 4)
             selectType();
-        return Converter.fromInt(option);
+        return Converter.fromInt(option - 1);
     }
 
     public String selectPlate() {
@@ -71,6 +71,10 @@ public class VehicleCtrl {
 
     public RouteSequence selectRouteSeq(RouteSequence[] routeSeqs) {
         RouteSequence selected = null;
+        if(routeSeqs.length == 0) {
+            Console.log("No hay secuencias de rutas creadas para este tipo de vehículo");
+            new VMainMenu(company);
+        }
         Console.log("Seleccione una secuencia de rutas");
         for (int i = 0; i < routeSeqs.length; i++)
             Console.log((i + 1) + ". " + routeSeqs[i].getId());

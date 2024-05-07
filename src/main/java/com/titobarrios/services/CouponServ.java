@@ -11,7 +11,7 @@ import com.titobarrios.utils.ArraysUtil;
 import com.titobarrios.utils.Maths;
 
 public class CouponServ {
-    
+
     public static void editObjects(Coupon coupon, Vehicle[] vehicles) {
         deleteObjects(coupon);
         coupon.setApplicable(Coupon.AppliesTo.VEHICLES);
@@ -110,13 +110,15 @@ public class CouponServ {
     }
 
     public static Coupon searchCouponByWord(Coupon[] coupons, String redeemWord) {
-		for (Coupon coupon : coupons)
-				if (coupon.getRedeemWord().equals(redeemWord))
-					return coupon;
-		return null;
-	}
+        for (Coupon coupon : coupons)
+            if (coupon.getRedeemWord().equals(redeemWord))
+                return coupon;
+        return null;
+    }
 
     public static int discountedPrice(Coupon coupon, int price) {
+        if (coupon == null)
+            return price;
         switch (coupon.getDiscountType()) {
             case QUANTITY:
                 if (price - coupon.getDiscount() <= 0)
