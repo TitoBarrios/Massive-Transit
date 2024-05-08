@@ -25,7 +25,7 @@ public class LogIn {
 
     public static Admin admin(String id, String password) throws InvalidCredentialsException{
         Admin admin = DB.getAdmin();
-        if (admin.getId().equals(id) || !BCrypt.checkpw(password, admin.getPassword()))
+        if (!admin.getId().equals(id) || !BCrypt.checkpw(password, admin.getPassword()))
             throw new InvalidCredentialsException("The password is wrong");
         return admin;
     }

@@ -30,22 +30,27 @@ public class SearchRMenuA {
                 User user = ctrl.selectUser(DB.getUsers());
                 Console.log("Los ingresos generados por el usuario son los siguientes: \n"
                         + RevenueCtrl.revenueInfo(user.getRevenue(), user.getLastCheck()));
+                menu();
             case 2:
                 Company company = ctrl.selectCompany(DB.getCompanies());
-                Console.log("Los ingresos generados por el usuario son los siguientes: \n"
+                Console.log("Los ingresos generados por la empresa son los siguientes: \n"
                         + RevenueCtrl.revenueInfo(company.getRevenue(), company.getLastCheck()));
+                menu();
             case 3:
                 RouteSequence routeSeq = ctrl.selectRouteSequence(DB.getRouteSeqs());
-                Console.log("Los ingresos generados por el usuario son los siguientes: \n"
+                Console.log("Los ingresos generados por la secuencia de rutas son los siguientes: \n"
                         + RevenueCtrl.revenueInfo(routeSeq.getRevenue(), routeSeq.getLastCheck()));
+                menu();
             case 4:
                 Vehicle vehicle = ctrl.selectVehicle(DB.getVehicles());
-                Console.log("Los ingresos generados por el usuario son los siguientes: \n"
+                Console.log("Los ingresos generados por el vehículo son los siguientes: \n"
                         + RevenueCtrl.revenueInfo(vehicle.getRevenue(), vehicle.getLastCheck()));
+                menu();
             case 5:
                 Coupon coupon = ctrl.selectCoupon(DB.getCoupons());
-                Console.log("Los ingresos generados por el usuario son los siguientes: \n"
+                Console.log("Los ingresos generados por el cupón son los siguientes: \n"
                         + RevenueCtrl.revenueInfo(coupon.getRevenue(), coupon.getLastCheck()));
+                menu();
             case 0:
                 new RevenueAMenu(admin);
             default:

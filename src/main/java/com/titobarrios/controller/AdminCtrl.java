@@ -50,7 +50,7 @@ public class AdminCtrl {
 
     public Company selectCompany(Company[] companies) {
         for (int i = 0; i < companies.length; i++)
-            Console.log(new StringBuilder().append(i + 1).append(". ").toString());
+            Console.log(new StringBuilder().append(i + 1).append(". ").append(companies[i].getId()).toString());
         Console.log("Seleccione una empresa");
         int option = 0;
         do {

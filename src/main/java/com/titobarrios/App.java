@@ -14,7 +14,6 @@ public class App {
         PropCtrl propCtrl = new PropCtrl("src/main/resources/default.properties");
         new User(propCtrl.getValue("userId"), propCtrl.getValue("userPassword"));
         new Company(propCtrl.getValue("companyId"), propCtrl.getValue("companyPassword"));
-
     }
 
     public void admin() {

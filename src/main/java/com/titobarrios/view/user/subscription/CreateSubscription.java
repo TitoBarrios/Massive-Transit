@@ -31,9 +31,9 @@ public class CreateSubscription {
         RouteSequence routeSeq = ctrl.selectRouteSeq(type, paymentDay);
         Console.log("Seleccione la ruta por la cual va a entrar");
         Route entry = ctrl.selectRoute(routeSeq);
-        Console.log("Seleccione la ruta por la cual va a entrar");
+        Console.log("Seleccione la ruta por la cual va a salir");
         Route exit = ctrl.selectRoute(routeSeq);
-        if (entry.getStops()[Route.StopType.ENTRY.ordinal()].isBefore(exit.getStops()[Route.StopType.EXIT.ordinal()])) {
+        if (entry.getStops()[Route.StopType.ENTRY.ordinal()].isAfter(exit.getStops()[Route.StopType.EXIT.ordinal()])) {
             Console.log("La ruta de salida no puede ir antes de la entrada, por favor, inténtalo de nuevo");
             menu();
         }

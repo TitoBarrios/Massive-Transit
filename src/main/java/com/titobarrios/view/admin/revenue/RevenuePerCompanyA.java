@@ -15,7 +15,7 @@ public class RevenuePerCompanyA {
     }
 
     private void menu() {
-        Console.log("Ingresos de las empresas\n");
+        Console.log("Ingresos por empresa\n");
         for (Company company : DB.getCompanies())
             Console.log(company.getId() + "\n" + RevenueCtrl.revenueInfo(company.getRevenue(), company.getLastCheck())
                     + "\n");

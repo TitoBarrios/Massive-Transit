@@ -24,7 +24,6 @@ public class User extends Account {
 		subscriptions = new ArrayList<Subscription>();
 		revenue =  new int[4];
 		lastCheck = CurrentDate.get();
-		DB.store(this);
 	}
 
 	public void add(Ticket ticket) {

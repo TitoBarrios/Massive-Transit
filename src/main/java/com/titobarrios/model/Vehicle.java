@@ -51,13 +51,13 @@ public abstract class Vehicle implements Id {
 		RevenueUtil.refreshRevenue(company.getRevenue(), company.getLastCheck());
 		RevenueUtil.refreshRevenue(routeSeq.getRevenue(), routeSeq.getLastCheck());
 		if (ticket.getCoupon() != null)
-			RevenueUtil.refreshRevenue(ticket.getCoupon().getRevenue(), ticket.getCoupon().getLastCheck());
+			RevenueUtil.refreshRevenue(ticket.getCoupon().getOriginal().getRevenue(), ticket.getCoupon().getOriginal().getLastCheck());
 		for (int i = 0; i < revenue.length; i++) {
 			revenue[i] += ticket.getPrice()[Ticket.PriceType.PAID.ordinal()];
 			company.getRevenue()[i] += ticket.getPrice()[Ticket.PriceType.PAID.ordinal()];
 			routeSeq.getRevenue()[i] += ticket.getPrice()[Ticket.PriceType.PAID.ordinal()];
 			if (ticket.getCoupon() != null)
-				ticket.getCoupon().getRevenue()[i] += ticket.getPrice()[Ticket.PriceType.PAID.ordinal()];
+				ticket.getCoupon().getOriginal().getRevenue()[i] += ticket.getPrice()[Ticket.PriceType.PAID.ordinal()];
 		}
 		tickets.add(ticket);
 	}

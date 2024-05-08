@@ -28,9 +28,9 @@ public class SearchCompanyA {
         int option = Console.readNumber();
         switch (option) {
             case 1:
-            Console.log(company.info());;
+                Console.log(company.info());
             case 2:
-            delete(company);
+                delete(company);
             case 0:
                 new CompaniesAMenu(admin);
             default:

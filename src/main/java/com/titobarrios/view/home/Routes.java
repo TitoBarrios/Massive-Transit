@@ -14,8 +14,7 @@ public class Routes {
 
     private void menu() {
         Console.log(
-                "¿Para qué tipo de vehículo desea crear tu suscripción?\nSuscríbete y así compramos automáticamente tus tickets"
-                        + VType.menu() + "\n0. Volver");
+                "¿Para qué tipo de vehículo desea visualizar las rutas?" + VType.menu() + "\n0. Volver");
         int option = 0;
         do {
             option = Console.readNumber();
@@ -23,7 +22,7 @@ public class Routes {
                 new Home();
             if (option < 0 || option > 4)
                 Console.log("Opción inválida, inténtalo de nuevo");
-        } while (option > 0 || option <= 4);
+        } while (option > 0 || option > 4);
         VType type = Converter.fromInt(option - 1);
         showRoutes(type);
     }
@@ -51,6 +50,5 @@ public class Routes {
         if (data.equals("0"))
             new Home();
         showRoutes(type);
-        new Home();
     }
 }

@@ -21,9 +21,9 @@ public class RouteSeqAMenu {
             case 2:
                 new SearchRouteSeqA(admin);
             case 0:
-                menu();
-            default:
                 new AdminMainMenu(admin);
+            default:
+                menu();
         }
     }
 }

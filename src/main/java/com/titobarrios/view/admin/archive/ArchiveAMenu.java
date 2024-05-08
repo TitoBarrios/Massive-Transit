@@ -24,14 +24,19 @@ public class ArchiveAMenu {
         switch (option) {
             case 1:
                 showAdmins();
+                menu();
             case 2:
                 showAccounts();
+                menu();
             case 3:
                 showRouteSeqs();
+                menu();
             case 4:
                 showVehicles();
+                menu();
             case 5:
                 showCoupons();
+                menu();
             case 0:
                 new AdminMainMenu(admin);
             default:

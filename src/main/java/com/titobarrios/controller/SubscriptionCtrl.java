@@ -30,7 +30,7 @@ public class SubscriptionCtrl {
         }
         Console.log("Estas son tus suscripciones activas");
         for (int i = 0; i < subscriptions.length; i++) {
-            Console.log((i + 1) + subscriptions[i].info());
+            Console.log((i + 1) + ". " + subscriptions[i].info());
         }
         Console.log("Digita el número de una suscripción\n0. Volver");
         int option = Console.readNumber();

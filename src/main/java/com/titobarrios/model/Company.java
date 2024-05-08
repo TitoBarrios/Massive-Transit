@@ -92,13 +92,14 @@ public class Company extends Account {
 
 	public String info() {
 		StringBuilder builder = new StringBuilder();
-		builder.append(this.getId()).append("\n").append(description).append("\nVehículos:");
+		builder.append(this.getId()).append("\n").append(description == null ? description : "Sin descripción")
+				.append("\nVehículos:\n");
 		for (Vehicle vehicle : vehicles)
 			builder.append(vehicle.info()).append("\n");
-		builder.append("\nSecuencias de Rutas:");
+		builder.append("\nSecuencias de Rutas:\n");
 		for (RouteSequence routeSeq : routeSeqs)
 			builder.append(routeSeq.info()).append("\n");
-		builder.append("\nCupones:");
+		builder.append("\nCupones:\n");
 		for (Coupon coupon : coupons)
 			builder.append(coupon.info()).append("\n");
 		return builder.toString();

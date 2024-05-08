@@ -17,7 +17,7 @@ public class RevenuePerUserA {
     private void menu() {
         Console.log("Ingresos por usuario");
         for (User user : DB.getUsers())
-            Console.log(user.getId() + RevenueCtrl.revenueInfo(user.getRevenue(), user.getLastCheck()));
+            Console.log(user.getId()  + "\n" + RevenueCtrl.revenueInfo(user.getRevenue(), user.getLastCheck()) + "\n");
         Console.log("Digite cualquier tecla para continuar");
         Console.readData();
         new RevenueAMenu(admin);

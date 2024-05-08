@@ -65,6 +65,8 @@ public class Coupon implements Id {
 	private int[] revenue;
 	private LocalDateTime lastCheck;
 
+	private Coupon original;
+
 	public Coupon(Type type, Company owner, String name, String description, String redeemWord,
 			DiscountType discountType, int discount, LocalDateTime[] dates, boolean isCumulative, AppliesTo applicable,
 			Vehicle[] vehicles, RouteSequence[] routeSeqs, Route[] routes, DayOfWeek[] redeemingDays,
@@ -86,6 +88,7 @@ public class Coupon implements Id {
 		this.redeems = new int[REDEEMS_X];
 		this.redeems[RedeemType.USER_MAXIMUM.ordinal()] = userMaxRedeems;
 		this.redeems[RedeemType.MAXIMUM.ordinal()] = maxRedeems;
+		this.revenue = new int[4];
 		lastCheck = CurrentDate.get();
 		initialize();
 	}
@@ -96,6 +99,7 @@ public class Coupon implements Id {
 		this.name = coupon.getName();
 		this.discountType = coupon.getDiscountType();
 		this.discount = coupon.getDiscount();
+		this.original = coupon;
 		RevenueUtil.refreshRevenue(coupon.getRevenue(), coupon.getLastCheck());
 	}
 
@@ -324,6 +328,10 @@ public class Coupon implements Id {
 
 	public LocalDateTime getLastCheck() {
 		return lastCheck;
+	}
+
+	public Coupon getOriginal() {
+		return original;
 	}
 
 	public void delete() {
