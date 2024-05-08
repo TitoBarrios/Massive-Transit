@@ -125,7 +125,7 @@ public class CouponServ {
                     return 0;
                 return price - coupon.getDiscount();
             case PERCENTAGE:
-                return price - new Maths().calculatePercentage(coupon.getDiscount(), price);
+                return price - Maths.calculatePercentage(coupon.getDiscount(), price);
             default:
                 return 0;
         }

@@ -36,8 +36,7 @@ public class Route {
 	}
 
 	public void checkAvailability() {
-		if (CurrentDate.get().isAfter(this.getStops()[Route.StopType.ENTRY.ordinal()])
-				|| CurrentDate.get().isEqual(this.getStops()[Route.StopType.ENTRY.ordinal()])) {
+		if (CurrentDate.get().isAfter(this.getStops()[Route.StopType.ENTRY.ordinal()])) {
 			this.setIsAvailable(false);
 			return;
 		}

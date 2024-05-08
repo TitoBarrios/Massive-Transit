@@ -35,7 +35,7 @@ public class CouponCtrl {
         if (option == 0)
             new CMainMenu(company);
         if (option < 0 || option > coupons.length)
-            selectCoupon();
+            return selectCoupon();
         return coupons[option - 1];
     }
 
@@ -65,9 +65,22 @@ public class CouponCtrl {
             case 0:
                 new CMainMenu(company);
             default:
-                selectType();
+                return selectType();
         }
         return type;
+    }
+
+    public String selectRedeemWord() {
+        String redeemWord = null;
+        Console.log("Digite la palabra con la que el usuario canjeará el cupón (debe tener al menos una letra)");
+        redeemWord = selectString();
+        try {
+            Integer.parseInt(redeemWord);
+            Console.log("La palabra debe tener al menos una letra, inténtelo nuevamente");
+            return selectRedeemWord();
+        } catch (NumberFormatException e) {
+        }
+        return redeemWord;
     }
 
     public Coupon.AppliesTo selectApplicable() {
@@ -87,7 +100,7 @@ public class CouponCtrl {
             case 0:
                 new CMainMenu(company);
             default:
-                selectApplicable();
+                return selectApplicable();
         }
         return applicable;
     }
@@ -97,6 +110,7 @@ public class CouponCtrl {
         Vehicle[] vehicles = company.getVehicles();
         for (int i = 0; i < vehicles.length; i++)
             Console.log((i + 1) + ". " + vehicles[i].getId());
+        Console.log("Seleccione uno por uno, cada vehículo que desea agregar.\n0. Terminar de leer");
         addUntilStop(selected, vehicles);
         return selected.toArray(Vehicle[]::new);
     }
@@ -116,6 +130,7 @@ public class CouponCtrl {
         RouteSequence routeSeq = selectRouteSeq();
         for (int i = 0; i < routeSeq.getRoutes().length; i++)
             Console.log((i + 1) + ". " + routeSeq.getRoutes()[i].info());
+        Console.log("Seleccione una por una, cada ruta que desea agregar.\n0. Terminar de leer");
         addUntilStop(selected, routeSeq.getRoutes());
         return selected.toArray(Route[]::new);
     }
@@ -141,6 +156,7 @@ public class CouponCtrl {
 
     private <T> void addUntilStop(ArrayList<T> arrayList, T[] list) {
         int option = 0;
+        ArrayList<Integer> selected = new ArrayList<>();
         do {
             option = Console.readNumber();
             if (option == 0 && arrayList.size() == 0) {
@@ -151,13 +167,25 @@ public class CouponCtrl {
                 Console.log("Número inválido, por favor, inténtelo de nuevo");
                 continue;
             }
+            if(isRepeated(selected, option)) {
+                Console.log("El elemento ya ha sido seleccionado, inténtelo de nuevo");
+                continue;
+            }
             if (option == 0) {
                 Console.log("Se ha terminado de leer");
                 continue;
             }
             arrayList.add(list[option - 1]);
+            selected.add(option);
             Console.log("Se ha agregado el objeto");
         } while (option != 0);
+    }
+
+    private boolean isRepeated(ArrayList<Integer> selected, int selection) {
+        for(Integer number : selected)
+            if(number == selection)
+                return true;
+        return false;
     }
 
     public Coupon.DiscountType selectDiscountType() {

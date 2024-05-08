@@ -19,5 +19,6 @@ public class MyCoupons {
             Console.log(coupon.info());
         Console.log("Digite cualquier tecla para volver");
         Console.readData();
+        new CMainMenu(company);
     }
 }

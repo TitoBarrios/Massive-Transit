@@ -26,7 +26,7 @@ public class TicketCtrl {
         if (option == 0)
             new MainMenu(user);
         if (option < 0 || option > 4)
-            selectType();
+            return selectType();
         return Converter.fromInt(option - 1);
     }
 
@@ -66,9 +66,9 @@ public class TicketCtrl {
                 new MainMenu(user);
         } while (option > 0 && option > routes.length);
         Route selected = routes[option - 1];
-        if(selected.getIsAvailable() == false) {
-            Console.log("la ruta seleccionado no está disponible, por favor inténtelo de nuevo");
-            selectRoute(routes, message);
+        if (selected.getIsAvailable() == false) {
+            Console.log("La ruta seleccionada no está disponible, por favor inténtelo de nuevo");
+            return selectRoute(routes, message);
         }
         return selected;
     }
@@ -104,7 +104,7 @@ public class TicketCtrl {
         Coupon coupon = CouponServ.findBestCoupon(CouponServ.filterPublic(coupons), price);
 
         if (coupons.length == 0) {
-            Console.log("No tenemos cupones disponibles en este momento");
+            Console.log("No tenemos cupones disponibles en este momento\n");
             return coupon;
         }
         Coupon[] pCoupons = CouponServ.filterPublic(CouponServ.filterAvailable(coupons));
@@ -121,7 +121,9 @@ public class TicketCtrl {
             redeemCode = Console.readData();
             try {
                 option = Integer.parseInt(redeemCode);
-                if (option != 0)
+                if (option == 0)
+                    new MainMenu(user);
+                if (option > 0 && option <= coupons.length)
                     coupon = pCoupons[option - 1];
             } catch (NumberFormatException e) {
                 Coupon temp = CouponServ.searchCouponByWord(coupons, redeemCode);

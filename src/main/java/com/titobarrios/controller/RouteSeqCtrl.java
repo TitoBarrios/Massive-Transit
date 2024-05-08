@@ -42,7 +42,7 @@ public class RouteSeqCtrl {
         do {
             option = Console.readNumber();
             if (option == 0)
-                selectRouteSeq(routeSeqs);
+                 return selectRouteSeq(routeSeqs);
             if (option != 1)
                 Console.log("Opción inválida");
         } while (option != 1);
@@ -55,7 +55,7 @@ public class RouteSeqCtrl {
         if (option == 0)
             new RSMainMenu(company);
         if (option < 0 || option > 4)
-            selectType();
+            return selectType();
         return Converter.fromInt(option - 1);
     }
 
@@ -101,9 +101,8 @@ public class RouteSeqCtrl {
             return LocalTime.parse(startingTime);
         } catch (DateTimeParseException e) {
             Console.log("El formato de la ruta se ha digitado mal, por favor, inténtelo de nuevo\n");
-            selectStartingTime();
+            return selectStartingTime();
         }
-        return null;
     }
 
     public int selectStopsQuantity() {
@@ -114,7 +113,7 @@ public class RouteSeqCtrl {
         if (stops < 2 && stops > 0)
             Console.log("Debe crear al menos 2 paradas\n");
         if (stops < 2)
-            selectStopsQuantity();
+            return selectStopsQuantity();
         return stops;
     }
 

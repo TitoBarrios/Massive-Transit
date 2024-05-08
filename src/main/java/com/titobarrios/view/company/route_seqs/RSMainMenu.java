@@ -30,6 +30,7 @@ public class RSMainMenu {
                 new MainMenu(company);
             default:
                 Console.log("Opción inválida, por favor, inténtelo de nuevo\n");
+                menu();
         }
     }
 }

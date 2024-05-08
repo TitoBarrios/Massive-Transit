@@ -2,7 +2,7 @@ package com.titobarrios.utils;
 
 public class Maths {
 
-    public int getGreatestBetweenThree(int a, int b, int c) {
+    public static int getGreatestBetweenThree(int a, int b, int c) {
 		if (a >= b && a >= c) {
 			return a;
 		}
@@ -12,7 +12,7 @@ public class Maths {
 		return c;
 	}
 
-    public int calculatePercentage(int percentage, int number){
-        return number * (percentage / 100);
+    public static int calculatePercentage(int percentage, int number){
+        return (int) (number * (float) percentage / 100);
     }
 }

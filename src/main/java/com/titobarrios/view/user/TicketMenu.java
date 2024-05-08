@@ -2,6 +2,7 @@ package com.titobarrios.view.user;
 
 import com.titobarrios.constants.VType;
 import com.titobarrios.controller.TicketCtrl;
+import com.titobarrios.exception.NotAffordableException;
 import com.titobarrios.model.Coupon;
 import com.titobarrios.model.Route;
 import com.titobarrios.model.RouteSequence;
@@ -43,8 +44,9 @@ public class TicketMenu {
         Coupon coupon = CouponServ.findBestCoupon(CouponServ.filterPublic(applicable), vehicle.getPrice());
         do {
             Console.log("1. Comprar     2. Agregar/Cambiar Cupón    3. Reiniciar    Cupón Actual: " + (coupon == null
-                    ? "Ninguno" : coupon.getName()) + "\nPrecio actual: " + CouponServ.discountedPrice(coupon, vehicle.getPrice())
-                            + "    Su saldo: " + user.getWallet() + "\n0. Cancelar y volver");
+                    ? "Ninguno"
+                    : coupon.getName()) + "\nPrecio actual: " + CouponServ.discountedPrice(coupon, vehicle.getPrice())
+                    + "    Su saldo: " + user.getWallet() + "\n0. Cancelar y volver");
             int option = 0;
             do {
                 option = Console.readNumber();
@@ -54,11 +56,7 @@ public class TicketMenu {
 
             switch (option) {
                 case 1:
-                    if (!Wallet.isAffordable(user, vehicle.getPrice())) {
-                        Console.log("Su saldo no es suficiente para realizar esta transacción");
-                        continue;
-                    }
-                    Console.log("Su ticket será el siguiente:\n Secuencia: " + routeSeq + "\n Entrada: "
+                    Console.log("Su ticket será el siguiente:\n Secuencia: " + routeSeq.getId() + "\n Entrada: "
                             + entry.getStops()[Route.StopType.ENTRY.ordinal()] + "\n Salida: "
                             + exit.getStops()[Route.StopType.EXIT.ordinal()] + "\n Vehículo: " + vehicle.getPlate()
                             + "\n Precio Final: " + CouponServ.discountedPrice(coupon, vehicle.getPrice())
@@ -69,11 +67,17 @@ public class TicketMenu {
                         Console.log("Se ha cancelado la operación");
                         continue;
                     }
+                    try {
+                        Wallet.charge(user, CouponServ.discountedPrice(coupon, vehicle.getPrice()));
+                    } catch (NotAffordableException ex) {
+                        Console.log("Su saldo no es suficiente para realizar esta transacción\n");
+                        menu();
+                    }
                     if (owner == null) {
-                        Console.log("Se ha generado correctamente su ticket, gracias por su compra!");
+                        Console.log("Se ha generado correctamente su ticket, gracias por su compra!\n");
                         new Ticket(user, user, coupon, vehicle, new Route[] { entry, exit }).bill();
                     } else {
-                        Console.log("Se ha enviado el ticket a " + user.getId() + ", gracias por su compra!");
+                        Console.log("Se ha enviado el ticket a " + user.getId() + ", gracias por su compra!\n");
                         new Ticket(owner, user, coupon, vehicle, new Route[] { entry, exit }).bill();
                     }
                     new MainMenu(user);

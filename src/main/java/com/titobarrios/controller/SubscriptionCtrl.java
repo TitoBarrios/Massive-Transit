@@ -39,7 +39,7 @@ public class SubscriptionCtrl {
             new SMainMenu(user);
         }
         if (option < 0 || option > subscriptions.length)
-            selectSubscription();
+            return selectSubscription();
         return subscriptions[option - 1];
     }
 
@@ -48,7 +48,7 @@ public class SubscriptionCtrl {
         if (option == 0)
             new MainMenu(user);
         if (option < 0 || option > 4)
-            selectType();
+            return selectType();
         return Converter.fromInt(option - 1);
     }
 
@@ -57,7 +57,7 @@ public class SubscriptionCtrl {
         if (option == 0)
             new SMainMenu(user);
         if (option < 0 || option > 7)
-            selectPaymentDay();
+            return selectPaymentDay();
         return LaboralDays.fromInt(option);
     }
 
@@ -72,7 +72,7 @@ public class SubscriptionCtrl {
         if (option == 0)
             new SMainMenu(user);
         if (option < 0 || option > applicableRouteSeqs.length)
-            selectRouteSeq(type, paymentDay);
+            return selectRouteSeq(type, paymentDay);
         return applicableRouteSeqs[option - 1];
     }
 
@@ -84,7 +84,7 @@ public class SubscriptionCtrl {
         if (option == 0)
             new SMainMenu(user);
         if (option < 0 || option > routeSeq.getRoutes().length)
-            selectRoute(routeSeq);
+            return selectRoute(routeSeq);
         return routeSeq.getRoutes()[option - 1];
     }
 }

@@ -69,33 +69,34 @@ public class Coupon implements Id {
 			DiscountType discountType, int discount, LocalDateTime[] dates, boolean isCumulative, AppliesTo applicable,
 			Vehicle[] vehicles, RouteSequence[] routeSeqs, Route[] routes, DayOfWeek[] redeemingDays,
 			int userMaxRedeems, int maxRedeems) {
+		this.type = type;
+		this.owner = owner;
 		this.name = name;
 		this.description = description;
-		this.isCumulative = isCumulative;
-		this.type = type;
 		this.redeemWord = redeemWord;
 		this.discountType = discountType;
 		this.discount = discount;
 		this.dates = dates;
+		this.isCumulative = isCumulative;
 		this.applicable = applicable;
 		this.vehicles = vehicles;
 		this.routeSeqs = routeSeqs;
 		this.routes = routes;
+		this.redeemingDays = redeemingDays;
 		this.redeems = new int[REDEEMS_X];
 		this.redeems[RedeemType.USER_MAXIMUM.ordinal()] = userMaxRedeems;
 		this.redeems[RedeemType.MAXIMUM.ordinal()] = maxRedeems;
 		lastCheck = CurrentDate.get();
-		this.redeemingDays = redeemingDays;
 		initialize();
 	}
 
 	public Coupon(Coupon coupon) {
-		RevenueUtil.refreshRevenue(revenue, lastCheck);
 		this.id = coupon.getId();
 		this.type = coupon.getType();
 		this.name = coupon.getName();
 		this.discountType = coupon.getDiscountType();
 		this.discount = coupon.getDiscount();
+		RevenueUtil.refreshRevenue(coupon.getRevenue(), coupon.getLastCheck());
 	}
 
 	private void initialize() {
@@ -109,7 +110,9 @@ public class Coupon implements Id {
 	public void checkAvailability() {
 		CurrentDate.refresh();
 		if (this.getRedeems()[Coupon.RedeemType.CURRENT.ordinal()] < this.getRedeems()[Coupon.RedeemType.MAXIMUM
-				.ordinal()] && (this.getDates()[Value.STARTING.value()].isBefore(CurrentDate.get())
+				.ordinal()]
+				&& ((this.getDates()[Value.STARTING.value()].isBefore(CurrentDate.get())
+						|| this.getDates()[Value.STARTING.value()].equals(CurrentDate.get()))
 						&& this.getDates()[Value.EXPIRATION.value()].isAfter(CurrentDate.get())))
 			this.setAvailable(true);
 		this.setAvailable(false);
@@ -333,7 +336,7 @@ public class Coupon implements Id {
 		StringBuilder builder = new StringBuilder();
 		builder.append("[").append(id).append("] ").append(name).append("\n ").append(description).append("\n")
 				.append(type.getName()).append(" ").append(type == Type.RESERVED ? redeemWord + "   " : "")
-				.append(discountType).append("   ").append(discount)
+				.append(discountType).append(":   ").append(discount)
 				.append(discountType == DiscountType.PERCENTAGE ? "%" : "").append("\n");
 		switch (applicable) {
 			case VEHICLES:

@@ -22,7 +22,7 @@ public class VehicleCtrl {
         if (option == 0)
             new VMainMenu(company);
         if (option < 0 || option > vehicles.length)
-            selectVehicle(vehicles);
+            return selectVehicle(vehicles);
         return vehicles[option - 1];
     }
 
@@ -32,7 +32,7 @@ public class VehicleCtrl {
         if (option == 0)
             new VMainMenu(company);
         if (option < 0 || option > 4)
-            selectType();
+            return selectType();
         return Converter.fromInt(option - 1);
     }
 
@@ -92,7 +92,7 @@ public class VehicleCtrl {
         do {
             option = Console.readNumber();
             if (option == 0)
-                selectRouteSeq(routeSeqs);
+                return selectRouteSeq(routeSeqs);
             if (option != 1)
                 Console.log("Opción inválida");
         } while (option != 1);

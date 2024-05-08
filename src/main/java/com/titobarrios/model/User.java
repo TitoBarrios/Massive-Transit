@@ -3,6 +3,7 @@ package com.titobarrios.model;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+import com.titobarrios.db.CurrentDate;
 import com.titobarrios.db.DB;
 import com.titobarrios.utils.RevenueUtil;
 
@@ -21,6 +22,8 @@ public class User extends Account {
 		tickets = new ArrayList<Ticket>();
 		relationships = new ArrayList<User>();
 		subscriptions = new ArrayList<Subscription>();
+		revenue =  new int[4];
+		lastCheck = CurrentDate.get();
 		DB.store(this);
 	}
 

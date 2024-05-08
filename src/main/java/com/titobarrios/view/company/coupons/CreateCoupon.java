@@ -30,7 +30,7 @@ public class CreateCoupon {
         Coupon.Type type = ctrl.selectType();
         String redeemWord = null;
         if (type.equals(Coupon.Type.RESERVED))
-            redeemWord = ctrl.selectString();
+            redeemWord = ctrl.selectRedeemWord();
         Coupon.AppliesTo applicable = ctrl.selectApplicable();
         Vehicle[] vehicles = null;
         RouteSequence[] routeSeqs = null;
@@ -68,7 +68,7 @@ public class CreateCoupon {
         new Coupon(type, company, name, description, redeemWord, discountType, discount,
                 new LocalDateTime[] { startingDate, expirationDate }, false, applicable, vehicles, routeSeqs, routes,
                 activeDays, maxUserRedemptions, maxRedemptions);
-        Console.log("El cupón se ha creado correctamente");
+        Console.log("El cupón se ha creado correctamente\n");
         new CMainMenu(company);
     }
 

@@ -25,7 +25,6 @@ public class AdminCtrl {
     }
 
     public User selectUser(User[] users) {
-        User selected = null;
         for (int i = 0; i < users.length; i++)
             Console.log(new StringBuilder().append(i + 1).append(". ").append(users[i].getId()).append("\n Tickets: ")
                     .append(users[i].getTickets().length).append(".   Relaciones: ")
@@ -39,9 +38,8 @@ public class AdminCtrl {
                 new UsersAMenu(admin);
             if (option < 0 || option > users.length)
                 Console.log("Opción inválida, por favor, inténtelo de nuevo");
-            selected = users[option - 1];
         } while (option < 0 || option > users.length);
-        return selected;
+        return users[option - 1];
     }
 
     public String userAdminInfo(User user) {
@@ -51,7 +49,6 @@ public class AdminCtrl {
     }
 
     public Company selectCompany(Company[] companies) {
-        Company selected = null;
         for (int i = 0; i < companies.length; i++)
             Console.log(new StringBuilder().append(i + 1).append(". ").toString());
         Console.log("Seleccione una empresa");
@@ -62,9 +59,8 @@ public class AdminCtrl {
                 new CompaniesAMenu(admin);
             if (option < 0 || option > companies.length)
                 Console.log("Opción inválida, por favor, inténtelo de nuevo");
-            selected = companies[option - 1];
         } while (option < 0 || option > companies.length);
-        return selected;
+        return companies[option - 1];
     }
 
     public String companyAdminInfo(Company company) {
@@ -74,7 +70,6 @@ public class AdminCtrl {
     }
 
     public RouteSequence selectRouteSequence(RouteSequence[] routeSeqs) {
-        RouteSequence selected = null;
         for (int i = 0; i < routeSeqs.length; i++)
             Console.log(new StringBuilder().append(i + 1).append(". ").append(routeSeqs[i].getId()).append("    ")
                     .append(routeSeqs[i].getOwner().getId()).toString());
@@ -86,9 +81,8 @@ public class AdminCtrl {
                 new RouteSeqAMenu(admin);
             if (option < 0 || option > routeSeqs.length)
                 Console.log("Opción inválida, por favor, inténtelo de nuevo");
-            selected = routeSeqs[option - 1];
         } while (option < 0 || option > routeSeqs.length);
-        return selected;
+        return routeSeqs[option - 1];
     }
 
     public String routeSeqAdminInfo(RouteSequence routeSeq) {
@@ -99,7 +93,6 @@ public class AdminCtrl {
     }
 
     public Vehicle selectVehicle(Vehicle[] vehicles) {
-        Vehicle selected = null;
         for (int i = 0; i < vehicles.length; i++)
             Console.log(new StringBuilder().append(i + 1).append(". ").append(vehicles[i].getPlate()).append("    ")
                     .append(vehicles[i].getCompany().getId()).append("    ").append(vehicles[i].getPrice()).append("\n")
@@ -112,9 +105,8 @@ public class AdminCtrl {
                 new VehiclesAMenu(admin);
             if (option < 0 || option > vehicles.length)
                 Console.log("Opción inválida, por favor, inténtelo de nuevo");
-            selected = vehicles[option - 1];
         } while (option < 0 || option > vehicles.length);
-        return selected;
+        return vehicles[option - 1];
     }
 
     public String vehicleAdminInfo(Vehicle vehicle) {
@@ -131,7 +123,6 @@ public class AdminCtrl {
     }
 
     public Coupon selectCoupon(Coupon[] coupons) {
-        Coupon selected = null;
         for (int i = 0; i < coupons.length; i++)
             Console.log(new StringBuilder().append(i + 1).append(". ").append(coupons[i].getId()).append("    ")
                     .append(coupons[i].getOwner().getId()).append("\n Descuento: ").append(coupons[i].getDiscount())
@@ -144,14 +135,14 @@ public class AdminCtrl {
                 new CouponsAMenu(admin);
             if (option < 0 || option > coupons.length)
                 Console.log("Opción inválida, por favor, inténtelo de nuevo");
-            selected = coupons[option - 1];
         } while (option < 0 || option > coupons.length);
-        return selected;
+        return coupons[option - 1];
     }
 
     public String couponAdminInfo(Coupon coupon) {
         StringBuilder builder = new StringBuilder();
-        builder.append("[").append(coupon.getId()).append("] ").append(coupon.getName()).append("   ").append(coupon.getOwner().getId()).append("\n ")
+        builder.append("[").append(coupon.getId()).append("] ").append(coupon.getName()).append("   ")
+                .append(coupon.getOwner().getId()).append("\n ")
                 .append(coupon.getDescription()).append("\n")
                 .append(coupon.getType().getName()).append(" ")
                 .append(coupon.getType() == Coupon.Type.RESERVED ? coupon.getRedeemWord() + "   " : "")
