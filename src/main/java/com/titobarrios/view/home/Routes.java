@@ -30,11 +30,13 @@ public class Routes {
     private void showRoutes(VType type) {
         RouteSequence[] routeSeqs = RouteSeqServ.filterByType(type, DB.getRouteSeqs());
         StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < routeSeqs.length; i++)
+        for (int i = 0; i < routeSeqs.length; i++) {
+            routeSeqs[i].refresh();
             builder.append(i + 1).append(". ").append(routeSeqs[i].getId()).append("    ")
                     .append(routeSeqs[i].getOwner().getId())
                     .append("\nDisponibilidad: ").append(routeSeqs[i].isAvailable() ? "Disponible" : "No disponible")
                     .append("\n\n");
+        }
         Console.log(builder.append("Seleccione una secuencia para ver más información\n0. Volver").toString());
         int option = 0;
         do {

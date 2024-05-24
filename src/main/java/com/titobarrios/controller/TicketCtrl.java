@@ -38,8 +38,10 @@ public class TicketCtrl {
                     "No tenemos secuencias de rutas disponibles en este momento, por favor, inténtelo de nuevo más tarde");
             new MainMenu(user);
         }
-        for (int i = 0; i < routeSeqs.length; i++)
+        for (int i = 0; i < routeSeqs.length; i++) {
+            routeSeqs[i].refresh();
             Console.log("\n" + (i + 1) + ". " + routeSeqs[i].getId() + "    " + routeSeqs[i].getOwner().getId());
+        }
         int option = 0;
         do {
             Console.log("Seleccione la secuencia de rutas que más le convenga");
@@ -81,6 +83,7 @@ public class TicketCtrl {
             new MainMenu(user);
         }
         for (int i = 0; i < vehicles.length; i++) {
+            vehicles[i].refresh();
             coupon = CouponServ.findBestCoupon(applicable, vehicles[i].getPrice());
             StringBuilder builder = new StringBuilder();
             builder.append(i + 1).append(". ").append(vehicles[i].getPlate()).append("\n Ticket: ")
