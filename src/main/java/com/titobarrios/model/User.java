@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import com.titobarrios.db.CurrentDate;
 import com.titobarrios.db.DB;
+import com.titobarrios.services.SubscriptionServ;
 import com.titobarrios.utils.RevenueUtil;
 
 public class User extends Account {
@@ -24,6 +25,12 @@ public class User extends Account {
 		subscriptions = new ArrayList<Subscription>();
 		revenue =  new int[4];
 		lastCheck = CurrentDate.get();
+	}
+
+	public void refresh() {
+		SubscriptionServ.checkUser(this);
+		for(Ticket ticket : tickets)
+			ticket.refresh();
 	}
 
 	public void add(Ticket ticket) {

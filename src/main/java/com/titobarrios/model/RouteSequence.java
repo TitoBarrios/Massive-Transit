@@ -60,6 +60,7 @@ public class RouteSequence implements Id {
 	}
 
 	public void refresh() {
+		CurrentDate.refresh();
 		LocalDate currentDate = CurrentDate.get().toLocalDate();
 		if (this.getRoutes()[0].getStops()[Route.StopType.ENTRY.ordinal()].getDayOfMonth() != currentDate
 				.getDayOfMonth()) {

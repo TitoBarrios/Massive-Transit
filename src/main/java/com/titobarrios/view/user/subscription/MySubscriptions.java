@@ -4,12 +4,14 @@ import com.titobarrios.controller.SubscriptionCtrl;
 import com.titobarrios.model.Subscription;
 import com.titobarrios.model.Ticket;
 import com.titobarrios.model.User;
+import com.titobarrios.services.SubscriptionServ;
 import com.titobarrios.view.Console;
 
 public class MySubscriptions {
     private SubscriptionCtrl ctrl;
 
     public MySubscriptions(User user) {
+        SubscriptionServ.checkUser(user);
         ctrl = new SubscriptionCtrl(user);
         menu();
     }

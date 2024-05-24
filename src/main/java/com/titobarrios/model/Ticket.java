@@ -66,6 +66,7 @@ public class Ticket {
 	}
 
 	public void refresh() {
+		CurrentDate.refresh();
 		int entry = Route.StopType.ENTRY.ordinal(), exit = Route.StopType.EXIT.ordinal();
 		isAvailable = routes[entry].getStops()[entry].isBefore(CurrentDate.get())
 				&& routes[exit].getStops()[exit].isAfter(CurrentDate.get());

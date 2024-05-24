@@ -26,6 +26,7 @@ public class SearchRouteSeqA {
     }
 
     private void routeSeqOpt(RouteSequence routeSeq) {
+        routeSeq.refresh();
         Console.log(
                 "Qué desea hacer con esta secuencia de rutas?\n1. Ver más información   |   2. Ver vehículos   |   3. Ver cupones");
         int option = Console.readNumber();

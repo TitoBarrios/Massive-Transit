@@ -82,6 +82,8 @@ public class Finances {
     }
 
     private String vehiclesReport(Vehicle[] vehicles, boolean withTickets) {
+        for (Vehicle vehicle : vehicles)
+            vehicle.refresh();
         int[] revenue = FinancesServ.vehiclesRevenue(vehicles);
         StringBuilder builder = new StringBuilder();
         builder.append("Total: ").append(revenue[Revenue.GENERAL.ordinal()]).append("    Total Anual: ")
@@ -90,7 +92,8 @@ public class Finances {
                 .append(revenue[Revenue.DAILY.ordinal()]).append("\nVehículos: ").append(vehicles.length).append("\n");
         for (int i = 0; i < vehicles.length; i++)
             builder.append("\n").append(i + 1).append(". ")
-                    .append(withTickets ? vehicleReportWithTickets(vehicles[i]) : vehicleReportWithoutTickets(vehicles[i]));
+                    .append(withTickets ? vehicleReportWithTickets(vehicles[i])
+                            : vehicleReportWithoutTickets(vehicles[i]));
         return builder.toString();
     }
 
@@ -113,6 +116,7 @@ public class Finances {
     }
 
     private String ticketReport(Ticket ticket) {
+        ticket.refresh();
         StringBuilder builder = new StringBuilder();
         builder.append("Id: ").append(ticket.getName()).append("   Cliente: ").append(ticket.getOwner().getId())
                 .append("   Regalo: ").append(ticket.getOwner().equals(ticket.getBuyer()) ? " Si" : "NO")

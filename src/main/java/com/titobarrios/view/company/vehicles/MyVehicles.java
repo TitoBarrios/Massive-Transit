@@ -31,8 +31,10 @@ public class MyVehicles {
     }
 
     private void showVehicles(Vehicle[] vehicles) {
-        for (Vehicle vehicle : vehicles)
+        for (Vehicle vehicle : vehicles){
+            vehicle.refresh();
             Console.log(vehicle.info());
+        }
         if (vehicles.length == 0)
             Console.log("No tienes ningún vehículo de este tipo");
     }

@@ -67,6 +67,10 @@ public class TicketMenu {
                         Console.log("Se ha cancelado la operación");
                         continue;
                     }
+                    vehicle.refresh();
+                    if(!routeSeq.isAvailable() || !vehicle.isAvailable() || !entry.getIsAvailable() || !exit.getIsAvailable()) {
+                        Console.log("El ticket ya no está disponible para su compra, por favor, inténtelo nuevamente");
+                    }
                     try {
                         Wallet.charge(user, CouponServ.discountedPrice(coupon, vehicle.getPrice()));
                     } catch (NotAffordableException ex) {

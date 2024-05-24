@@ -10,6 +10,7 @@ import com.titobarrios.view.Console;
 import com.titobarrios.view.home.Home;
 
 public class App {
+
     public void defaults() {
         PropCtrl propCtrl = new PropCtrl("src/main/resources/default.properties");
         new User(propCtrl.getValue("userId"), propCtrl.getValue("userPassword"));

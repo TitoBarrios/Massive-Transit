@@ -75,6 +75,7 @@ public abstract class Vehicle implements Id {
 	}
 
 	public void refresh() {
+		CurrentDate.refresh();
 		routeSeq.refresh();
 		for (Ticket ticket : tickets)
 			if (ticket.getRoutes()[Route.StopType.EXIT.ordinal()].getStops()[Route.StopType.EXIT.ordinal()]

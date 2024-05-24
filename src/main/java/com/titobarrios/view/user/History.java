@@ -14,6 +14,7 @@ public class History {
     public void menu() {
         Console.log("Su historial de compras es el siguiente:");
         for (int i = 0; i < user.getTickets().length; i++) {
+            user.getTickets()[i].refresh();
             user.getTickets()[i].getVehicle().getRouteSeq().refresh();
             Console.log(user.getTickets()[i].bill());
         }

@@ -38,11 +38,13 @@ public class SearchRMenuA {
                 menu();
             case 3:
                 RouteSequence routeSeq = ctrl.selectRouteSequence(DB.getRouteSeqs());
+                routeSeq.refresh();
                 Console.log("Los ingresos generados por la secuencia de rutas son los siguientes: \n"
                         + RevenueCtrl.revenueInfo(routeSeq.getRevenue(), routeSeq.getLastCheck()));
                 menu();
             case 4:
                 Vehicle vehicle = ctrl.selectVehicle(DB.getVehicles());
+                vehicle.refresh();
                 Console.log("Los ingresos generados por el vehículo son los siguientes: \n"
                         + RevenueCtrl.revenueInfo(vehicle.getRevenue(), vehicle.getLastCheck()));
                 menu();

@@ -1,6 +1,7 @@
 package com.titobarrios.view.user;
 
 import com.titobarrios.model.User;
+import com.titobarrios.services.SubscriptionServ;
 import com.titobarrios.utils.Wallet;
 import com.titobarrios.view.Console;
 
@@ -8,6 +9,7 @@ public class WalletMenu {
     private User user;
 
     public WalletMenu(User user) {
+        SubscriptionServ.checkUser(user);
         this.user = user;
         menu();
     }

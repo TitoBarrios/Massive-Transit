@@ -17,6 +17,7 @@ public class EditRouteSeq {
 
     private void menu() {
         RouteSequence selected = ctrl.selectRouteSeq(company.getRouteSeqs());
+        selected.refresh();
         edit(selected);
     }
 

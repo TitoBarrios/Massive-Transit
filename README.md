@@ -1,5 +1,5 @@
-# Basic-Bus-Transportation-Program
-V 1.4
+# Massive Transit Program
+V 1.4  
 I am creating this program to improve my knowledge in java.
   
 Features:  
@@ -22,5 +22,5 @@ Features:
 Future Features (Sorted by priority, highest-lowest):
 - Java UI 
 - My SQL Data Base.
-- SOLID code.
+- Change Log
 - Functional Website.

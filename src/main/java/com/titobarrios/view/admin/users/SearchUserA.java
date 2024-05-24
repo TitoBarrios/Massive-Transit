@@ -34,13 +34,13 @@ public class SearchUserA {
                 showTickets(user);
                 userOpts(user);
             case 2:
-            showRelationships(user);
-            userOpts(user);
+                showRelationships(user);
+                userOpts(user);
             case 3:
-            showSubscriptions(user);
-            userOpts(user);
+                showSubscriptions(user);
+                userOpts(user);
             case 4:
-            delete(user);
+                delete(user);
                 break;
             case 0:
                 break;
@@ -51,22 +51,23 @@ public class SearchUserA {
 
     private void showTickets(User user) {
         Console.log("Los tickets del usuario son los siguientes:");
+        user.refresh();
         for (Ticket ticket : user.getTickets())
             Console.log(ticket.bill() + "\n");
     }
 
     private void showRelationships(User user) {
         Console.log("Las relaciones del usuario son las siguientes:");
-        for(User relationship : user.getRelationships())
+        for (User relationship : user.getRelationships())
             Console.log(relationship.getId());
     }
 
     private void showSubscriptions(User user) {
         Console.log("Las suscripciones del usuario son las siguientes:");
-        for(Subscription subscription : user.getSubscriptions())
+        for (Subscription subscription : user.getSubscriptions())
             Console.log(subscription.info() + "\n");
     }
-    
+
     private void delete(User user) {
         Console.log("Está seguro que desea eliminar este usuario?\n1. Sí   2. No");
         int option = Console.readNumber();
