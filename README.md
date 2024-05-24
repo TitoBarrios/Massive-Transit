@@ -1,5 +1,5 @@
-# Basic-Bus-Transportation-Program
-V 1.33  
+# Massive Transit Program
+V 1.4  
 I am creating this program to improve my knowledge in java.
   
 Features:  
@@ -11,17 +11,16 @@ Features:
   - Subscription.  
   - Redeem coupons.  
 - **Companies:** 
-  - Routes creator, selecting te amount of stop, first stop time and the time between each stop.  
+  - Routes creator, selecting the amount of stops, first stop time and the time between each stop.  
   - Vehicles creator, selecting between airplanes, buses, ships and travel buses.  
   - Coupons creator.
   - Statistics.  
 - **Admin:**  
   - General statistics.  
-  - Delete companies and users.  
+  - Manage companies and users. 
 
 Future Features (Sorted by priority, highest-lowest):
-- Code refactoring.
 - Java UI 
 - My SQL Data Base.
-- SOLID code.
+- Change Log
 - Functional Website.
