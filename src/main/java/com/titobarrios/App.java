@@ -6,6 +6,7 @@ import com.titobarrios.db.DB;
 import com.titobarrios.model.Admin;
 import com.titobarrios.model.Company;
 import com.titobarrios.model.User;
+import com.titobarrios.services.JsonServices.JsonService;
 import com.titobarrios.view.Console;
 import com.titobarrios.view.home.Home;
 
@@ -18,14 +19,14 @@ public class App {
     }
 
     public void admin() {
-        PropCtrl propCtrl = new PropCtrl("src/main/resources/config.properties");
-        new Admin(propCtrl.getValue("adminId"), propCtrl.getValue("adminPassword"));
+        new Admin(DB.getPropCtrl().getValue("adminId"), DB.getPropCtrl().getValue("adminPassword"));
     }
     
     public static void main(String[] args) {
         DB.initialize();
         CurrentDate.initialize();
         Console.initialize();
+        JsonService.initialize();
 
         App app = new App();
         app.admin();

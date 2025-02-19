@@ -46,7 +46,7 @@ public class CreateSubscription {
             Console.log("Se ha cancelado la operación");
             new SMainMenu(user);
         }
-        new Subscription(user, paymentDay, routeSeq, new Route[] { entry, exit });
+        new Subscription(user, new Route[] { entry, exit }, paymentDay, routeSeq);
         Console.log("Se ha creado su suscripción correctamente");
         new SMainMenu(user);
     }

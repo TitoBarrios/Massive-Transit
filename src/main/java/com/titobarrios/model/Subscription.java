@@ -10,12 +10,12 @@ public class Subscription {
 	private RouteSequence routeSeq;
 	private ArrayList<Ticket> bought;
 
-	public Subscription(User subscriber, DayOfWeek dayOfWeek, RouteSequence routeSeq, Route[] routes) {
+	public Subscription(User subscriber, Route[] routes, DayOfWeek dayOfWeek, RouteSequence routeSeq) {
 		bought = new ArrayList<Ticket>();
 		this.subscriber = subscriber;
+		this.routes = routes;
 		this.dayOfWeek = dayOfWeek;
 		this.routeSeq = routeSeq;
-		this.routes = routes;
 		subscriber.add(this);
 	}
 

@@ -6,7 +6,7 @@ import com.titobarrios.model.Ticket;
 import com.titobarrios.model.User;
 
 public class AccountsServ {
-        public static boolean isIdAvailable(String id) {
+    public static boolean isIdAvailable(String id) {
         for (Account account : DB.getAccounts())
             if (account.getId().equals(id))
                 return false;

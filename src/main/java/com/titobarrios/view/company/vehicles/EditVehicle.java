@@ -60,7 +60,7 @@ public class EditVehicle {
                     break;
             case 5:
                 Console.log("Editar secuencia de rutas, actual: " + vehicle.getRouteSeq().getId());
-                vehicle.setRouteSequence(
+                vehicle.setRouteSeq(
                         ctrl.selectRouteSeq(RouteSeqServ.filterByType(vehicle.getType(), company.getRouteSeqs())));
                 Console.log("Se ha editado la secuencia de rutas exitosamente Nueva secuencia: " + vehicle.getRouteSeq().getId());
                 if (option != 1)

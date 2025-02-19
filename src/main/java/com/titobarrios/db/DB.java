@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import com.titobarrios.model.Coupon;
 import com.titobarrios.model.RouteSequence;
 import com.titobarrios.model.User;
+import com.myproperties.PropCtrl;
 import com.titobarrios.model.Account;
 import com.titobarrios.model.Admin;
 import com.titobarrios.model.Company;
@@ -24,15 +25,14 @@ public class DB {
     private static List<Vehicle> vehicles;
 
     private static List<Coupon> coupons;
-
-    public DB() {
-    }
+    private static PropCtrl propCtrl;
 
     public static void initialize() {
         accounts = new ArrayList<Account>();
         routeSeqs = new ArrayList<RouteSequence>();
         vehicles = new ArrayList<Vehicle>();
         coupons = new ArrayList<Coupon>();
+        propCtrl = new PropCtrl("src/main/resources/config.properties");
         Archive.initialize();
     }
 
@@ -101,7 +101,49 @@ public class DB {
         return coupons.toArray(Coupon[]::new);
     }
 
-    public static void setAdmin(Admin newAdmin) {
-        admin = newAdmin;
+    public static PropCtrl getPropCtrl() {
+        return propCtrl;
     }
+
+    public static void changeAdmin(Admin newAdmin) {
+        admin = newAdmin;
+        Archive.store(admin);
+    }
+
+    public static List<Account> getAccountsList() {
+        return accounts;
+    }
+
+    public static List<RouteSequence> getRouteSeqsList() {
+        return routeSeqs;
+    }
+
+    public static List<Vehicle> getVehiclesList() {
+        return vehicles;
+    }
+
+    public static List<Coupon> getCouponsList() {
+        return coupons;
+    }
+
+    public static void setAdmin(Admin admin) {
+        DB.admin = admin;
+    }
+
+    public static void setAccounts(List<Account> accounts) {
+        DB.accounts = accounts;
+    }
+
+    public static void setRouteSeqs(List<RouteSequence> routeSeqs) {
+        DB.routeSeqs = routeSeqs;
+    }
+
+    public static void setVehicles(List<Vehicle> vehicles) {
+        DB.vehicles = vehicles;
+    }
+
+    public static void setCoupons(List<Coupon> coupons) {
+        DB.coupons = coupons;
+    }
+
 }
