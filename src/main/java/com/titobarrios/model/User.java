@@ -72,16 +72,16 @@ public class User extends Account {
 		return wallet;
 	}
 
-	public void setWallet(int wallet) {
-		this.wallet = wallet;
-	}
-
 	public int[] getRevenue() {
 		return revenue;
 	}
 
 	public LocalDateTime getLastCheck() {
 		return lastCheck;
+	}
+
+	public void setWallet(int wallet) {
+		this.wallet = wallet;
 	}
 
 	public void delete() {

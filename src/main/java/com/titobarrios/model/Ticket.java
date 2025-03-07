@@ -68,16 +68,8 @@ public class Ticket {
 	public void refresh() {
 		CurrentDate.refresh();
 		int entry = Route.StopType.ENTRY.ordinal(), exit = Route.StopType.EXIT.ordinal();
-		isAvailable = routes[entry].getStops()[entry].isBefore(CurrentDate.get())
-				&& routes[exit].getStops()[exit].isAfter(CurrentDate.get());
-	}
-
-	public Route[] getRoutes() {
-		return routes;
-	}
-
-	public void setRoutes(Route[] routes) {
-		this.routes = routes;
+		isAvailable = routes[entry].getStops()[entry].isAfter(CurrentDate.get())
+				|| routes[exit].getStops()[exit].isBefore(CurrentDate.get());
 	}
 
 	public Account getBuyer() {
@@ -88,7 +80,7 @@ public class Ticket {
 		this.buyer = buyer;
 	}
 
-	public Account getOwner() {
+	public User getOwner() {
 		return owner;
 	}
 
@@ -102,6 +94,14 @@ public class Ticket {
 
 	public void setVehicle(Vehicle vehicle) {
 		this.vehicle = vehicle;
+	}
+
+	public Route[] getRoutes() {
+		return routes;
+	}
+
+	public void setRoutes(Route[] routes) {
+		this.routes = routes;
 	}
 
 	public Coupon getCoupon() {

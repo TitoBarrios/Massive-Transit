@@ -66,12 +66,12 @@ public abstract class Vehicle implements Id {
 		coupons.add(coupon);
 	}
 
-	public void remove(Coupon coupon) {
-		coupons.remove(coupon);
-	}
-
 	public void remove(Ticket ticket) {
 		tickets.remove(ticket);
+	}
+
+	public void remove(Coupon coupon) {
+		coupons.remove(coupon);
 	}
 
 	public void refresh() {
@@ -122,7 +122,7 @@ public abstract class Vehicle implements Id {
 		return routeSeq;
 	}
 
-	public void setRouteSequence(RouteSequence routeSeq) {
+	public void setRouteSeq(RouteSequence routeSeq) {
 		this.routeSeq = routeSeq;
 	}
 
@@ -154,20 +154,20 @@ public abstract class Vehicle implements Id {
 		this.isAvailable = isAvailable;
 	}
 
-	public void delete() {
-		DB.remove(this);
-		company.remove(this);
-		routeSeq.remove(this);
-		for (Coupon coupon : coupons)
-			coupon.remove(this);
-	}
-
 	public int[] getRevenue() {
 		return revenue;
 	}
 
 	public LocalDateTime getLastCheck() {
 		return lastCheck;
+	}
+
+	public void delete() {
+		DB.remove(this);
+		company.remove(this);
+		routeSeq.remove(this);
+		for (Coupon coupon : coupons)
+			coupon.remove(this);
 	}
 
 	public String info() {

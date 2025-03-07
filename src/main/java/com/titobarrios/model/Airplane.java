@@ -23,7 +23,7 @@ public class Airplane extends Vehicle {
 	 * }
 	 * }
 	 * 
-	 * public void setCatologue(Product[] catalogue) {
+	 * public void setCatalogue(Product[] catalogue) {
 	 * this.catalogue = catalogue;
 	 * }
 	 * 

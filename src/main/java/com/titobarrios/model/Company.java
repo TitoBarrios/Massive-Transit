@@ -74,20 +74,20 @@ public class Company extends Account {
 		return revenue;
 	}
 
-	public void setRevenue(int[] revenue) {
-		this.revenue = revenue;
-	}
-
 	public String getDescription() {
 		return description;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
 	public LocalDateTime getLastCheck() {
 		return lastCheck;
+	}
+
+	public void setRevenue(int[] revenue) {
+		this.revenue = revenue;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public String info() {

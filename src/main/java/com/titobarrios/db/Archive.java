@@ -16,8 +16,6 @@ public class Archive {
 	private static ArrayList<Vehicle> vehicles;
 	private static ArrayList<Coupon> coupons;
 
-	public Archive() {}
-
 	public static void initialize() {
 		admins = new ArrayList<Admin>();
 		accounts = new ArrayList<Account>();
@@ -57,7 +55,7 @@ public class Archive {
 	public static RouteSequence[] getRouteSeqs() {
 		return routeSeqs.toArray(RouteSequence[]::new);
 	}
-	
+
 	public static Vehicle[] getVehicles() {
 		return vehicles.toArray(Vehicle[]::new);
 	}
@@ -66,4 +64,43 @@ public class Archive {
 		return coupons.toArray(Coupon[]::new);
 	}
 
+	public static ArrayList<Admin> getAdminsArrayList() {
+		return admins;
+	}
+
+	public static ArrayList<Account> getAccountsArrayList() {
+		return accounts;
+	}
+
+	public static ArrayList<RouteSequence> getRouteSeqsArrayList() {
+		return routeSeqs;
+	}
+
+	public static ArrayList<Vehicle> getVehiclesArrayList() {
+		return vehicles;
+	}
+
+	public static ArrayList<Coupon> getCouponsArrayList() {
+		return coupons;
+	}
+
+	public static void setAdmins(ArrayList<Admin> admins) {
+		Archive.admins = admins;
+	}
+
+	public static void setAccounts(ArrayList<Account> accounts) {
+		Archive.accounts = accounts;
+	}
+
+	public static void setRouteSeqs(ArrayList<RouteSequence> routeSeqs) {
+		Archive.routeSeqs = routeSeqs;
+	}
+
+	public static void setVehicles(ArrayList<Vehicle> vehicles) {
+		Archive.vehicles = vehicles;
+	}
+
+	public static void setCoupons(ArrayList<Coupon> coupons) {
+		Archive.coupons = coupons;
+	}
 }

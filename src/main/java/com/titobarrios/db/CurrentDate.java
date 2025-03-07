@@ -9,8 +9,6 @@ public class CurrentDate {
         currentDate = LocalDateTime.now();
     }
 
-    public CurrentDate(){}
-
     public static void refresh(){
         currentDate = LocalDateTime.now();
     }
