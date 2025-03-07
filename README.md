@@ -1,5 +1,5 @@
 # Massive Transit Program
-V 1.4  
+V 1.41  
 I am creating this program to improve my knowledge in java.
   
 Features:  
@@ -20,7 +20,6 @@ Features:
   - Manage companies and users. 
 
 Future Features (Sorted by priority, highest-lowest):
-- Java UI 
+- Functional Website.
 - My SQL Data Base.
 - Change Log
-- Functional Website.
